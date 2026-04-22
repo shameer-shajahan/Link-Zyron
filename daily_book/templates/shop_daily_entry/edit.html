@@ -1,0 +1,268 @@
+{% extends base_template %}
+{% block content %}
+
+<style>
+  .entry-row .form-label {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .entry-row .form-control,
+  .entry-row .form-select {
+    height: 38px;
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+  .entry-row .btn-save {
+    height: 38px;
+    font-size: 13px;
+    font-weight: 600;
+    width: 100%;
+  }
+  .auto-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 220px;
+    max-width: 320px;
+    max-height: 220px;
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 6px;
+    z-index: 9999;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  }
+  .auto-item {
+    padding: 6px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .auto-item:hover { background: #f3f4f6; }
+</style>
+
+<div class="container py-24">
+  <div class="card shadow-sm p-24">
+    <h4 class="mb-24">Edit Shop Daily Entry</h4>
+
+
+    <form method="post" id="dailyEntryForm">
+    {% csrf_token %}
+
+    <div class="row g-2 align-items-end entry-row">
+        <div class="col-2">
+          <label class="form-label">Shop</label>
+          <select name="shop" class="form-select js-nav" required>
+            {% for shop in shops %}
+            <option value="{{ shop.id }}" {% if entry.shop.id == shop.id %}selected{% endif %}>{{ shop.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col position-relative">
+        <label class="form-label">Customer</label>
+        <input type="text" name="customer_name" id="customer_name"
+               class="form-control js-nav" autocomplete="off"
+               value="{{ entry.Customer.name }}" required>
+        <input type="hidden" name="customer_id" id="customer_id" value="{{ entry.Customer.id }}">
+        <div id="customer_suggestions" class="auto-list"></div>
+        </div>
+
+        <div class="col-1">
+        <label class="form-label">Type</label>
+        <select name="customer_type" id="customer_type" class="form-select js-nav" required>
+            <option value=""> Select</option>
+            <option value="normal" {% if entry.Customer.customer_type == "normal" %}selected{% endif %}>Normal</option>
+            <option value="press" {% if entry.Customer.customer_type == "press" %}selected{% endif %}>Press</option>
+        </select>
+        </div>
+
+        <div class="col position-relative">
+        <label class="form-label">Paper</label>
+        <input type="text" id="paper_text" class="form-control js-nav" autocomplete="off"
+               value="{{ entry.paper.name }} - {{ entry.paper.gsm }} gsm" required>
+        <input type="hidden" name="paper_id" id="paper_id" value="{{ entry.paper.id }}">
+        <div id="paper_suggestions" class="auto-list"></div>
+        </div>
+
+        <div class="col-1">
+        <label class="form-label">Item</label>
+        <input type="text" name="item_name" class="form-control js-nav" value="{{ entry.item_name }}">
+        </div>
+
+        <div class="col position-relative">
+        <label class="form-label">Finishing</label>
+        <input type="text" id="finishing_text" name="finishing_name"
+               class="form-control js-nav" autocomplete="off"
+               value="{% if entry.finishing %}{{ entry.finishing.name }}{% endif %}">
+        <input type="hidden" name="finishing_id" id="finishing_id"
+               value="{% if entry.finishing %}{{ entry.finishing.id }}{% endif %}">
+        <div id="finishing_suggestions" class="auto-list"></div>
+        </div>
+
+        <div class="col-1">
+        <label class="form-label">Side</label>
+        <select name="side" class="form-select js-nav" required>
+            <option value=""> Select</option>
+            <option value="single" {% if entry.side == "single" %}selected{% endif %}>Single</option>
+            <option value="double" {% if entry.side == "double" %}selected{% endif %}>Double</option>
+        </select>
+        </div>
+
+        <div class="col-1">
+        <label class="form-label">Qty</label>
+        <input type="number" name="quantity" class="form-control js-nav" value="{{ entry.quantity }}" required>
+        </div>
+
+        <div class="col-1">
+        <label class="form-label">Rate</label>
+        <input type="number" step="0.01" name="rate" class="form-control js-nav" value="{{ entry.rate }}" required>
+        </div>
+
+        <div class="col-1">
+        <label class="form-label">Amount</label>
+        <input type="number" step="0.01" name="amount" class="form-control js-nav" value="{{ entry.amount }}" required>
+        </div>
+
+        <input type="hidden" name="is_credit" id="is_credit" value="{% if entry.is_credit %}on{% else %}off{% endif %}">
+
+        <div class="col-1" id="payment_section">
+          <label class="form-label">Payment</label>
+          <select name="payment" id="payment" class="form-select js-nav">
+            <option value="">Select</option>
+            <option value="cash" {% if entry.payment == "cash" %}selected{% endif %}>Cash</option>
+            <option value="upi" {% if entry.payment == "upi" %}selected{% endif %}>UPI</option>
+          </select>
+        </div>
+
+        <div class="col-1 d-grid">
+        <label class="form-label invisible">Save</label>
+        <button type="submit" class="btn btn-primary btn-save">Update</button>
+        </div>
+    </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const customerInput = document.getElementById('customer_name');
+const customerIdInput = document.getElementById('customer_id');
+const customerTypeSelect = document.getElementById('customer_type');
+const customerSuggestions = document.getElementById('customer_suggestions');
+
+const paperInput = document.getElementById('paper_text');
+const paperIdInput = document.getElementById('paper_id');
+const paperSuggestions = document.getElementById('paper_suggestions');
+
+const finishingInput = document.getElementById('finishing_text');
+const finishingIdInput = document.getElementById('finishing_id');
+const finishingSuggestions = document.getElementById('finishing_suggestions');
+
+const qtyInput = document.querySelector('input[name="quantity"]');
+const rateInput = document.querySelector('input[name="rate"]');
+const amountInput = document.querySelector('input[name="amount"]');
+
+const paymentSection = document.getElementById('payment_section');
+const creditHidden = document.getElementById('is_credit');
+
+customerInput.addEventListener('input', function () {
+    customerIdInput.value = '';
+});
+
+customerTypeSelect.addEventListener('change', function () {
+  if (this.value === 'press') {
+    paymentSection.style.display = 'none';
+    creditHidden.value = 'on';
+  } else {
+    paymentSection.style.display = 'block';
+    creditHidden.value = 'off';
+  }
+});
+customerTypeSelect.dispatchEvent(new Event('change'));
+
+// Customer autocomplete
+customerInput.addEventListener('keyup', function () {
+    const q = this.value.trim();
+    customerIdInput.value = '';
+    if (!q) { customerSuggestions.innerHTML=''; return; }
+
+    fetch(`/customers/autocomplete/?q=${q}`)
+        .then(res => res.json())
+        .then(data => {
+            customerSuggestions.innerHTML = '';
+            data.forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'auto-item';
+                div.textContent = c.name;
+                div.onclick = () => {
+                    customerInput.value = c.name;
+                    customerTypeSelect.value = c.type;
+                    customerIdInput.value = c.id;
+                    customerSuggestions.innerHTML = '';
+                };
+                customerSuggestions.appendChild(div);
+            });
+        });
+});
+
+// Paper autocomplete
+paperInput.addEventListener('keyup', function () {
+    const q = this.value.trim();
+    paperIdInput.value = '';
+    if (!q) { paperSuggestions.innerHTML=''; return; }
+
+    fetch(`/papers/autocomplete/?q=${q}`)
+        .then(res => res.json())
+        .then(data => {
+            paperSuggestions.innerHTML = '';
+            data.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'auto-item';
+                div.textContent = `${p.name} - ${p.gsm} gsm`;
+                div.onclick = () => {
+                    paperInput.value = `${p.name} - ${p.gsm} gsm`;
+                    paperIdInput.value = p.id;
+                    paperSuggestions.innerHTML = '';
+                };
+                paperSuggestions.appendChild(div);
+            });
+        });
+});
+
+// Finishing autocomplete
+finishingInput.addEventListener('keyup', function () {
+    const q = this.value.trim();
+    finishingIdInput.value = '';
+    if (!q) { finishingSuggestions.innerHTML=''; return; }
+
+    fetch(`/finishings/autocomplete/?q=${q}`)
+        .then(res => res.json())
+        .then(data => {
+            finishingSuggestions.innerHTML = '';
+            data.forEach(f => {
+                const div = document.createElement('div');
+                div.className = 'auto-item';
+                div.textContent = f.name;
+                div.onclick = () => {
+                    finishingInput.value = f.name;
+                    finishingIdInput.value = f.id;
+                    finishingSuggestions.innerHTML = '';
+                };
+                finishingSuggestions.appendChild(div);
+            });
+        });
+});
+
+// Amount auto-calc
+function updateAmount() {
+    const qty = parseFloat(qtyInput.value);
+    const rate = parseFloat(rateInput.value);
+
+    if (!isNaN(qty) && !isNaN(rate)) {
+        amountInput.value = (qty * rate).toFixed(2);
+    }
+}
+qtyInput.addEventListener('input', updateAmount);
+rateInput.addEventListener('input', updateAmount);
+</script>
+
+{% endblock %}

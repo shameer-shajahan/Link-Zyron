@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .pattern-bg {
+            background-color: #f8fafc;
+            background-image: 
+                repeating-linear-gradient(0deg, transparent, transparent 2px, #e2e8f0 2px, #e2e8f0 3px),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, #e2e8f0 2px, #e2e8f0 3px);
+            background-size: 40px 40px;
+        }
+
+        .slide-in-bottom {
+            animation: slideInBottom 0.6s ease-out forwards;
+        }
+
+        @keyframes slideInBottom {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .input-focus-ring:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-2px);
+        }
+
+        #preloader {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            background-color: #ffffff;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e5e7eb;
+            border-top-color: #1e293b;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="lg:pattern-bg bg-slate-900 min-h-screen">
+    
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="min-h-screen flex">
+        
+        <!-- Left Panel - Branding (Hidden on mobile) -->
+        <div class="hidden lg:flex lg:w-1/2 bg-slate-900 p-12 items-center justify-center relative overflow-hidden">
+            
+            <!-- Decorative Elements -->
+            <div class="absolute top-0 left-0 w-72 h-72 bg-blue-500 opacity-10 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 right-0 w-100 h-100 bg-purple-500 opacity-10 rounded-full blur-3xl"></div>
+            
+            <div class="relative z-10 max-w-md fade-in">
+                <!-- Logo -->
+                <div class="mb-12 text-center">
+                    <div class="w-20 h-20 bg-white rounded-2xl shadow-xl flex items-center justify-center mb-6 hover-lift mx-auto">
+                        <img src="{% static 'img/logo2.png' %}" alt="Logo" class="w-14 h-14 object-contain">
+                    </div>
+                    <h1 class="text-5xl font-bold text-white mb-3">
+                        Zy <span class="text-blue-400 relative">Tron</span>
+                    </h1>
+                    <p class="text-slate-300 text-lg leading-relaxed">
+                        Smart consumer data management with secure access control
+                    </p>
+                </div>
+
+                <!-- Features -->
+                <div class="space-y-6">
+                    <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10">
+                        <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-shield-alt text-blue-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-semibold">Bank-Level Security</h3>
+                            <p class="text-slate-400 text-sm">256-bit SSL encryption protection</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10">
+                        <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-chart-line text-purple-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-semibold">Real-time Analytics</h3>
+                            <p class="text-slate-400 text-sm">Monitor your data insights instantly</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4 p-4 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10">
+                        <div class="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-users text-cyan-400 text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-semibold">Team Collaboration</h3>
+                            <p class="text-slate-400 text-sm">Work together seamlessly</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <!-- <div class="grid grid-cols-3 gap-6 mt-12 pt-12 border-t border-white/10">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-white mb-1">50K+</div>
+                        <div class="text-slate-400 text-sm">Active Users</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-white mb-1">99.9%</div>
+                        <div class="text-slate-400 text-sm">Uptime</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-white mb-1">24/7</div>
+                        <div class="text-slate-400 text-sm">Support</div>
+                    </div>
+                </div> -->
+
+                <!-- Developed by Hostlane -->
+                <div class="mt-8 pt-6 border-t border-white/10 text-center">
+                    <p class="text-slate-400 text-sm">
+                        Developed by <span class="text-white font-semibold">Hostlane</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel - Login Form -->
+        <div class="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12">
+            
+            <div class="w-full max-w-lg slide-in-bottom">
+                
+                <!-- Mobile Logo -->
+                <div class="lg:hidden text-center mb-10">
+                    <div class="w-16 h-16 bg-slate-900 rounded-2xl shadow-lg flex items-center justify-center mx-auto mb-4">
+                        <img src="{% static 'img/logo.png' %}" alt="Logo" class="w-11 h-11 object-contain">
+                    </div>
+                </div>
+
+                <!-- Form Card -->
+                <div class="bg-white rounded-3xl shadow-2xl p-8 lg:p-10 border border-slate-100">
+                    
+                    <!-- Header -->
+                    <div class="mb-8">
+                        <h2 class="text-3xl font-bold text-slate-900 mb-2">Welcome back</h2>
+                        <p class="text-slate-500">Enter your credentials to access your account</p>
+                    </div>
+
+                    <!-- Error Messages -->
+                    {% if messages %}
+                    <div class="mb-6">
+                        {% for message in messages %}
+                        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg flex items-start space-x-3">
+                            <i class="fas fa-exclamation-circle text-red-500 mt-0.5"></i>
+                            <p class="text-red-700 text-sm">{{ message }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% if error %}
+                    <div class="mb-6">
+                        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg flex items-start space-x-3">
+                            <i class="fas fa-exclamation-circle text-red-500 mt-0.5"></i>
+                            <p class="text-red-700 text-sm">{{ error }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Login Form -->
+                    <form method="post" class="space-y-6">
+                        {% csrf_token %}
+                        
+                        <!-- Email Field -->
+                        <div>
+                            <label for="email" class="block text-sm font-semibold text-slate-700 mb-2">
+                                Email Address
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="fas fa-envelope text-slate-400"></i>
+                                </div>
+                                <input 
+                                    type="email" 
+                                    name="email" 
+                                    id="email"
+                                    placeholder="you@example.com"
+                                    required
+                                    class="w-full pl-11 pr-4 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:bg-white input-focus-ring transition-all duration-200"
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div>
+                            <label for="password" class="block text-sm font-semibold text-slate-700 mb-2">
+                                Password
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="fas fa-lock text-slate-400"></i>
+                                </div>
+                                <input 
+                                    type="password" 
+                                    name="password" 
+                                    id="password"
+                                    placeholder="Enter your password"
+                                    required
+                                    class="w-full pl-11 pr-12 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:bg-white input-focus-ring transition-all duration-200"
+                                >
+                                <button 
+                                    type="button" 
+                                    id="togglePassword"
+                                    class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+                                >
+                                    <i class="fas fa-eye" id="toggleIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Remember & Forgot -->
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center cursor-pointer group">
+                                <input 
+                                    type="checkbox" 
+                                    name="remember"
+                                    class="w-4 h-4 text-blue-600 bg-slate-100 border-slate-300 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                                >
+                                <span class="ml-2 text-sm text-slate-600 group-hover:text-slate-900 transition-colors">Remember me</span>
+                            </label>
+                            <a href="#" class="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                                Forgot password?
+                            </a>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button 
+                            type="submit" 
+                            class="w-full bg-slate-900 text-white font-semibold py-4 rounded-xl hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-300 transition-all duration-200 flex items-center justify-center space-x-2 hover-lift"
+                        >
+                            <span>Sign in to your account</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </form>
+
+                    <!-- Security Notice -->
+                    <div class="mt-8 pt-6 border-t border-slate-100">
+                        <div class="flex items-center justify-center space-x-2 text-sm text-slate-500">
+                            <i class="fas fa-shield-check text-green-500"></i>
+                            <span>Secured with 256-bit SSL encryption</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sign Up Link -->
+                <p class="mt-8 text-center text-sm text-slate-600">
+
+                    <a href="#" class="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+
+                    </a>
+                </p>
+
+                <!-- Developed by Hostlane (Mobile) -->
+                <div class="lg:hidden mt-8 text-center">
+                    <p class="text-slate-500 text-sm">
+                        Developed by <span class="text-slate-500 font-semibold">Hostlane</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        // Preloader
+        $(window).on("load", function () {
+            $("#preloader").fadeOut(600);
+        });
+
+        // Password toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+
+            if (togglePassword && passwordInput && toggleIcon) {
+                togglePassword.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        toggleIcon.classList.remove('fa-eye');
+                        toggleIcon.classList.add('fa-eye-slash');
+                    } else {
+                        passwordInput.type = 'password';
+                        toggleIcon.classList.remove('fa-eye-slash');
+                        toggleIcon.classList.add('fa-eye');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

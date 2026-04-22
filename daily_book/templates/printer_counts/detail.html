@@ -1,0 +1,16 @@
+{% extends 'master_base.html' %}
+{% load static %}
+
+{% block title %} Master {% endblock %}
+
+{% block content %}
+<h2>Printer Count Detail</h2>
+
+<p><b>Printer:</b> {{ count.printer.name }}</p>
+<p><b>Date:</b> {{ count.date }}</p>
+<p><b>Type:</b> {{ count.type }}</p>
+<p><b>Count:</b> {{ count.count }}</p>
+
+<a href="{% url 'printer_count_list' %}">Back</a>
+
+{% endblock %}

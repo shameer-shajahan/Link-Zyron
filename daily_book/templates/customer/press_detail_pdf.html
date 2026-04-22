@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+
+<html>
+  {% load humanize %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: white;
+    }
+    
+    @page {
+      size: A4;
+      margin: 15mm;
+    }
+    
+    @media print {
+      body {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+      
+      .entry-section {
+        page-break-inside: avoid;
+      }
+      
+      .items-table tbody tr {
+        page-break-inside: avoid;
+      }
+    }
+    
+    .container {
+      max-width: 210mm;
+      margin: 0 auto;
+      background-color: white;
+    }
+    
+    /* Header */
+    .header {
+      background-color: white;
+      padding: 1.5rem 1.5rem 1rem 1.5rem;
+      text-align: center;
+      border-bottom: 3px solid #dc2626;
+      margin-bottom: 0;
+    }
+    
+    .logo-section {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 0.75rem;
+    }
+    
+    .logo-section img {
+      max-height: 70px;
+      width: auto;
+      display: inline-block;
+      margin: 0 auto;
+    }
+    
+    .company-info {
+      font-size: 0.75rem;
+      color: #1e293b;
+      text-align: center;
+      line-height: 1.5;
+    }
+    
+    /* Report Top Section */
+    .invoice-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 1rem 1.5rem;
+      background-color: #f8fafc;
+      border-bottom: 2px solid #e2e8f0;
+      margin-bottom: 0;
+    }
+    
+    .invoice-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 0.5rem;
+    }
+    
+    .invoice-number {
+      font-size: 0.875rem;
+      color: #475569;
+    }
+    
+    .customer-phone {
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-top: 0.25rem;
+    }
+    
+    .invoice-date {
+      text-align: right;
+      font-size: 0.875rem;
+      color: #475569;
+      line-height: 1.6;
+    }
+    
+    .date-label {
+      font-weight: 600;
+      color: #1e293b;
+    }
+    
+    /* Main Content */
+    .content {
+      padding: 1rem 1.5rem;
+    }
+    
+    /* Info Cards */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      margin-top: 0;
+    }
+    
+    .info-card {
+      border-left: 4px solid #1e293b;
+      background-color: #f8fafc;
+      padding: 0.75rem;
+      border-radius: 0 0.25rem 0.25rem 0;
+    }
+    
+    .card-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #1e293b;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .card-title-dot {
+      width: 0.4rem;
+      height: 0.4rem;
+      background-color: #1e293b;
+      border-radius: 50%;
+      margin-right: 0.4rem;
+    }
+    
+    .card-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      font-size: 0.75rem;
+    }
+    
+    .card-row {
+      display: flex;
+    }
+    
+    .card-label {
+      font-weight: 600;
+      color: #475569;
+      min-width: 90px;
+      font-size: 0.7rem;
+    }
+    
+    .card-value {
+      color: #0f172a;
+      font-weight: 500;
+      flex: 1;
+    }
+    
+    /* Entry Section */
+    .entry-section {
+      margin-bottom: 1.5rem;
+      page-break-inside: avoid;
+    }
+    
+    .entry-header {
+      background-color: #1e293b;
+      color: white;
+      padding: 0.6rem 0.75rem;
+      border-radius: 0.25rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .entry-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+    }
+    
+    .entry-meta {
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    
+    /* Table */
+    .table-wrapper {
+      overflow-x: auto;
+    }
+    
+    .items-table {
+      width: 100%;
+      font-size: 0.75rem;
+      border-collapse: collapse;
+    }
+    
+    .items-table thead {
+      background-color: #1e293b;
+      color: white;
+    }
+    
+    .items-table th {
+      text-align: left;
+      padding: 0.5rem 0.6rem;
+      font-weight: 700;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .items-table th.text-center {
+      text-align: center;
+    }
+    
+    .items-table th.text-right {
+      text-align: right;
+    }
+    
+    .items-table tbody tr {
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .items-table tbody tr:last-child {
+      border-bottom: 2px solid #cbd5e1;
+    }
+    
+    .items-table tbody tr:hover {
+      background-color: #f8fafc;
+    }
+    
+    .items-table td {
+      padding: 0.5rem 0.6rem;
+    }
+    
+    .items-table td.text-center {
+      text-align: center;
+    }
+    
+    .items-table td.text-right {
+      text-align: right;
+    }
+    
+    .item-title {
+      font-weight: 600;
+      color: #0f172a;
+    }
+    
+    .item-subtitle {
+      font-size: 0.65rem;
+      color: #64748b;
+      font-weight: 500;
+    }
+    
+    .qty-badge {
+      display: inline-block;
+      background-color: #f1f5f9;
+      padding: 0.2rem 0.6rem;
+      border-radius: 0.25rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    
+    .amount-cell {
+      font-weight: 700;
+      color: #0f172a;
+    }
+    
+    /* Summary Section */
+    .summary-section {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 3px solid #1e293b;
+      page-break-inside: avoid;
+    }
+    
+    .totals-box {
+      background-color: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 0.25rem;
+      padding: 1rem;
+      max-width: 400px;
+      margin-left: auto;
+    }
+    
+    .grand-total {
+      background-color: #1e293b;
+      color: white;
+      border-radius: 0.25rem;
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .grand-total .total-label {
+      font-size: 0.875rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      color: white;
+    }
+    
+    .grand-total .total-value {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: white;
+    }
+    
+    /* Footer */
+    .footer {
+      border-top: 2px solid #e2e8f0;
+      padding: 0.75rem 1.5rem;
+      margin-top: 1.5rem;
+      page-break-inside: avoid;
+    }
+    
+    .thank-you {
+      text-align: center;
+      margin-bottom: 0.875rem;
+    }
+    
+    .thank-you-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 0.2rem;
+    }
+    
+    .thank-you-subtitle {
+      font-size: 0.65rem;
+      color: #64748b;
+    }
+    
+    .footer-note {
+      text-align: center;
+      font-size: 0.65rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    
+    .no-entries {
+      text-align: center;
+      padding: 2rem;
+      background-color: #f8fafc;
+      border-radius: 0.25rem;
+      color: #64748b;
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- Header with Logo -->
+    <div class="header">
+      <div class="logo-section">
+        <img src="{{ header_url }}" alt="Link Designers Home">
+      </div>
+      <div class="company-info">
+        Amrutha Complex, Near TDMC Hospital, Vandanam, Aravukad, Alappuzha 688561<br>
+        Ph: 7796612829, 8075209939 | Email: linkdms@gmail.com | Website: www.linktdmc.com
+      </div>
+    </div>
+
+    <!-- Report Top Section -->
+    <div class="invoice-top">
+      <div>
+        <div class="invoice-title">Press Customer Report</div>
+        <div class="invoice-number">Customer: {{ customer.name }}</div>
+        {% if customer.phone %}
+        <div class="customer-phone">Phone: {{ customer.phone }}</div>
+        {% endif %}
+      </div>
+      <div class="invoice-date">
+        <div><span class="date-label">From:</span> {{ start }}</div>
+        <div><span class="date-label">To:</span> {{ end }}</div>
+      </div>
+    </div>
+
+    <div class="content">
+      
+      <!-- Info Cards Grid -->
+      <div class="info-grid">
+        <!-- Report Information -->
+        <div class="info-card">
+          <h3 class="card-title">
+            <span class="card-title-dot"></span>
+            Report Information
+          </h3>
+          <div class="card-details">
+            <div class="card-row">
+              <span class="card-label">Filter Type:</span>
+              <span class="card-value">{{ filter_type }}</span>
+            </div>
+            <div class="card-row">
+              <span class="card-label">Period:</span>
+              <span class="card-value">{{ start }} to {{ end }}</span>
+            </div>
+            <div class="card-row">
+              <span class="card-label">Total Amount:</span>
+              <span class="card-value">₹{{ total_amount|floatformat:2|intcomma }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer Information -->
+        <div class="info-card">
+          <h3 class="card-title">
+            <span class="card-title-dot"></span>
+            Customer Details
+          </h3>
+          <div class="card-details">
+            <div class="card-row">
+              <span class="card-label">Name:</span>
+              <span class="card-value">{{ customer.name }}</span>
+            </div>
+            {% if customer.phone %}
+            <div class="card-row">
+              <span class="card-label">Phone:</span>
+              <span class="card-value">{{ customer.phone }}</span>
+            </div>
+            {% endif %}
+            {% if customer.email %}
+            <div class="card-row">
+              <span class="card-label">Email:</span>
+              <span class="card-value">{{ customer.email }}</span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Entries Section -->
+      {% if entries %}
+        {% for entry in entries %}
+        <div class="entry-section">
+          <div class="entry-header">
+            <span class="entry-title">Entry #{{ entry.id }}</span>
+            <span class="entry-meta">{{ entry.date }} | {{ entry.shop.name }}</span>
+          </div>
+
+          <!-- Items Table -->
+          <div class="table-wrapper">
+            <table class="items-table">
+              <thead>
+                <tr>
+                  <th>Paper</th>
+                  <th>Item</th>
+                  <th>Finishing</th>
+                  <th class="text-center">Side</th>
+                  <th class="text-center">Qty</th>
+                  <th class="text-right">Rate</th>
+                  <th class="text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in entry.items.all %}
+                <tr>
+                  <td>
+                    <div class="item-title">{{ i.paper.name }}</div>
+                    <div class="item-subtitle">{{ i.paper.gsm }} GSM</div>
+                  </td>
+                  <td class="item-title">{{ i.item_name }}</td>
+                  <td>{{ i.finishing.name|default:"—" }}</td>
+                  <td class="text-center">{{ i.side }}</td>
+                  <td class="text-center">
+                    <span class="qty-badge">{{ i.quantity_breakdown }}</span>
+                  </td>
+                  <td class="text-right">₹{{ i.rate|floatformat:2|intcomma }}</td>
+                  <td class="text-right amount-cell">₹{{ i.amount|floatformat:2|intcomma }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {% endfor %}
+
+        <!-- Total Summary -->
+        <div class="summary-section">
+          <div class="totals-box">
+            <div class="grand-total">
+              <span class="total-label">Total Amount</span>
+              <span class="total-value">₹{{ total_amount|floatformat:2|intcomma }}</span>
+            </div>
+          </div>
+        </div>
+
+      {% else %}
+        <div class="no-entries">
+          No entries found for the selected period.
+        </div>
+      {% endif %}
+
+      <!-- Footer Section -->
+      <div class="footer">
+        <div class="thank-you">
+          <h3 class="thank-you-title">Thank You For Your Business!</h3>
+          <p class="thank-you-subtitle">We appreciate your trust and look forward to serving you again</p>
+        </div>
+
+        <p class="footer-note">
+          This is a computer-generated report | For any queries, please contact us
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

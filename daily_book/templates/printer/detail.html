@@ -1,0 +1,11 @@
+{% extends 'master_base.html' %}
+{% load static %}
+
+{% block title %} Master {% endblock %}
+
+{% block content %}
+<h2>{{ printer.name }}</h2>
+<p>Shop: {{ printer.shop.name }}</p>
+<p>Model: {{ printer.model }}</p>
+
+{% endblock %}

@@ -1,0 +1,296 @@
+{% extends base_template %}
+{% load static %}
+{% block title %}Select Shop{% endblock %}
+
+{% block content %}
+
+<style>
+/* === ANIMATIONS === */
+
+/* Fade In Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Card Slide Up Animation */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card-animate {
+    animation: slideUp 0.6s ease-out both;
+}
+
+/* Info Item Slide Animation */
+@keyframes infoItemSlide {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.info-item-animate {
+    animation: infoItemSlide 0.5s ease-out both;
+    transition: all 0.3s ease;
+}
+
+/* Card Hover Effect */
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Controls Styling */
+.form-select,
+.form-control {
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.form-select:focus,
+.form-control:focus {
+    border-color: #487fff;
+    box-shadow: 0 0 0 3px rgba(72, 127, 255, 0.1);
+    outline: none;
+}
+
+/* Icon Field Styling */
+.icon-field {
+    position: relative;
+}
+
+.icon-field .icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    font-size: 20px;
+    z-index: 1;
+}
+
+.icon-field .form-select {
+    padding-left: 48px;
+}
+
+/* Button Styles */
+.btn-primary-600 {
+    background-color: #487fff;
+    border-color: #487fff;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-600:hover {
+    background-color: #3667e6;
+    border-color: #3667e6;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(72, 127, 255, 0.3);
+}
+
+/* Background Color Classes */
+.bg-primary-50 {
+    background-color: rgba(72, 127, 255, 0.1);
+}
+
+.bg-success-50 {
+    background-color: rgba(34, 197, 94, 0.1);
+}
+
+.bg-info-50 {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Text Color Classes */
+.text-primary-600 {
+    color: #487fff;
+}
+
+.text-success-600 {
+    color: #22c55e;
+}
+
+.text-info-600 {
+    color: #3b82f6;
+}
+
+/* Smooth Transitions */
+* {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Info Cards Hover Effect */
+.bg-info-50,
+.bg-success-50 {
+    transition: all 0.3s ease;
+}
+
+.bg-info-50:hover,
+.bg-success-50:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Center Container */
+.center-container {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Shop Icon Container */
+.shop-icon-container {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #487fff 0%, #3667e6 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    box-shadow: 0 8px 20px rgba(72, 127, 255, 0.3);
+}
+
+/* Focus States for Accessibility */
+.btn-primary-600:focus {
+    outline: 2px solid #487fff;
+    outline-offset: 2px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .card-animate {
+        animation-delay: 0s !important;
+    }
+    
+    .info-item-animate {
+        animation-delay: 0s !important;
+    }
+}
+
+/* Smooth Scroll */
+html {
+    scroll-behavior: smooth;
+}
+</style>
+
+<div class="dashboard-main-body">
+    <div class="center-container">
+        <div class="row justify-content-center w-100">
+            <!-- Main Shop Selection Card -->
+            <div class="col-lg-9 col-md-7">
+                <div class="card card-animate" style="animation-delay: 0.1s;">
+                    <div class="card-body p-32">
+                        <!-- Icon Header -->
+                        <div class="shop-icon-container">
+                            <iconify-icon icon="solar:shop-2-bold" class="text-white" style="font-size: 40px;"></iconify-icon>
+                        </div>
+
+                        <!-- Title & Description -->
+                        <div class="text-center mb-32">
+                            <h4 class="fw-bold mb-8">Select Your Shop</h4>
+                            <p class="text-secondary-light mb-0">Choose your assigned shop to continue to the dashboard</p>
+                        </div>
+
+
+
+                        <form method="post">
+                            {% csrf_token %}
+
+                            <!-- Shop Selection -->
+                            <div class="mb-24">
+                                <div class="info-item-animate" style="animation-delay: 0.15s;">
+                                    <label class="form-label fw-semibold text-primary-light text-sm mb-2 d-flex align-items-center gap-2">
+                                        <iconify-icon icon="solar:shop-linear" class="text-primary-600 text-xl"></iconify-icon>
+                                        Shop
+                                        <span class="text-danger-600">*</span>
+                                    </label>
+                                    <div class="icon-field">
+                                        <span class="icon">
+                                            <!-- <iconify-icon icon="solar:shop-outline"></iconify-icon> -->
+                                        </span>
+                                        <select name="shop" class="form-select radius-8 px-16 py-12" required>
+                                            <option value="" selected disabled>Select a shop</option>
+                                            {% for shop in shops %}
+                                            <option value="{{ shop.id }}">{{ shop.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="info-item-animate" style="animation-delay: 0.2s;">
+                                <button type="submit" class="btn btn-primary-600 radius-8 px-20 py-12 d-flex align-items-center justify-content-center gap-2 w-100">
+                                    <iconify-icon icon="solar:arrow-right-linear" class="text-xl"></iconify-icon>
+                                    Continue to Dashboard
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Information Cards -->
+                <div class="row mt-24 gy-3">
+                    <div class="col-md-6">
+                        <div class="card card-animate bg-info-50 border-0" style="animation-delay: 0.25s;">
+                            <div class="card-body p-16">
+                                <div class="d-flex align-items-start gap-2">
+                                    <iconify-icon icon="solar:info-circle-bold" class="text-info-600 text-xl flex-shrink-0"></iconify-icon>
+                                    <div>
+                                        <h6 class="text-sm fw-semibold mb-1">Shop Assignment</h6>
+                                        <p class="text-xs text-secondary-light mb-0">You can only access shops you're assigned to</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card card-animate bg-success-50 border-0" style="animation-delay: 0.3s;">
+                            <div class="card-body p-16">
+                                <div class="d-flex align-items-start gap-2">
+                                    <iconify-icon icon="solar:shield-check-bold" class="text-success-600 text-xl flex-shrink-0"></iconify-icon>
+                                    <div>
+                                        <h6 class="text-sm fw-semibold mb-1">Secure Access</h6>
+                                        <p class="text-xs text-secondary-light mb-0">Your session is protected and encrypted</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

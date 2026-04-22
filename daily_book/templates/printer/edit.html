@@ -1,0 +1,21 @@
+{% extends 'master_base.html' %}
+{% load static %}
+
+{% block title %} Master {% endblock %}
+
+{% block content %}
+<h2>Edit Printer</h2>
+<form method="post">{% csrf_token %}
+<select name="shop">
+{% for s in shops %}
+<option value="{{ s.id }}" {% if s.id == printer.shop.id %}selected{% endif %}>
+{{ s.name }}
+</option>
+{% endfor %}
+</select><br>
+<input name="name" value="{{ printer.name }}"><br>
+<input name="model" value="{{ printer.model }}"><br>
+<button>Update</button>
+</form>
+
+{% endblock %}

@@ -1,0 +1,507 @@
+{% extends 'master_base.html' %}
+{% load static %}
+
+{% block title %}{% if printer %}Edit Printer{% else %}Add Printer{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    
+/* === ANIMATIONS === */
+
+/* Fade In Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Card Slide Up Animation */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card-animate {
+    animation: slideUp 0.6s ease-out both;
+}
+
+/* Info Item Slide Animation */
+@keyframes infoItemSlide {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.info-item-animate {
+    animation: infoItemSlide 0.5s ease-out both;
+    transition: all 0.3s ease;
+}
+
+/* Action Button Animation */
+@keyframes buttonSlide {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.action-btn-animate {
+    animation: buttonSlide 0.5s ease-out;
+    transition: all 0.3s ease;
+}
+
+.action-btn-animate:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Card Hover Effect */
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Breadcrumb Link Animation */
+.hover-text-primary {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.hover-text-primary::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: #487fff;
+    transition: width 0.3s ease;
+}
+
+.hover-text-primary:hover::after {
+    width: 100%;
+}
+
+.hover-text-primary:hover {
+    color: #487fff !important;
+}
+
+.hover-text-primary iconify-icon {
+    transition: transform 0.3s ease;
+}
+
+.hover-text-primary:hover iconify-icon {
+    transform: translateX(-3px);
+}
+
+/* Form Controls Styling */
+.form-select,
+.form-control {
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.form-select:focus,
+.form-control:focus {
+    border-color: #487fff;
+    box-shadow: 0 0 0 3px rgba(72, 127, 255, 0.1);
+    outline: none;
+}
+
+/* Icon Field Styling */
+.icon-field {
+    position: relative;
+}
+
+.icon-field .icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    font-size: 20px;
+    z-index: 1;
+}
+
+.icon-field input {
+    padding-left: 48px;
+}
+
+/* Icon Field Textarea */
+.icon-field-textarea {
+    position: relative;
+}
+
+.icon-field-textarea .icon {
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    color: #9ca3af;
+    font-size: 20px;
+    z-index: 1;
+}
+
+.icon-field-textarea textarea {
+    padding-left: 48px;
+}
+
+/* Button Styles */
+.btn-primary-600 {
+    background-color: #487fff;
+    border-color: #487fff;
+    color: white;
+}
+
+.btn-primary-600:hover {
+    background-color: #3667e6;
+    border-color: #3667e6;
+}
+
+.btn-neutral-400 {
+    background-color: #9ca3af;
+    border-color: #9ca3af;
+    color: white;
+}
+
+.btn-neutral-400:hover {
+    background-color: #6b7280;
+    border-color: #6b7280;
+}
+
+/* Textarea Styling */
+textarea.form-control {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* Label Icon Styling */
+.form-label iconify-icon {
+    vertical-align: middle;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .card-animate {
+        animation-delay: 0s !important;
+    }
+    
+    .info-item-animate {
+        animation-delay: 0s !important;
+    }
+
+    .action-btn-animate {
+        flex-grow: 1 !important;
+    }
+}
+
+/* Focus States for Accessibility */
+.action-btn-animate:focus {
+    outline: 2px solid #487fff;
+    outline-offset: 2px;
+}
+
+/* Smooth Scroll */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Background Color Classes */
+.bg-primary-50 {
+    background-color: rgba(72, 127, 255, 0.1);
+}
+
+.bg-success-50 {
+    background-color: rgba(34, 197, 94, 0.1);
+}
+
+.bg-warning-50 {
+    background-color: rgba(251, 191, 36, 0.1);
+}
+
+.bg-info-50 {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+.bg-danger-50 {
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+.bg-purple-50 {
+    background-color: rgba(147, 51, 234, 0.1);
+}
+
+/* Text Color Classes */
+.text-primary-600 {
+    color: #487fff;
+}
+
+.text-success-600 {
+    color: #22c55e;
+}
+
+.text-warning-600 {
+    color: #f59e0b;
+}
+
+.text-info-600 {
+    color: #3b82f6;
+}
+
+.text-danger-600 {
+    color: #ef4444;
+}
+
+.text-purple-600 {
+    color: #9333ea;
+}
+
+/* Position Utilities */
+.ps-48 {
+    padding-left: 48px !important;
+}
+
+/* Smooth Transitions */
+* {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Info Cards Hover Effect */
+.bg-info-50,
+.bg-success-50,
+.bg-warning-50 {
+    transition: all 0.3s ease;
+}
+
+.bg-info-50:hover,
+.bg-success-50:hover,
+.bg-warning-50:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+</style>
+
+<div class="dashboard-main-body">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24 fade-in">
+        <h6 class="fw-semibold mb-0">{% if printer %}Edit Printer{% else %}Add New Printer{% endif %}</h6>
+        <ul class="d-flex align-items-center gap-2">
+            <li class="fw-medium">
+                <a href="{% url 'admin_dashboard' %}" class="d-flex align-items-center gap-1 hover-text-primary">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                    Dashboard
+                </a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">
+                <a href="{% url 'printer_list' %}" class="d-flex align-items-center gap-1 hover-text-primary">
+                    Printers
+                </a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">{% if printer %}Edit{% else %}Create{% endif %}</li>
+        </ul>
+    </div>
+
+    <div class="row gy-4">
+        <!-- Main Printer Form Card -->
+        <div class="col-lg-8">
+            <div class="card card-animate" style="animation-delay: 0.1s;">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Printer Details</h6>
+                </div>
+                <div class="card-body p-24">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row gy-4">
+                            <!-- Shop Selection -->
+                            <div class="col-12">
+                                <div class="info-item-animate" style="animation-delay: 0.1s;">
+                                    <label class="form-label fw-semibold text-primary-light text-sm mb-2 d-flex align-items-center gap-2">
+                                        <iconify-icon icon="solar:shop-linear" class="text-primary-600 text-xl"></iconify-icon>
+                                        Select Shop
+                                        <span class="text-danger-600">*</span>
+                                    </label>
+                                    <div class="position-relative">
+                                        <select name="shop" class="form-select radius-8 px-16 py-12" required>
+                                            <option value="">-- Select Shop --</option>
+                                            {% for s in shops %}
+                                                <option value="{{ s.id }}" {% if printer and printer.shop.id == s.id %}selected{% endif %}>
+                                                    {{ s.name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Printer Name -->
+                            <div class="col-12">
+                                <div class="info-item-animate" style="animation-delay: 0.15s;">
+                                    <label class="form-label fw-semibold text-primary-light text-sm mb-2 d-flex align-items-center gap-2">
+                                        <iconify-icon icon="solar:printer-linear" class="text-success-600 text-xl"></iconify-icon>
+                                        Printer Name
+                                        <span class="text-danger-600">*</span>
+                                    </label>
+                                    <div class="icon-field">
+                                        <span class="icon">
+                                            <iconify-icon icon="solar:printer-outline"></iconify-icon>
+                                        </span>
+                                        <input 
+                                            type="text" 
+                                            name="name" 
+                                            class="form-control radius-8 px-16 py-12 ps-48" 
+                                            placeholder="Enter printer name"
+                                            value="{% if printer %}{{ printer.name }}{% endif %}"
+                                            required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Model -->
+                            <div class="col-12">
+                                <div class="info-item-animate" style="animation-delay: 0.2s;">
+                                    <label class="form-label fw-semibold text-primary-light text-sm mb-2 d-flex align-items-center gap-2">
+                                        <iconify-icon icon="solar:tag-linear" class="text-purple-600 text-xl"></iconify-icon>
+                                        Model
+                                        <span class="text-danger-600">*</span>
+                                    </label>
+                                    <div class="icon-field">
+                                        <span class="icon">
+                                            <iconify-icon icon="solar:tag-outline"></iconify-icon>
+                                        </span>
+                                        <input 
+                                            type="text" 
+                                            name="model" 
+                                            class="form-control radius-8 px-16 py-12 ps-48" 
+                                            placeholder="Enter printer model"
+                                            value="{% if printer %}{{ printer.model }}{% endif %}"
+                                            required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Buttons -->
+                            <div class="col-12 mt-4">
+                                <div class="d-flex flex-wrap gap-3 info-item-animate">
+                                    <button type="submit" class="btn btn-primary-600 radius-8 px-20 py-11 d-flex align-items-center justify-content-center gap-2 mt-3 flex-grow-1">
+                                        {% if printer %}
+                                            <iconify-icon icon="solar:diskette-linear" class="text-xl"></iconify-icon>
+                                            Update Printer
+                                        {% else %}
+                                            <iconify-icon icon="solar:add-circle-linear" class="text-xl"></iconify-icon>
+                                            Save Printer
+                                        {% endif %}
+                                    </button>
+                                    <a href="{% url 'printer_list' %}" class="btn btn-neutral-400 radius-8 px-20 py-11 d-flex align-items-center justify-content-center gap-2 mt-3">
+                                        <iconify-icon icon="solar:close-circle-linear" class="text-xl"></iconify-icon>
+                                        Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Information Sidebar -->
+        <div class="col-lg-4">
+            <div class="card card-animate" style="animation-delay: 0.2s;">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Information</h6>
+                </div>
+                <div class="card-body p-24">
+                    <!-- Instructions -->
+                    <div class="p-3 bg-info-50 radius-8 mb-3">
+                        <div class="d-flex align-items-start gap-2">
+                            <iconify-icon icon="solar:info-circle-bold" class="text-info-600 text-xl flex-shrink-0"></iconify-icon>
+                            <div>
+                                <h6 class="text-sm fw-semibold mb-1">Instructions</h6>
+                                <p class="text-sm text-secondary-light mb-0">
+                                    {% if printer %}
+                                        Update the printer information. Make sure to select the correct shop and provide accurate details.
+                                    {% else %}
+                                        Fill in all required fields to add a new printer. Make sure to select the shop and provide accurate printer details.
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shop/Printer Info -->
+                    <div class="p-3 bg-success-50 radius-8 mb-3">
+                        <div class="d-flex align-items-start gap-2">
+                            <iconify-icon icon="solar:{% if printer %}document-text-bold{% else %}buildings-bold{% endif %}" class="text-success-600 text-xl flex-shrink-0"></iconify-icon>
+                            <div>
+                                <h6 class="text-sm fw-semibold mb-1">{% if printer %}Current Printer{% else %}Available Shops{% endif %}</h6>
+                                <p class="text-sm text-secondary-light mb-0">
+                                    {% if printer %}
+                                        Editing: <strong>{{ printer.name }}</strong>
+                                    {% else %}
+                                        {{ shops.count }} shop(s) available in the system.
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Info -->
+                    <div class="p-3 bg-warning-50 radius-8">
+                        <div class="d-flex align-items-start gap-2">
+                            <iconify-icon icon="solar:shield-check-bold" class="text-warning-600 text-xl flex-shrink-0"></iconify-icon>
+                            <div>
+                                <h6 class="text-sm fw-semibold mb-1">{% if printer %}Note{% else %}Initial Status{% endif %}</h6>
+                                <p class="text-sm text-secondary-light mb-0">
+                                    {% if printer %}
+                                        Changes will be saved immediately after clicking Update Printer button.
+                                    {% else %}
+                                        New printers will be created with "Active" status by default.
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Action -->
+                    <div class="mt-4">
+                        <a href="{% url 'printer_list' %}" class="btn btn-neutral-400 radius-8 px-20 py-11 d-flex align-items-center justify-content-center gap-2 w-100 mt-3">
+                            <iconify-icon icon="solar:list-linear" class="text-xl"></iconify-icon>
+                            View All Printers
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

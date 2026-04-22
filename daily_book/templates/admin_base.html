@@ -1,0 +1,2427 @@
+<!DOCTYPE html>
+{%load static%}
+<!-- saved from url=(0042)https://www.wow-dash.com/demo/index-3.html -->
+<html lang="en" data-theme="light">
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style>
+        /* Hide dashboard statistics on mobile devices */
+        @media (max-width: 767px) {
+            .row.gy-4.mt-1 {
+                display: none !important;
+            }
+        }
+
+        /* Alternative: If you want more specific targeting */
+        @media (max-width: 767px) {
+
+            /* Hide Sales Statistic card */
+            .row.gy-4.mt-1>.col-xxl-6.col-xl-12,
+            /* Hide Total Subscriber card */
+            .row.gy-4.mt-1>.col-xxl-3.col-xl-6 {
+                display: none !important;
+            }
+        }
+
+        body {
+            transition: opacity ease-in 0.2s;
+        }
+
+        body[unresolved] {
+            opacity: 0;
+            display: block;
+            overflow: hidden;
+            position: relative;
+        }
+    </style>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{%block title%} {%endblock%}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="{%static 'img/favicon.png'%}" sizes="16x16">
+    <style>
+        /* vietnamese */
+        @font-face {
+            font-family: 'Archivo';
+            font-style: normal;
+            font-weight: 400;
+            font-stretch: 100%;
+            src: url(https://fonts.gstatic.com/s/archivo/v25/k3kPo8UDI-1M0wlSV9XAw6lQkqWY8Q82sLySOxK-vA.woff2) format('woff2');
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+        }
+
+        /* latin-ext */
+        @font-face {
+            font-family: 'Archivo';
+            font-style: normal;
+            font-weight: 400;
+            font-stretch: 100%;
+            src: url(https://fonts.gstatic.com/s/archivo/v25/k3kPo8UDI-1M0wlSV9XAw6lQkqWY8Q82sLyTOxK-vA.woff2) format('woff2');
+            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+        }
+
+        /* latin */
+        @font-face {
+            font-family: 'Archivo';
+            font-style: normal;
+            font-weight: 400;
+            font-stretch: 100%;
+            src: url(https://fonts.gstatic.com/s/archivo/v25/k3kPo8UDI-1M0wlSV9XAw6lQkqWY8Q82sLydOxI.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+
+        /* vietnamese */
+        @font-face {
+            font-family: 'Archivo';
+            font-style: normal;
+            font-weight: 500;
+            font-stretch: 100%;
+            src: url(https://fonts.gstatic.com/s/archivo/v25/k3kPo8UDI-1M0wlSV9XAw6lQkqWY8Q82sLySOxK-vA.woff2) format('woff2');
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+        }
+
+        /* latin-ext */
+        @font-face {
+            font-family: 'Archivo';
+            font-style: normal;
+            font-weight: 500;
+            font-stretch: 100%;
+            src: url(https://fonts.gstatic.com/s/archivo/v25/k3kPo8UDI-1M0wlSV9XAw6lQkqWY8Q82sLyTOxK-vA.woff2) format('woff2');
+            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+        }
+
+        /* latin */
+        @font-face {
+            font-family: 'Archivo';
+            font-style: normal;
+            font-weight: 500;
+            font-stretch: 100%;
+            src: url(https://fonts.gstatic.com/s/archivo/v25/k3kPo8UDI-1M0wlSV9XAw6lQkqWY8Q82sLydOxI.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+
+        /* vietnamese */
+        @font-face {
+            font-family: 'Archivo';
+            font-style: normal;
+            font-weight: 600;
+            font-stretch: 100%;
+            src: url(https://fonts.gstatic.com/s/archivo/v25/k3kPo8UDI-1M0wlSV9XAw6lQkqWY8Q82sLySOxK-vA.woff2) format('woff2');
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+        }
+
+        /* latin-ext */
+        @font-face {
+            font-family: 'Archivo';
+            font-style: normal;
+            font-weight: 600;
+            font-stretch: 100%;
+            src: url(https://fonts.gstatic.com/s/archivo/v25/k3kPo8UDI-1M0wlSV9XAw6lQkqWY8Q82sLyTOxK-vA.woff2) format('woff2');
+            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+        }
+
+        /* latin */
+        @font-face {
+            font-family: 'Archivo';
+            font-style: normal;
+            font-weight: 600;
+            font-stretch: 100%;
+            src: url(https://fonts.gstatic.com/s/archivo/v25/k3kPo8UDI-1M0wlSV9XAw6lQkqWY8Q82sLydOxI.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+
+        /* vietnamese */
+        @font-face {
+            font-family: 'Archivo';
+            font-style: normal;
+            font-weight: 700;
+            font-stretch: 100%;
+            src: url(https://fonts.gstatic.com/s/archivo/v25/k3kPo8UDI-1M0wlSV9XAw6lQkqWY8Q82sLySOxK-vA.woff2) format('woff2');
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+        }
+
+        /* latin-ext */
+        @font-face {
+            font-family: 'Archivo';
+            font-style: normal;
+            font-weight: 700;
+            font-stretch: 100%;
+            src: url(https://fonts.gstatic.com/s/archivo/v25/k3kPo8UDI-1M0wlSV9XAw6lQkqWY8Q82sLyTOxK-vA.woff2) format('woff2');
+            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+        }
+
+        /* latin */
+        @font-face {
+            font-family: 'Archivo';
+            font-style: normal;
+            font-weight: 700;
+            font-stretch: 100%;
+            src: url(https://fonts.gstatic.com/s/archivo/v25/k3kPo8UDI-1M0wlSV9XAw6lQkqWY8Q82sLydOxI.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+
+        /* vietnamese */
+        @font-face {
+            font-family: 'Archivo';
+            font-style: normal;
+            font-weight: 800;
+            font-stretch: 100%;
+            src: url(https://fonts.gstatic.com/s/archivo/v25/k3kPo8UDI-1M0wlSV9XAw6lQkqWY8Q82sLySOxK-vA.woff2) format('woff2');
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+        }
+
+        /* latin-ext */
+        @font-face {
+            font-family: 'Archivo';
+            font-style: normal;
+            font-weight: 800;
+            font-stretch: 100%;
+            src: url(https://fonts.gstatic.com/s/archivo/v25/k3kPo8UDI-1M0wlSV9XAw6lQkqWY8Q82sLyTOxK-vA.woff2) format('woff2');
+            unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+        }
+
+        /* latin */
+        @font-face {
+            font-family: 'Archivo';
+            font-style: normal;
+            font-weight: 800;
+            font-stretch: 100%;
+            src: url(https://fonts.gstatic.com/s/archivo/v25/k3kPo8UDI-1M0wlSV9XAw6lQkqWY8Q82sLydOxI.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+    </style>
+
+    <style>
+  /* ===== DARK MODE STYLES FOR DELETE MODAL ===== */
+/* Add this CSS block after your existing delete modal styles */
+
+/* Dark Mode - Backdrop */
+[data-theme="dark"] .delete-modal-backdrop {
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+@keyframes backdropFadeInDark {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(8px);
+  }
+}
+
+[data-theme="dark"] .delete-modal-backdrop.show {
+  animation: backdropFadeInDark 0.3s ease-out;
+}
+
+/* Dark Mode - Modal Container */
+[data-theme="dark"] .delete-modal {
+  background: #1f2937;
+  border: 1px solid #374151;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark Mode - Delete Icon */
+[data-theme="dark"] .delete-icon {
+  background: #7f1d1d;
+  border-color: #991b1b;
+  color: #fca5a5;
+}
+
+@keyframes iconPulseWaveDark {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(252, 165, 165, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 15px rgba(252, 165, 165, 0);
+  }
+}
+
+[data-theme="dark"] .delete-icon {
+  animation: iconPulseWaveDark 2s ease-in-out infinite;
+}
+
+[data-theme="dark"] .delete-modal-backdrop.show .delete-icon {
+  animation: iconEntrance 0.6s ease-out 0.2s both, iconPulseWaveDark 2s ease-in-out 0.8s infinite;
+}
+
+/* Dark Mode - Modal Heading */
+[data-theme="dark"] .delete-modal h4,
+[data-theme="dark"] .delete-modal h5 {
+  color: #f3f4f6;
+}
+
+/* Dark Mode - Modal Text */
+[data-theme="dark"] .delete-modal p {
+  color: #9ca3af;
+}
+
+/* Dark Mode - Highlighted Text (Customer Name) */
+[data-theme="dark"] .delete-modal p strong {
+  color: #f3f4f6;
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  border: 1px solid #4b5563;
+}
+
+@keyframes highlightPulseDark {
+  0%, 100% {
+    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  }
+  50% {
+    background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%);
+  }
+}
+
+[data-theme="dark"] .delete-modal p strong {
+  animation: highlightPulseDark 2s ease-in-out infinite;
+}
+
+/* Dark Mode - Secondary Button */
+[data-theme="dark"] .delete-actions .btn-secondary {
+  background: #374151;
+  color: #f3f4f6;
+  border: 1px solid #4b5563;
+}
+
+[data-theme="dark"] .delete-actions .btn-secondary:hover {
+  background: #4b5563;
+  border-color: #6b7280;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark Mode - Danger Button */
+[data-theme="dark"] .delete-actions .btn-danger {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+}
+
+[data-theme="dark"] .delete-actions .btn-danger:hover {
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5);
+}
+
+/* Dark Mode - Button Ripple Effect */
+[data-theme="dark"] .delete-actions .btn::before {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Dark Mode - Loading State */
+[data-theme="dark"] .delete-actions form button[type="submit"]:disabled {
+  opacity: 0.5;
+  background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+}
+
+/* Dark Mode - Mobile Adjustments */
+@media (max-width: 480px) {
+  [data-theme="dark"] .delete-modal {
+    background: #111827;
+    border-color: #374151;
+  }
+  
+  [data-theme="dark"] .delete-icon {
+    background: #991b1b;
+    border-color: #b91c1c;
+  }
+}
+</style>
+
+
+    <!-- remix icon font css -->
+    <link rel="stylesheet" href="{% static 'css/admin_css/remixicon.css' %}">
+
+    <!-- BootStrap css -->
+    <link rel="stylesheet" href="{% static 'css/admin_css/bootstrap.min.css' %}">
+
+    <!-- Apex Chart css -->
+    <link rel="stylesheet" href="{% static 'css/admin_css/apexcharts.css' %}">
+
+    <!-- Data Table css -->
+    <link rel="stylesheet" href="{% static 'css/admin_css/dataTables.min.css' %}">
+
+    <!-- Text Editor css -->
+    <link rel="stylesheet" href="{% static 'css/admin_css/editor-katex.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin_css/editor.atom-one-dark.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin_css/editor.quill.snow.css' %}">
+
+    <!-- Date picker css -->
+    <link rel="stylesheet" href="{% static 'css/admin_css/flatpickr.min.css' %}">
+
+    <!-- Calendar css -->
+    <link rel="stylesheet" href="{% static 'css/admin_css/full-calendar.css' %}">
+
+    <!-- Vector Map css -->
+    <link rel="stylesheet" href="{% static 'css/admin_css/jquery-jvectormap-2.0.5.css' %}">
+
+    <!-- Popup css -->
+    <link rel="stylesheet" href="{% static 'css/admin_css/magnific-popup.css' %}">
+
+    <!-- Slick Slider css -->
+    <link rel="stylesheet" href="{% static 'css/admin_css/slick.css' %}">
+
+    <!-- prism css -->
+    <link rel="stylesheet" href="{% static 'css/admin_css/prism.css' %}">
+
+    <!-- file upload css -->
+    <link rel="stylesheet" href="{% static 'css/admin_css/file-upload.css' %}">
+
+    <!-- Audio player css -->
+    <link rel="stylesheet" href="{% static 'css/admin_css/audioplayer.css' %}">
+
+    <!-- main css -->
+    <link rel="stylesheet" href="{% static 'css/admin_css/style.css' %}">
+
+    <style id="apexcharts-css">
+        @keyframes opaque {
+            0% {
+                opacity: 0
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes resizeanim {
+
+            0%,
+            to {
+                opacity: 0
+            }
+        }
+
+        .apexcharts-canvas {
+            position: relative;
+            user-select: none
+        }
+
+        .apexcharts-canvas ::-webkit-scrollbar {
+            -webkit-appearance: none;
+            width: 6px
+        }
+
+        .apexcharts-canvas ::-webkit-scrollbar-thumb {
+            border-radius: 4px;
+            background-color: rgba(0, 0, 0, .5);
+            box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+            -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5)
+        }
+
+        .apexcharts-inner {
+            position: relative
+        }
+
+        .apexcharts-text tspan {
+            font-family: inherit
+        }
+
+        .legend-mouseover-inactive {
+            transition: .15s ease all;
+            opacity: .2
+        }
+
+        .apexcharts-legend-text {
+            padding-left: 15px;
+            margin-left: -15px;
+        }
+
+        .apexcharts-series-collapsed {
+            opacity: 0
+        }
+
+        .apexcharts-tooltip {
+            border-radius: 5px;
+            box-shadow: 2px 2px 6px -4px #999;
+            cursor: default;
+            font-size: 14px;
+            left: 62px;
+            opacity: 0;
+            pointer-events: none;
+            position: absolute;
+            top: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            white-space: nowrap;
+            z-index: 12;
+            transition: .15s ease all
+        }
+
+        .apexcharts-tooltip.apexcharts-active {
+            opacity: 1;
+            transition: .15s ease all
+        }
+
+        .apexcharts-tooltip.apexcharts-theme-light {
+            border: 1px solid #e3e3e3;
+            background: rgba(255, 255, 255, .96)
+        }
+
+        .apexcharts-tooltip.apexcharts-theme-dark {
+            color: #fff;
+            background: rgba(30, 30, 30, .8)
+        }
+
+        .apexcharts-tooltip * {
+            font-family: inherit
+        }
+
+        .apexcharts-tooltip-title {
+            padding: 6px;
+            font-size: 15px;
+            margin-bottom: 4px
+        }
+
+        .apexcharts-tooltip.apexcharts-theme-light .apexcharts-tooltip-title {
+            background: #eceff1;
+            border-bottom: 1px solid #ddd
+        }
+
+        .apexcharts-tooltip.apexcharts-theme-dark .apexcharts-tooltip-title {
+            background: rgba(0, 0, 0, .7);
+            border-bottom: 1px solid #333
+        }
+
+        .apexcharts-tooltip-text-goals-value,
+        .apexcharts-tooltip-text-y-value,
+        .apexcharts-tooltip-text-z-value {
+            display: inline-block;
+            margin-left: 5px;
+            font-weight: 600
+        }
+
+        .apexcharts-tooltip-text-goals-label:empty,
+        .apexcharts-tooltip-text-goals-value:empty,
+        .apexcharts-tooltip-text-y-label:empty,
+        .apexcharts-tooltip-text-y-value:empty,
+        .apexcharts-tooltip-text-z-value:empty,
+        .apexcharts-tooltip-title:empty {
+            display: none
+        }
+
+        .apexcharts-tooltip-text-goals-label,
+        .apexcharts-tooltip-text-goals-value {
+            padding: 6px 0 5px
+        }
+
+        .apexcharts-tooltip-goals-group,
+        .apexcharts-tooltip-text-goals-label,
+        .apexcharts-tooltip-text-goals-value {
+            display: flex
+        }
+
+        .apexcharts-tooltip-text-goals-label:not(:empty),
+        .apexcharts-tooltip-text-goals-value:not(:empty) {
+            margin-top: -6px
+        }
+
+        .apexcharts-tooltip-marker {
+            width: 12px;
+            height: 12px;
+            position: relative;
+            top: 0;
+            margin-right: 10px;
+            border-radius: 50%
+        }
+
+        .apexcharts-tooltip-series-group {
+            padding: 0 10px;
+            display: none;
+            text-align: left;
+            justify-content: left;
+            align-items: center
+        }
+
+        .apexcharts-tooltip-series-group.apexcharts-active .apexcharts-tooltip-marker {
+            opacity: 1
+        }
+
+        .apexcharts-tooltip-series-group.apexcharts-active,
+        .apexcharts-tooltip-series-group:last-child {
+            padding-bottom: 4px
+        }
+
+        .apexcharts-tooltip-series-group-hidden {
+            opacity: 0;
+            height: 0;
+            line-height: 0;
+            padding: 0 !important
+        }
+
+        .apexcharts-tooltip-y-group {
+            padding: 6px 0 5px
+        }
+
+        .apexcharts-custom-tooltip,
+        .apexcharts-tooltip-box {
+            padding: 4px 8px
+        }
+
+        .apexcharts-tooltip-boxPlot {
+            display: flex;
+            flex-direction: column-reverse
+        }
+
+        .apexcharts-tooltip-box>div {
+            margin: 4px 0
+        }
+
+        .apexcharts-tooltip-box span.value {
+            font-weight: 700
+        }
+
+        .apexcharts-tooltip-rangebar {
+            padding: 5px 8px
+        }
+
+        .apexcharts-tooltip-rangebar .category {
+            font-weight: 600;
+            color: #777
+        }
+
+        .apexcharts-tooltip-rangebar .series-name {
+            font-weight: 700;
+            display: block;
+            margin-bottom: 5px
+        }
+
+        .apexcharts-xaxistooltip,
+        .apexcharts-yaxistooltip {
+            opacity: 0;
+            pointer-events: none;
+            color: #373d3f;
+            font-size: 13px;
+            text-align: center;
+            border-radius: 2px;
+            position: absolute;
+            z-index: 10;
+            background: #eceff1;
+            border: 1px solid #90a4ae
+        }
+
+        .apexcharts-xaxistooltip {
+            padding: 9px 10px;
+            transition: .15s ease all
+        }
+
+        .apexcharts-xaxistooltip.apexcharts-theme-dark {
+            background: rgba(0, 0, 0, .7);
+            border: 1px solid rgba(0, 0, 0, .5);
+            color: #fff
+        }
+
+        .apexcharts-xaxistooltip:after,
+        .apexcharts-xaxistooltip:before {
+            left: 50%;
+            border: solid transparent;
+            content: " ";
+            height: 0;
+            width: 0;
+            position: absolute;
+            pointer-events: none
+        }
+
+        .apexcharts-xaxistooltip:after {
+            border-color: transparent;
+            border-width: 6px;
+            margin-left: -6px
+        }
+
+        .apexcharts-xaxistooltip:before {
+            border-color: transparent;
+            border-width: 7px;
+            margin-left: -7px
+        }
+
+        .apexcharts-xaxistooltip-bottom:after,
+        .apexcharts-xaxistooltip-bottom:before {
+            bottom: 100%
+        }
+
+        .apexcharts-xaxistooltip-top:after,
+        .apexcharts-xaxistooltip-top:before {
+            top: 100%
+        }
+
+        .apexcharts-xaxistooltip-bottom:after {
+            border-bottom-color: #eceff1
+        }
+
+        .apexcharts-xaxistooltip-bottom:before {
+            border-bottom-color: #90a4ae
+        }
+
+        .apexcharts-xaxistooltip-bottom.apexcharts-theme-dark:after,
+        .apexcharts-xaxistooltip-bottom.apexcharts-theme-dark:before {
+            border-bottom-color: rgba(0, 0, 0, .5)
+        }
+
+        .apexcharts-xaxistooltip-top:after {
+            border-top-color: #eceff1
+        }
+
+        .apexcharts-xaxistooltip-top:before {
+            border-top-color: #90a4ae
+        }
+
+        .apexcharts-xaxistooltip-top.apexcharts-theme-dark:after,
+        .apexcharts-xaxistooltip-top.apexcharts-theme-dark:before {
+            border-top-color: rgba(0, 0, 0, .5)
+        }
+
+        .apexcharts-xaxistooltip.apexcharts-active {
+            opacity: 1;
+            transition: .15s ease all
+        }
+
+        .apexcharts-yaxistooltip {
+            padding: 4px 10px
+        }
+
+        .apexcharts-yaxistooltip.apexcharts-theme-dark {
+            background: rgba(0, 0, 0, .7);
+            border: 1px solid rgba(0, 0, 0, .5);
+            color: #fff
+        }
+
+        .apexcharts-yaxistooltip:after,
+        .apexcharts-yaxistooltip:before {
+            top: 50%;
+            border: solid transparent;
+            content: " ";
+            height: 0;
+            width: 0;
+            position: absolute;
+            pointer-events: none
+        }
+
+        .apexcharts-yaxistooltip:after {
+            border-color: transparent;
+            border-width: 6px;
+            margin-top: -6px
+        }
+
+        .apexcharts-yaxistooltip:before {
+            border-color: transparent;
+            border-width: 7px;
+            margin-top: -7px
+        }
+
+        .apexcharts-yaxistooltip-left:after,
+        .apexcharts-yaxistooltip-left:before {
+            left: 100%
+        }
+
+        .apexcharts-yaxistooltip-right:after,
+        .apexcharts-yaxistooltip-right:before {
+            right: 100%
+        }
+
+        .apexcharts-yaxistooltip-left:after {
+            border-left-color: #eceff1
+        }
+
+        .apexcharts-yaxistooltip-left:before {
+            border-left-color: #90a4ae
+        }
+
+        .apexcharts-yaxistooltip-left.apexcharts-theme-dark:after,
+        .apexcharts-yaxistooltip-left.apexcharts-theme-dark:before {
+            border-left-color: rgba(0, 0, 0, .5)
+        }
+
+        .apexcharts-yaxistooltip-right:after {
+            border-right-color: #eceff1
+        }
+
+        .apexcharts-yaxistooltip-right:before {
+            border-right-color: #90a4ae
+        }
+
+        .apexcharts-yaxistooltip-right.apexcharts-theme-dark:after,
+        .apexcharts-yaxistooltip-right.apexcharts-theme-dark:before {
+            border-right-color: rgba(0, 0, 0, .5)
+        }
+
+        .apexcharts-yaxistooltip.apexcharts-active {
+            opacity: 1
+        }
+
+        .apexcharts-yaxistooltip-hidden {
+            display: none
+        }
+
+        .apexcharts-xcrosshairs,
+        .apexcharts-ycrosshairs {
+            pointer-events: none;
+            opacity: 0;
+            transition: .15s ease all
+        }
+
+        .apexcharts-xcrosshairs.apexcharts-active,
+        .apexcharts-ycrosshairs.apexcharts-active {
+            opacity: 1;
+            transition: .15s ease all
+        }
+
+        .apexcharts-ycrosshairs-hidden {
+            opacity: 0
+        }
+
+        .apexcharts-selection-rect {
+            cursor: move
+        }
+
+        .svg_select_boundingRect,
+        .svg_select_points_rot {
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden
+        }
+
+        .apexcharts-selection-rect+g .svg_select_boundingRect,
+        .apexcharts-selection-rect+g .svg_select_points_rot {
+            opacity: 0;
+            visibility: hidden
+        }
+
+        .apexcharts-selection-rect+g .svg_select_points_l,
+        .apexcharts-selection-rect+g .svg_select_points_r {
+            cursor: ew-resize;
+            opacity: 1;
+            visibility: visible
+        }
+
+        .svg_select_points {
+            fill: #efefef;
+            stroke: #333;
+            rx: 2
+        }
+
+        .apexcharts-svg.apexcharts-zoomable.hovering-zoom {
+            cursor: crosshair
+        }
+
+        .apexcharts-svg.apexcharts-zoomable.hovering-pan {
+            cursor: move
+        }
+
+        .apexcharts-menu-icon,
+        .apexcharts-pan-icon,
+        .apexcharts-reset-icon,
+        .apexcharts-selection-icon,
+        .apexcharts-toolbar-custom-icon,
+        .apexcharts-zoom-icon,
+        .apexcharts-zoomin-icon,
+        .apexcharts-zoomout-icon {
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            line-height: 24px;
+            color: #6e8192;
+            text-align: center
+        }
+
+        .apexcharts-menu-icon svg,
+        .apexcharts-reset-icon svg,
+        .apexcharts-zoom-icon svg,
+        .apexcharts-zoomin-icon svg,
+        .apexcharts-zoomout-icon svg {
+            fill: #6e8192
+        }
+
+        .apexcharts-selection-icon svg {
+            fill: #444;
+            transform: scale(.76)
+        }
+
+        .apexcharts-theme-dark .apexcharts-menu-icon svg,
+        .apexcharts-theme-dark .apexcharts-pan-icon svg,
+        .apexcharts-theme-dark .apexcharts-reset-icon svg,
+        .apexcharts-theme-dark .apexcharts-selection-icon svg,
+        .apexcharts-theme-dark .apexcharts-toolbar-custom-icon svg,
+        .apexcharts-theme-dark .apexcharts-zoom-icon svg,
+        .apexcharts-theme-dark .apexcharts-zoomin-icon svg,
+        .apexcharts-theme-dark .apexcharts-zoomout-icon svg {
+            fill: #f3f4f5
+        }
+
+        .apexcharts-canvas .apexcharts-reset-zoom-icon.apexcharts-selected svg,
+        .apexcharts-canvas .apexcharts-selection-icon.apexcharts-selected svg,
+        .apexcharts-canvas .apexcharts-zoom-icon.apexcharts-selected svg {
+            fill: #008ffb
+        }
+
+        .apexcharts-theme-light .apexcharts-menu-icon:hover svg,
+        .apexcharts-theme-light .apexcharts-reset-icon:hover svg,
+        .apexcharts-theme-light .apexcharts-selection-icon:not(.apexcharts-selected):hover svg,
+        .apexcharts-theme-light .apexcharts-zoom-icon:not(.apexcharts-selected):hover svg,
+        .apexcharts-theme-light .apexcharts-zoomin-icon:hover svg,
+        .apexcharts-theme-light .apexcharts-zoomout-icon:hover svg {
+            fill: #333
+        }
+
+        .apexcharts-menu-icon,
+        .apexcharts-selection-icon {
+            position: relative
+        }
+
+        .apexcharts-reset-icon {
+            margin-left: 5px
+        }
+
+        .apexcharts-menu-icon,
+        .apexcharts-reset-icon,
+        .apexcharts-zoom-icon {
+            transform: scale(.85)
+        }
+
+        .apexcharts-zoomin-icon,
+        .apexcharts-zoomout-icon {
+            transform: scale(.7)
+        }
+
+        .apexcharts-zoomout-icon {
+            margin-right: 3px
+        }
+
+        .apexcharts-pan-icon {
+            transform: scale(.62);
+            position: relative;
+            left: 1px;
+            top: 0
+        }
+
+        .apexcharts-pan-icon svg {
+            fill: #fff;
+            stroke: #6e8192;
+            stroke-width: 2
+        }
+
+        .apexcharts-pan-icon.apexcharts-selected svg {
+            stroke: #008ffb
+        }
+
+        .apexcharts-pan-icon:not(.apexcharts-selected):hover svg {
+            stroke: #333
+        }
+
+        .apexcharts-toolbar {
+            position: absolute;
+            z-index: 11;
+            max-width: 176px;
+            text-align: right;
+            border-radius: 3px;
+            padding: 0 6px 2px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center
+        }
+
+        .apexcharts-menu {
+            background: #fff;
+            position: absolute;
+            top: 100%;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 3px;
+            right: 10px;
+            opacity: 0;
+            min-width: 110px;
+            transition: .15s ease all;
+            pointer-events: none
+        }
+
+        .apexcharts-menu.apexcharts-menu-open {
+            opacity: 1;
+            pointer-events: all;
+            transition: .15s ease all
+        }
+
+        .apexcharts-menu-item {
+            padding: 6px 7px;
+            font-size: 12px;
+            cursor: pointer
+        }
+
+        .apexcharts-theme-light .apexcharts-menu-item:hover {
+            background: #eee
+        }
+
+        .apexcharts-theme-dark .apexcharts-menu {
+            background: rgba(0, 0, 0, .7);
+            color: #fff
+        }
+
+        @media screen and (min-width:768px) {
+            .apexcharts-canvas:hover .apexcharts-toolbar {
+                opacity: 1
+            }
+        }
+
+        .apexcharts-canvas .apexcharts-element-hidden,
+        .apexcharts-datalabel.apexcharts-element-hidden,
+        .apexcharts-hide .apexcharts-series-points {
+            opacity: 0
+        }
+
+        .apexcharts-hidden-element-shown {
+            opacity: 1;
+            transition: 0.25s ease all;
+        }
+
+        .apexcharts-datalabel,
+        .apexcharts-datalabel-label,
+        .apexcharts-datalabel-value,
+        .apexcharts-datalabels,
+        .apexcharts-pie-label {
+            cursor: default;
+            pointer-events: none
+        }
+
+        .apexcharts-pie-label-delay {
+            opacity: 0;
+            animation-name: opaque;
+            animation-duration: .3s;
+            animation-fill-mode: forwards;
+            animation-timing-function: ease
+        }
+
+        .apexcharts-annotation-rect,
+        .apexcharts-area-series .apexcharts-area,
+        .apexcharts-area-series .apexcharts-series-markers .apexcharts-marker.no-pointer-events,
+        .apexcharts-gridline,
+        .apexcharts-line,
+        .apexcharts-line-series .apexcharts-series-markers .apexcharts-marker.no-pointer-events,
+        .apexcharts-point-annotation-label,
+        .apexcharts-radar-series path,
+        .apexcharts-radar-series polygon,
+        .apexcharts-toolbar svg,
+        .apexcharts-tooltip .apexcharts-marker,
+        .apexcharts-xaxis-annotation-label,
+        .apexcharts-yaxis-annotation-label,
+        .apexcharts-zoom-rect {
+            pointer-events: none
+        }
+
+        .apexcharts-marker {
+            transition: .15s ease all
+        }
+
+        .resize-triggers {
+            animation: 1ms resizeanim;
+            visibility: hidden;
+            opacity: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden
+        }
+
+        .contract-trigger:before,
+        .resize-triggers,
+        .resize-triggers>div {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0
+        }
+
+        .resize-triggers>div {
+            height: 100%;
+            width: 100%;
+            background: #eee;
+            overflow: auto
+        }
+
+        .contract-trigger:before {
+            overflow: hidden;
+            width: 200%;
+            height: 200%
+        }
+
+        
+
+/* Dark Mode File Input */
+[data-theme="dark"] input[type="file"]::file-selector-button {
+    background-color: #273142 !important;
+    color: #f3f4f6 !important;
+}
+
+/* KILL HOVER COMPLETELY */
+input[type="file"]::file-selector-button:hover,
+input[type="file"]::file-selector-button:active,
+input[type="file"]::file-selector-button:focus {
+    background-color: #e5e7eb !important;
+    color: #1f2937 !important;
+    border: 1px solid #d1d5db !important;
+}
+
+[data-theme="dark"] input[type="file"]::file-selector-button:hover,
+[data-theme="dark"] input[type="file"]::file-selector-button:active,
+[data-theme="dark"] input[type="file"]::file-selector-button:focus {
+    background-color: #273142 !important;
+    color: #f3f4f6 !important;
+    border: 1px solid #4b5563 !important;
+}
+
+/* Light mode input text color */
+.form-control[type="file"] {
+    color: #1f2937;
+}
+
+/* Dark mode input text color */
+[data-theme="dark"] .form-control[type="file"] {
+    color: #f3f4f6;
+}
+
+    </style>
+</head>
+
+<body>
+
+    <!-- Theme Customization Structure Start -->
+    <div class="body-overlay"></div>
+
+    <button type="button"
+        class="theme-customization__button w-48-px h-48-px bg-primary-600 text-white rounded-circle d-flex justify-content-center align-items-center position-fixed end-0 bottom-0 mb-40 me-40 text-2xxl bg-hover-primary-700"
+        fdprocessedid="h3s6w">
+        <i class="ri-settings-3-line animate-spin"></i>
+    </button>
+    <div class="theme-customization-sidebar w-100 bg-base h-100vh overflow-y-auto position-fixed end-0 top-0 shadow-lg">
+        <div class="d-flex align-items-center gap-3 py-16 px-24 justify-content-between border-bottom">
+            <div>
+                <h6 class="text-sm dark:text-white">Theme Settings</h6>
+                <p class="text-xs mb-0 text-neutral-500 dark:text-neutral-200">Customize and preview instantly</p>
+            </div>
+            <button data-slot="button"
+                class="theme-customization-sidebar__close text-neutral-900 bg-transparent text-hover-primary-600 d-flex text-xl">
+                <i class="ri-close-fill"></i>
+            </button>
+        </div>
+
+        <div class="d-flex flex-column gap-48 p-24 overflow-y-auto flex-grow-1">
+
+            <div class="theme-setting-item">
+                <h6 class="fw-medium text-primary-light text-md mb-3">Theme Mode</h6>
+                <div class="d-grid grid-cols-3 gap-3 dark-light-mode">
+                    <button type="button"
+                        class="theme-btn theme-setting-item__btn d-flex align-items-center justify-content-center h-64-px rounded-3 text-xl active"
+                        data-theme="light">
+                        <i class="ri-sun-line"></i>
+                    </button>
+                    <button type="button"
+                        class="theme-btn theme-setting-item__btn d-flex align-items-center justify-content-center h-64-px rounded-3 text-xl"
+                        data-theme="dark">
+                        <i class="ri-moon-line"></i>
+                    </button>
+                    <button type="button"
+                        class="theme-btn theme-setting-item__btn d-flex align-items-center justify-content-center h-64-px rounded-3 text-xl"
+                        data-theme="system">
+                        <i class="ri-computer-line"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="theme-setting-item">
+                <h6 class="fw-medium text-primary-light text-md mb-3">Page Direction</h6>
+                <div class="d-grid grid-cols-2 gap-3">
+                    <button type="button"
+                        class="theme-setting-item__btn ltr-mode-btn d-flex align-items-center justify-content-center gap-2 h-56-px rounded-3 text-xl">
+                        <span><i class="ri-align-item-left-line"></i></span>
+                        <span class="h6 text-sm font-medium mb-0">LTR</span>
+                    </button>
+
+                    <button type="button"
+                        class="theme-setting-item__btn rtl-mode-btn d-flex align-items-center justify-content-center gap-2 h-56-px rounded-3 text-xl">
+                        <span class="h6 text-sm font-medium mb-0">RTL</span>
+                        <span><i class="ri-align-item-right-line"></i></span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="theme-setting-item">
+                <h6 class="fw-medium text-primary-light text-md mb-3">Color Schema</h6>
+                <div class="d-grid grid-cols-3 gap-3">
+                    <button type="button"
+                        class="color-picker-btn d-flex flex-column justify-content-center align-items-center active"
+                        data-color="blue">
+                        <span class="color-picker-btn__box h-40-px w-100 rounded-3"
+                            style="background-color: #2563eb;"></span>
+                        <span class="fw-medium mt-1" style="color: #2563eb;">Blue</span>
+                    </button>
+                    <button type="button"
+                        class="color-picker-btn d-flex flex-column justify-content-center align-items-center"
+                        data-color="red">
+                        <span class="color-picker-btn__box h-40-px w-100 rounded-3"
+                            style="background-color: #dc2626;"></span>
+                        <span class="fw-medium mt-1" style="color: #dc2626;">Red</span>
+                    </button>
+                    <button type="button"
+                        class="color-picker-btn d-flex flex-column justify-content-center align-items-center"
+                        data-color="green">
+                        <span class="color-picker-btn__box h-40-px w-100 rounded-3"
+                            style="background-color: #16a34a;"></span>
+                        <span class="fw-medium mt-1" style="color: #16a34a;">Green</span>
+                    </button>
+                    <button type="button"
+                        class="color-picker-btn d-flex flex-column justify-content-center align-items-center"
+                        data-color="yellow">
+                        <span class="color-picker-btn__box h-40-px w-100 rounded-3"
+                            style="background-color: #ff9f29;"></span>
+                        <span class="fw-medium mt-1" style="color: #ff9f29;">Yellow</span>
+                    </button>
+                    <button type="button"
+                        class="color-picker-btn d-flex flex-column justify-content-center align-items-center"
+                        data-color="cyan">
+                        <span class="color-picker-btn__box h-40-px w-100 rounded-3"
+                            style="background-color: #00b8f2;"></span>
+                        <span class="fw-medium mt-1" style="color: #00b8f2;">Cyan</span>
+                    </button>
+                    <button type="button"
+                        class="color-picker-btn d-flex flex-column justify-content-center align-items-center"
+                        data-color="violet">
+                        <span class="color-picker-btn__box h-40-px w-100 rounded-3"
+                            style="background-color: #7c3aed;"></span>
+                        <span class="fw-medium mt-1" style="color: #7c3aed;">Violet</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- Theme Customization Structure End -->
+
+    
+    <aside class="sidebar">
+        <button type="button" class="sidebar-close-btn">
+            <iconify-icon icon="radix-icons:cross-2"><template shadowrootmode="open">
+                    <style data-style="data-style">
+                        :host {
+                            display: inline-block;
+                            vertical-align: 0
+                        }
+
+                        span,
+                        svg {
+                            display: block
+                        }
+                    </style><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 15 15">
+                        <path fill="currentColor"
+                            d="M10.969 3.219a.574.574 0 1 1 .812.812L8.313 7.5l3.468 3.469l.074.09a.575.575 0 0 1-.796.796l-.09-.074L7.5 8.312l-3.469 3.47a.574.574 0 1 1-.812-.813L6.688 7.5l-3.47-3.469l-.073-.09a.575.575 0 0 1 .796-.797l.09.075L7.5 6.687z">
+                        </path>
+                    </svg>
+                </template></iconify-icon>
+        </button>
+        <div>
+            <a href="{% url 'employee_dashboard' %}" class="sidebar-logo">
+                <img src="{% static 'img/link-logo.png' %}"  style="min-height: 150px !important; width: 150px;" alt="site logo" class="light-logo">
+                <img src="{% static 'img/link-dark.png' %}" style="min-height: 140px !important; width: 150px;" alt="site logo" class="dark-logo">
+                <img src="{% static 'img/link-logo.png' %}" alt="site logo" class="logo-icon">
+            </a>
+        </div>
+        <div class="sidebar-menu-area open">
+            <ul class="sidebar-menu show" id="sidebar-menu">
+                <li class="">
+                    <a href="{%url 'admin_dashboard'%}">
+                        <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-group-title">Application</li>
+
+                <!-- Employee Section -->
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="clarity:employee-group-line" class="menu-icon"></iconify-icon>
+                        <span>Employee</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="{% url 'create_employee' %}">
+                                <iconify-icon icon="mi:user-add" class="menu-icon"></iconify-icon>
+                                Create Employee
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'employee_list' %}">
+                                <iconify-icon icon="lucide:user" class="menu-icon"></iconify-icon>
+                                List Employee
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- shop daily section -->
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="hugeicons:task-daily-02" class="menu-icon"></iconify-icon>
+                        <span>Shop Daily Entry</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="{% url 'shop_daily_entry_create' %}">
+                                <iconify-icon icon="material-symbols:add-circle-outline" class="menu-icon"></iconify-icon>
+                                Shop Daily Create
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'shop_daily_entry_list' %}">
+                                <iconify-icon icon="mdi:format-list-bulleted" class="menu-icon"></iconify-icon>
+                                Shop Daily List
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- customer section -->
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="lucide:user" class="menu-icon"></iconify-icon>
+                        <span>Customers</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="{% url 'press_customer_list' %}">
+                                <iconify-icon icon="mdi:format-list-bulleted" class="menu-icon"></iconify-icon>
+                                Press Customer List
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'normal_customer_list' %}">
+                                <iconify-icon icon="mdi:format-list-bulleted" class="menu-icon"></iconify-icon>
+                                Normal Customer List
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'customer_payment_list' %}">
+                                <iconify-icon icon="mdi:format-list-bulleted" class="menu-icon"></iconify-icon>
+                                Customer Payment List
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+ 
+                <!-- Purchase section -->
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="bx:purchase-tag-alt" class="menu-icon"></iconify-icon>
+                        <span>Purchase</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li>
+                            <a href="{% url 'purchase_item_create' %}">
+                                <iconify-icon icon="material-symbols:add-circle-outline" class="menu-icon"></iconify-icon>
+                                Purchase Create
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'purchase_item_list' %}">
+                                <iconify-icon icon="mdi:format-list-bulleted" class="menu-icon"></iconify-icon>
+                                Purchase List
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="sidebar-menu-group-title">Reports</li>
+
+                <!-- Master report -->
+                <li class="">
+                    <a href="{% url 'master_dashboard' %}">
+                        <iconify-icon icon="eos-icons:admin-outlined" class="menu-icon"></iconify-icon>
+                        <span>Master</span>
+                    </a>
+                </li>
+
+                <!-- shop daily report -->
+                <li class="">
+                    <a href="{% url 'shop_daily_entry_report' %}">
+                        <iconify-icon icon="hugeicons:date-time" class="menu-icon"></iconify-icon>
+                        <span>Daily Entry Report</span>
+                    </a>
+                </li>
+
+                <!-- stock report -->
+                <li class="">
+                    <a href="{% url 'stock_report' %}">
+                        <iconify-icon icon="lsicon:management-stockout-outline" class="menu-icon"></iconify-icon>
+                        <span>Stock Report</span>
+                    </a>
+                </li>
+
+                <!-- Payment report -->
+                <li class="">
+                    <a href="{% url 'payment_statement_report' %}">
+                        <iconify-icon icon="si:rupee-fill" class="menu-icon"></iconify-icon>
+                        <span>Payment Statement</span>
+                    </a>
+                </li>
+
+                <!-- Activity Log -->
+                <li class="">
+                    <a href="{% url 'activity_log_list' %}">
+                        <iconify-icon icon="material-symbols:search-activity-rounded" class="menu-icon"></iconify-icon>
+                        <span>Activity Log</span>
+                    </a>
+                </li>
+                <!-- Logout -->
+                <li class="">
+                    <a href="{% url 'logout' %}">
+                        <i class="ri-logout-box-line text-xl me-14 d-flex w-auto"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+    </aside>
+
+    <main class="dashboard-main">
+        <div class="navbar-header">
+            <div class="row align-items-center justify-content-between">
+                <div class="col-auto">
+                    <div class="d-flex flex-wrap align-items-center gap-4">
+                        <button type="button" class="sidebar-toggle" fdprocessedid="a28kd">
+                            <iconify-icon icon="heroicons:bars-3-solid" class="icon text-2xl non-active"><template
+                                    shadowrootmode="open">
+                                    <style data-style="data-style">
+                                        :host {
+                                            display: inline-block;
+                                            vertical-align: 0
+                                        }
+
+                                        span,
+                                        svg {
+                                            display: block
+                                        }
+                                    </style><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                        viewBox="0 0 24 24">
+                                        <path fill="currentColor" fill-rule="evenodd"
+                                            d="M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75M3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12m0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                </template></iconify-icon>
+                            <iconify-icon icon="iconoir:arrow-right" class="icon text-2xl active"><template
+                                    shadowrootmode="open">
+                                    <style data-style="data-style">
+                                        :host {
+                                            display: inline-block;
+                                            vertical-align: 0
+                                        }
+
+                                        span,
+                                        svg {
+                                            display: block
+                                        }
+                                    </style><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                        viewBox="0 0 24 24">
+                                        <path fill="none" stroke="currentColor" stroke-linecap="round"
+                                            stroke-linejoin="round" stroke-width="1.5"
+                                            d="M3 12h18m0 0l-8.5-8.5M21 12l-8.5 8.5"></path>
+                                    </svg>
+                                </template></iconify-icon>
+                        </button>
+                        <button type="button" class="sidebar-mobile-toggle">
+                            <iconify-icon icon="heroicons:bars-3-solid" class="icon"><template shadowrootmode="open">
+                                    <style data-style="data-style">
+                                        :host {
+                                            display: inline-block;
+                                            vertical-align: 0
+                                        }
+
+                                        span,
+                                        svg {
+                                            display: block
+                                        }
+                                    </style><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                        viewBox="0 0 24 24">
+                                        <path fill="currentColor" fill-rule="evenodd"
+                                            d="M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75M3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12m0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                </template></iconify-icon>
+                        </button>
+                        <!-- <form class="navbar-search position-relative" autocomplete="off">
+                            <input type="text" id="consumerSearch" placeholder="Search consumer...">
+                            <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
+
+
+                            <div id="searchResults" class="search-dropdown"></div>
+                        </form> -->
+
+
+
+                        <style>
+                            .search-dropdown {
+                                position: absolute;
+                                top: 100%;
+                                left: 0;
+                                width: 100%;
+                                background: #fff;
+                                border-radius: 6px;
+                                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+                                z-index: 9999;
+                                display: none;
+                                max-height: 300px;
+                                overflow-y: auto;
+                            }
+
+                            .search-item {
+                                padding: 10px 12px;
+                                cursor: pointer;
+                                border-bottom: 1px solid #eee;
+                            }
+
+                            .search-item:hover {
+                                background: #f5f7fa;
+                            }
+
+                            .search-item small {
+                                display: block;
+                                color: #777;
+                            }
+                        </style>
+
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="d-flex flex-wrap align-items-center gap-3">
+                        <button type="button" data-theme-toggle=""
+                            class="w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
+                            aria-label="light" fdprocessedid="f5f0mn">light</button>
+                        <!-- <div class="dropdown">
+                            
+                            <button
+                                class="has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
+                                type="button" data-bs-toggle="dropdown" fdprocessedid="bjfn29">
+                                <iconify-icon icon="mage:email" class="text-primary-light text-xl"><template
+                                        shadowrootmode="open">
+                                        <style data-style="data-style">
+                                            :host {
+                                                display: inline-block;
+                                                vertical-align: 0
+                                            }
+
+                                            span,
+                                            svg {
+                                                display: block
+                                            }
+                                        </style><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                            viewBox="0 0 24 24">
+                                            <g fill="none" stroke="currentColor" stroke-width="1.5">
+                                                <rect width="18.5" height="17" x="2.682" y="3.5" rx="4"></rect>
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="m2.729 7.59l7.205 4.13a3.96 3.96 0 0 0 3.975 0l7.225-4.13">
+                                                </path>
+                                            </g>
+                                        </svg>
+                                    </template></iconify-icon>
+                            </button>
+                            <div class="dropdown-menu to-top dropdown-menu-lg p-0">
+                                <div
+                                    class="m-16 py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2">
+                                    <div>
+                                        <h6 class="text-lg text-primary-light fw-semibold mb-0">Message</h6>
+                                    </div>
+                                    <span
+                                        class="text-primary-600 fw-semibold text-lg w-40-px h-40-px rounded-circle bg-base d-flex justify-content-center align-items-center">05</span>
+                                </div>
+
+                                <div class="max-h-400-px overflow-y-auto scroll-sm pe-4">
+
+                                    <a href="javascript:void(0)"
+                                        class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between">
+                                        <div
+                                            class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3">
+                                            <span
+                                                class="w-40-px h-40-px rounded-circle flex-shrink-0 position-relative">
+                                                <img src="./index_files/profile-3.png" alt="">
+                                                <span
+                                                    class="w-8-px h-8-px bg-success-main rounded-circle position-absolute end-0 bottom-0"></span>
+                                            </span>
+                                            <div>
+                                                <h6 class="text-md fw-semibold mb-4">Kathryn Murphy</h6>
+                                                <p class="mb-0 text-sm text-secondary-light text-w-100-px">hey! there
+                                                    i’m...</p>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-end">
+                                            <span class="text-sm text-secondary-light flex-shrink-0">12:30 PM</span>
+                                            <span
+                                                class="mt-4 text-xs text-base w-16-px h-16-px d-flex justify-content-center align-items-center bg-warning-main rounded-circle">8</span>
+                                        </div>
+                                    </a>
+
+                                    <a href="javascript:void(0)"
+                                        class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between">
+                                        <div
+                                            class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3">
+                                            <span
+                                                class="w-40-px h-40-px rounded-circle flex-shrink-0 position-relative">
+                                                <img src="./index_files/profile-4.png" alt="">
+                                                <span
+                                                    class="w-8-px h-8-px  bg-neutral-300 rounded-circle position-absolute end-0 bottom-0"></span>
+                                            </span>
+                                            <div>
+                                                <h6 class="text-md fw-semibold mb-4">Robiul Hasan</h6>
+                                                <p class="mb-0 text-sm text-secondary-light text-w-100-px">hey! there
+                                                    i’m...</p>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-end">
+                                            <span class="text-sm text-secondary-light flex-shrink-0">12:30 PM</span>
+                                            <span
+                                                class="mt-4 text-xs text-base w-16-px h-16-px d-flex justify-content-center align-items-center bg-warning-main rounded-circle">2</span>
+                                        </div>
+                                    </a>
+
+                                    <a href="javascript:void(0)"
+                                        class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between bg-neutral-50">
+                                        <div
+                                            class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3">
+                                            <span
+                                                class="w-40-px h-40-px rounded-circle flex-shrink-0 position-relative">
+                                                <img src="./index_files/profile-5.png" alt="">
+                                                <span
+                                                    class="w-8-px h-8-px bg-success-main rounded-circle position-absolute end-0 bottom-0"></span>
+                                            </span>
+                                            <div>
+                                                <h6 class="text-md fw-semibold mb-4">Kathryn Murphy</h6>
+                                                <p class="mb-0 text-sm text-secondary-light text-w-100-px">hey! there
+                                                    i’m...</p>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-end">
+                                            <span class="text-sm text-secondary-light flex-shrink-0">12:30 PM</span>
+                                            <span
+                                                class="mt-4 text-xs text-base w-16-px h-16-px d-flex justify-content-center align-items-center bg-neutral-400 rounded-circle">0</span>
+                                        </div>
+                                    </a>
+
+                                    <a href="javascript:void(0)"
+                                        class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between bg-neutral-50">
+                                        <div
+                                            class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3">
+                                            <span
+                                                class="w-40-px h-40-px rounded-circle flex-shrink-0 position-relative">
+                                                <img src="./index_files/profile-6.png" alt="">
+                                                <span
+                                                    class="w-8-px h-8-px bg-neutral-300 rounded-circle position-absolute end-0 bottom-0"></span>
+                                            </span>
+                                            <div>
+                                                <h6 class="text-md fw-semibold mb-4">Kathryn Murphy</h6>
+                                                <p class="mb-0 text-sm text-secondary-light text-w-100-px">hey! there
+                                                    i’m...</p>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-end">
+                                            <span class="text-sm text-secondary-light flex-shrink-0">12:30 PM</span>
+                                            <span
+                                                class="mt-4 text-xs text-base w-16-px h-16-px d-flex justify-content-center align-items-center bg-neutral-400 rounded-circle">0</span>
+                                        </div>
+                                    </a>
+
+                                    <a href="javascript:void(0)"
+                                        class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between">
+                                        <div
+                                            class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3">
+                                            <span
+                                                class="w-40-px h-40-px rounded-circle flex-shrink-0 position-relative">
+                                                <img src="./index_files/profile-7.png" alt="">
+                                                <span
+                                                    class="w-8-px h-8-px bg-success-main rounded-circle position-absolute end-0 bottom-0"></span>
+                                            </span>
+                                            <div>
+                                                <h6 class="text-md fw-semibold mb-4">Kathryn Murphy</h6>
+                                                <p class="mb-0 text-sm text-secondary-light text-w-100-px">hey! there
+                                                    i’m...</p>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column align-items-end">
+                                            <span class="text-sm text-secondary-light flex-shrink-0">12:30 PM</span>
+                                            <span
+                                                class="mt-4 text-xs text-base w-16-px h-16-px d-flex justify-content-center align-items-center bg-warning-main rounded-circle">8</span>
+                                        </div>
+                                    </a>
+
+                                </div>
+                                <div class="text-center py-12 px-16">
+                                    <a href="javascript:void(0)" class="text-primary-600 fw-semibold text-md">See All
+                                        Message</a>
+                                </div>
+                            </div>
+                        </div> -->
+
+                        <!-- <div class="dropdown">
+                            <button
+                                class="has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
+                                type="button" data-bs-toggle="dropdown" fdprocessedid="yvt93r">
+                                <iconify-icon icon="iconoir:bell" class="text-primary-light text-xl"><template
+                                        shadowrootmode="open">
+                                        <style data-style="data-style">
+                                            :host {
+                                                display: inline-block;
+                                                vertical-align: 0
+                                            }
+
+                                            span,
+                                            svg {
+                                                display: block
+                                            }
+                                        </style><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                            viewBox="0 0 24 24">
+                                            <path fill="none" stroke="currentColor" stroke-linecap="round"
+                                                stroke-linejoin="round" stroke-width="1.5"
+                                                d="M18 8.4c0-1.697-.632-3.325-1.757-4.525S13.59 2 12 2s-3.117.674-4.243 1.875C6.632 5.075 6 6.703 6 8.4C6 15.867 3 18 3 18h18s-3-2.133-3-9.6M13.73 21a2 2 0 0 1-3.46 0">
+                                            </path>
+                                        </svg>
+                                    </template></iconify-icon>
+                            </button>
+                            <div class="dropdown-menu to-top dropdown-menu-lg p-0">
+                                <div
+                                    class="m-16 py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2">
+                                    <div>
+                                        <h6 class="text-lg text-primary-light fw-semibold mb-0">Notifications</h6>
+                                    </div>
+                                    <span
+                                        class="text-primary-600 fw-semibold text-lg w-40-px h-40-px rounded-circle bg-base d-flex justify-content-center align-items-center">05</span>
+                                </div>
+
+                                <div class="max-h-400-px overflow-y-auto scroll-sm pe-4">
+                                    <a href="javascript:void(0)"
+                                        class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between">
+                                        <div
+                                            class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3">
+                                            <span
+                                                class="w-44-px h-44-px bg-success-subtle text-success-main rounded-circle d-flex justify-content-center align-items-center flex-shrink-0">
+                                                <iconify-icon icon="bitcoin-icons:verify-outline"
+                                                    class="icon text-xxl"><template shadowrootmode="open">
+                                                        <style data-style="data-style">
+                                                            :host {
+                                                                display: inline-block;
+                                                                vertical-align: 0
+                                                            }
+
+                                                            span,
+                                                            svg {
+                                                                display: block
+                                                            }
+                                                        </style><svg xmlns="http://www.w3.org/2000/svg" width="1em"
+                                                            height="1em" viewBox="0 0 24 24">
+                                                            <g fill="none" stroke="currentColor">
+                                                                <path
+                                                                    d="M14.049 5.54a1 1 0 0 1 1.071.443l.994 1.587a1 1 0 0 0 .316.316l1.587.994a1 1 0 0 1 .444 1.072l-.42 1.824a1 1 0 0 0 0 .448l.42 1.825a1 1 0 0 1-.444 1.07l-1.587.995a1 1 0 0 0-.316.316l-.994 1.587a1 1 0 0 1-1.071.444l-1.825-.42a1 1 0 0 0-.447 0l-1.825.42a1 1 0 0 1-1.071-.444l-.994-1.587a1 1 0 0 0-.317-.316l-1.586-.994a1 1 0 0 1-.444-1.071l.419-1.825a1 1 0 0 0 0-.448l-.42-1.824a1 1 0 0 1 .445-1.072l1.586-.994a1 1 0 0 0 .317-.316l.994-1.587a1 1 0 0 1 1.07-.443l1.826.419a1 1 0 0 0 .447 0z">
+                                                                </path>
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="m9.515 12.536l2.035 1.949l2.935-4.97"></path>
+                                                            </g>
+                                                        </svg>
+                                                    </template></iconify-icon>
+                                            </span>
+                                            <div>
+                                                <h6 class="text-md fw-semibold mb-4">Congratulations</h6>
+                                                <p class="mb-0 text-sm text-secondary-light text-w-200-px">Your profile
+                                                    has been Verified. Your
+                                                    profile has been Verified</p>
+                                            </div>
+                                        </div>
+                                        <span class="text-sm text-secondary-light flex-shrink-0">23 Mins ago</span>
+                                    </a>
+
+                                    <a href="javascript:void(0)"
+                                        class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between bg-neutral-50">
+                                        <div
+                                            class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3">
+                                            <span
+                                                class="w-44-px h-44-px bg-success-subtle text-success-main rounded-circle d-flex justify-content-center align-items-center flex-shrink-0">
+                                                <img src="./index_files/profile-1.png" alt="">
+                                            </span>
+                                            <div>
+                                                <h6 class="text-md fw-semibold mb-4">Ronald Richards</h6>
+                                                <p class="mb-0 text-sm text-secondary-light text-w-200-px">You can
+                                                    stitch between artboards</p>
+                                            </div>
+                                        </div>
+                                        <span class="text-sm text-secondary-light flex-shrink-0">23 Mins ago</span>
+                                    </a>
+
+                                    <a href="javascript:void(0)"
+                                        class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between">
+                                        <div
+                                            class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3">
+                                            <span
+                                                class="w-44-px h-44-px bg-info-subtle text-info-main rounded-circle d-flex justify-content-center align-items-center flex-shrink-0">
+                                                AM
+                                            </span>
+                                            <div>
+                                                <h6 class="text-md fw-semibold mb-4">Arlene McCoy</h6>
+                                                <p class="mb-0 text-sm text-secondary-light text-w-200-px">Invite you to
+                                                    prototyping</p>
+                                            </div>
+                                        </div>
+                                        <span class="text-sm text-secondary-light flex-shrink-0">23 Mins ago</span>
+                                    </a>
+
+                                    <a href="javascript:void(0)"
+                                        class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between bg-neutral-50">
+                                        <div
+                                            class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3">
+                                            <span
+                                                class="w-44-px h-44-px bg-success-subtle text-success-main rounded-circle d-flex justify-content-center align-items-center flex-shrink-0">
+                                                <img src="./index_files/profile-2.png" alt="">
+                                            </span>
+                                            <div>
+                                                <h6 class="text-md fw-semibold mb-4">Robiul Hasan</h6>
+                                                <p class="mb-0 text-sm text-secondary-light text-w-200-px">Invite you to
+                                                    prototyping</p>
+                                            </div>
+                                        </div>
+                                        <span class="text-sm text-secondary-light flex-shrink-0">23 Mins ago</span>
+                                    </a>
+
+                                    <a href="javascript:void(0)"
+                                        class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between">
+                                        <div
+                                            class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3">
+                                            <span
+                                                class="w-44-px h-44-px bg-info-subtle text-info-main rounded-circle d-flex justify-content-center align-items-center flex-shrink-0">
+                                                DR
+                                            </span>
+                                            <div>
+                                                <h6 class="text-md fw-semibold mb-4">Darlene Robertson</h6>
+                                                <p class="mb-0 text-sm text-secondary-light text-w-200-px">Invite you to
+                                                    prototyping</p>
+                                            </div>
+                                        </div>
+                                        <span class="text-sm text-secondary-light flex-shrink-0">23 Mins ago</span>
+                                    </a>
+                                </div>
+
+                                <div class="text-center py-12 px-16">
+                                    <a href="javascript:void(0)" class="text-primary-600 fw-semibold text-md">See All
+                                        Notification</a>
+                                </div>
+
+                            </div>
+                        </div> -->
+
+                        <div class="dropdown">
+                            <button class="d-flex justify-content-center align-items-center rounded-circle"
+                                type="button" data-bs-toggle="dropdown" fdprocessedid="a6zhl">
+                                <img src="{%static 'img/admin.png'%}" alt="image"
+                                    class="w-50-px h-50-px object-fit-cover rounded-circle">
+                            </button>
+                            <div class="dropdown-menu to-top dropdown-menu-sm">
+                                <div
+                                    class="py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2">
+                                    <div>
+                                        <h6 class="text-lg text-primary-light fw-semibold mb-2">Link Designers Home</h6>
+                                        <span class="text-secondary-light fw-medium text-sm">Admin</span>
+                                    </div>
+                                    <button type="button" class="hover-text-danger">
+                                        <iconify-icon icon="radix-icons:cross-1" class="icon text-xl"><template
+                                                shadowrootmode="open">
+                                                <style data-style="data-style">
+                                                    :host {
+                                                        display: inline-block;
+                                                        vertical-align: 0
+                                                    }
+
+                                                    span,
+                                                    svg {
+                                                        display: block
+                                                    }
+                                                </style><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                                    viewBox="0 0 15 15">
+                                                    <path fill="currentColor"
+                                                        d="M12.225 2.082a.5.5 0 0 1 .693.694l-.064.078L8.207 7.5l4.647 4.647l.064.078a.5.5 0 0 1-.693.693l-.078-.064L7.5 8.207l-4.646 4.647a.5.5 0 1 1-.707-.707L6.793 7.5L2.147 2.854l-.065-.078a.5.5 0 0 1 .694-.694l.078.065L7.5 6.793l4.647-4.646z">
+                                                    </path>
+                                                </svg>
+                                            </template></iconify-icon>
+                                    </button>
+                                </div>
+                                <ul class="to-top-list">
+                                    <li>
+                                        <a class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-danger d-flex align-items-center gap-3"
+                                            href="{%url 'logout'%}">
+                                            <iconify-icon icon="lucide:power" class="icon text-xl"><template
+                                                    shadowrootmode="open">
+                                                    <style data-style="data-style">
+                                                        :host {
+                                                            display: inline-block;
+                                                            vertical-align: 0
+                                                        }
+
+                                                        span,
+                                                        svg {
+                                                            display: block
+                                                        }
+                                                    </style><svg xmlns="http://www.w3.org/2000/svg" width="1em"
+                                                        height="1em" viewBox="0 0 24 24">
+                                                        <path fill="none" stroke="currentColor" stroke-linecap="round"
+                                                            stroke-linejoin="round" stroke-width="2"
+                                                            d="M12 2v10m6.4-5.4a9 9 0 1 1-12.77.04"></path>
+                                                    </svg>
+                                                </template></iconify-icon> Log Out</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div><!-- Profile dropdown end -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+            <!-- Add this CSS in your <head> section or in your static CSS file -->
+<style>
+    /* Messages Container */
+.messages-container {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  z-index: 10000;
+  max-width: 420px;
+  width: 100%;
+  pointer-events: none;
+}
+
+/* Individual Message */
+.message-item {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  pointer-events: all;
+  transform: translateY(-20px);
+  opacity: 0;
+  animation: slideDown 0.3s ease forwards;
+  position: relative;
+  font-family: 'Archivo', sans-serif;
+}
+
+/* Dark Mode - Message Item */
+[data-theme="dark"] .message-item {
+  background: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* Slide Down Animation */
+@keyframes slideDown {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Slide Up Animation */
+@keyframes slideUp {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+}
+
+.message-item.hiding {
+  animation: slideUp 0.2s ease forwards;
+}
+
+/* Icon Container */
+.message-icon-container {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+/* Message Content */
+.message-content {
+  flex: 1;
+  font-family: 'Archivo', sans-serif;
+}
+
+.message-text {
+  font-size: 14px;
+  color: #111827;
+  line-height: 1.5;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Dark Mode - Message Text */
+[data-theme="dark"] .message-text {
+  color: #f3f4f6;
+}
+
+/* Close Button */
+.message-close {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  font-size: 16px;
+  padding: 0;
+}
+
+.message-close:hover {
+  color: #4b5563;
+  background: #f3f4f6;
+}
+
+/* Dark Mode - Close Button */
+[data-theme="dark"] .message-close {
+  color: #9ca3af;
+}
+
+[data-theme="dark"] .message-close:hover {
+  color: #d1d5db;
+  background: #374151;
+}
+
+/* Success Message */
+.message-success {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+}
+
+.message-success .message-icon-container {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.message-success .message-text {
+  color: #065f46;
+}
+
+/* Dark Mode - Success Message */
+[data-theme="dark"] .message-success {
+  background: #064e3b;
+  border-color: #065f46;
+}
+
+[data-theme="dark"] .message-success .message-text {
+  color: #6ee7b7;
+}
+
+/* Error Message */
+.message-error {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.message-error .message-icon-container {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.message-error .message-text {
+  color: #991b1b;
+}
+
+/* Dark Mode - Error Message */
+[data-theme="dark"] .message-error {
+  background: #7f1d1d;
+  border-color: #991b1b;
+}
+
+[data-theme="dark"] .message-error .message-text {
+  color: #fca5a5;
+}
+
+/* Warning Message */
+.message-warning {
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+
+.message-warning .message-icon-container {
+  background: #f59e0b;
+  color: #ffffff;
+}
+
+.message-warning .message-text {
+  color: #92400e;
+}
+
+/* Dark Mode - Warning Message */
+[data-theme="dark"] .message-warning {
+  background: #78350f;
+  border-color: #92400e;
+}
+
+[data-theme="dark"] .message-warning .message-text {
+  color: #fcd34d;
+}
+
+/* Info Message */
+.message-info {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.message-info .message-icon-container {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.message-info .message-text {
+  color: #1e40af;
+}
+
+/* Dark Mode - Info Message */
+[data-theme="dark"] .message-info {
+  background: #1e3a8a;
+  border-color: #1e40af;
+}
+
+[data-theme="dark"] .message-info .message-text {
+  color: #93c5fd;
+}
+
+/* Progress Bar */
+.message-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  border-radius: 0 0 12px 12px;
+  animation: shrink 4s linear forwards;
+}
+
+@keyframes shrink {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+.message-success .message-progress {
+  background: #10b981;
+}
+
+.message-error .message-progress {
+  background: #ef4444;
+}
+
+.message-warning .message-progress {
+  background: #f59e0b;
+}
+
+.message-info .message-progress {
+  background: #3b82f6;
+}
+
+/* Dark Mode - Progress Bars (brighter colors for visibility) */
+[data-theme="dark"] .message-success .message-progress {
+  background: #34d399;
+}
+
+[data-theme="dark"] .message-error .message-progress {
+  background: #f87171;
+}
+
+[data-theme="dark"] .message-warning .message-progress {
+  background: #fbbf24;
+}
+
+[data-theme="dark"] .message-info .message-progress {
+  background: #60a5fa;
+}
+
+/* Mobile Responsive */
+@media screen and (max-width: 991px) {
+  .messages-container {
+    top: 80px;
+    right: 15px;
+    left: 15px;
+    max-width: none;
+  }
+
+  .message-item {
+    padding: 12px 14px;
+  }
+
+  .message-icon-container {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  .message-text {
+    font-size: 13px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .messages-container {
+    top: 70px;
+    right: 10px;
+    left: 10px;
+  }
+
+  .message-item {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .message-icon-container {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .message-close {
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+  }
+
+  .message-text {
+    font-size: 13px;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .message-item {
+    border-radius: 10px;
+  }
+
+  .message-text {
+    font-size: 12px;
+  }
+}
+</style>
+
+<!-- Add this HTML right after your opening <body> tag or in your base template -->
+{% if messages %}
+<div class="messages-container" id="messagesContainer">
+  {% for message in messages %}
+  <div class="message-item message-{{ message.tags }}" data-message-id="{{ forloop.counter }}">
+    <div class="message-icon-container">
+      {% if message.tags == 'success' %}
+        <i class="fas fa-check"></i>
+      {% elif message.tags == 'error' %}
+        <i class="fas fa-times"></i>
+      {% elif message.tags == 'warning' %}
+        <i class="fas fa-exclamation"></i>
+      {% elif message.tags == 'info' %}
+        <i class="fas fa-info"></i>
+      {% else %}
+        <i class="fas fa-bell"></i>
+      {% endif %}
+    </div>
+    
+    <div class="message-content">
+      <div class="message-text">{{ message }}</div>
+    </div>
+    
+    <button class="message-close" onclick="closeMessage(this)" aria-label="Close message">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <div class="message-progress"></div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- Add this JavaScript at the bottom of your template, before </body> -->
+<script>
+// Auto-dismiss messages after 4 seconds
+document.addEventListener('DOMContentLoaded', function() {
+  const messages = document.querySelectorAll('.message-item');
+  
+  messages.forEach((message, index) => {
+    // Stagger the appearance of multiple messages
+    message.style.animationDelay = `${index * 0.1}s`;
+    
+    // Auto-dismiss after 4 seconds
+    setTimeout(() => {
+      dismissMessage(message);
+    }, 4000 + (index * 100));
+  });
+});
+
+// Close message when clicking the X button
+function closeMessage(button) {
+  const message = button.closest('.message-item');
+  dismissMessage(message);
+}
+
+// Dismiss message with animation
+function dismissMessage(message) {
+  message.classList.add('hiding');
+  
+  setTimeout(() => {
+    message.remove();
+    
+    // Remove container if no messages left
+    const container = document.getElementById('messagesContainer');
+    if (container && container.children.length === 0) {
+      container.remove();
+    }
+  }, 200);
+}
+</script>
+
+
+        {%block content%}
+
+        {%endblock%}
+
+        <footer class="d-footer">
+            <div class="row align-items-center justify-content-between">
+                <div class="col-auto">
+                    <p class="mb-0">
+                        © Developed By
+                        <a href="https://www.hostlanetechnolab.com/" target="_blank" rel="noopener noreferrer">
+                            Hostlane Technolab
+                        </a>
+                    </p>
+
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    {% load static %}
+
+    <!-- jQuery library js -->
+    <script src="{% static 'js/admin_js/jquery-3.7.1.min.js' %}"></script>
+
+    <!-- Bootstrap js -->
+    <script src="{% static 'js/admin_js/bootstrap.bundle.min.js' %}"></script>
+
+    <!-- Apex Chart js -->
+    <script src="{% static 'js/admin_js/apexcharts.min.js' %}"></script>
+
+    <!-- Data Table js -->
+    <script src="{% static 'js/admin_js/dataTables.min.js' %}"></script>
+
+    <!-- Iconify Font js -->
+    <script src="{% static 'js/admin_js/iconify-icon.min.js' %}"></script>
+
+    <!-- jQuery UI js -->
+    <script src="{% static 'js/admin_js/jquery-ui.min.js' %}"></script>
+
+    <!-- Vector Map js -->
+    <script src="{% static 'js/admin_js/jquery-jvectormap-2.0.5.min.js' %}"></script>
+    <script src="{% static 'js/admin_js/jquery-jvectormap-world-mill-en.js' %}"></script>
+
+    <!-- Popup js -->
+    <script src="{% static 'js/admin_js/magnifc-popup.min.js' %}"></script>
+
+    <!-- Slick Slider js -->
+    <script src="{% static 'js/admin_js/slick.min.js' %}"></script>
+
+    <!-- prism js -->
+    <script src="{% static 'js/admin_js/prism.js' %}"></script>
+
+    <!-- file upload js -->
+    <script src="{% static 'js/admin_js/file-upload.js' %}"></script>
+
+    <!-- Audio player -->
+    <script src="{% static 'js/admin_js/audioplayer.js' %}"></script>
+
+    <!-- main js -->
+    <script src="{% static 'js/admin_js/app.js' %}"></script>
+
+    <!-- Home three chart js -->
+    <!-- <script src="{% static 'js/admin_js/homeThreeChart.js' %}"></script> -->
+
+    <div class="jvectormap-tip"></div>
+
+
+
+    <svg id="SvgjsSvg1253" width="2" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1"
+        xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev"
+        style="overflow: hidden; top: -100%; left: -100%; position: absolute; opacity: 0;">
+        <defs id="SvgjsDefs1254"></defs>
+        <polyline id="SvgjsPolyline1255" points="0,0"></polyline>
+        <path id="SvgjsPath1256"
+            d="M-1 394.9344L-1 394.9344C-1 394.9344 38.80474853515625 394.9344 38.80474853515625 394.9344C38.80474853515625 394.9344 77.6094970703125 394.9344 77.6094970703125 394.9344C77.6094970703125 394.9344 116.41424560546875 394.9344 116.41424560546875 394.9344C116.41424560546875 394.9344 155.218994140625 394.9344 155.218994140625 394.9344C155.218994140625 394.9344 194.02374267578125 394.9344 194.02374267578125 394.9344C194.02374267578125 394.9344 232.8284912109375 394.9344 232.8284912109375 394.9344C232.8284912109375 394.9344 271.63323974609375 394.9344 271.63323974609375 394.9344C271.63323974609375 394.9344 310.43798828125 394.9344 310.43798828125 394.9344C310.43798828125 394.9344 310.43798828125 394.9344 310.43798828125 394.9344 ">
+        </path>
+    </svg><span id="PING_IFRAME_FORM_DETECTION" style="display: none;"></span>
+
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const searchInput = document.getElementById("consumerSearch");
+            const resultBox = document.getElementById("searchResults");
+
+            if (!searchInput || !resultBox) return;
+
+            searchInput.addEventListener("keyup", function () {
+                const query = this.value.trim();
+
+                if (query.length < 2) {
+                    resultBox.style.display = "none";
+                    return;
+                }
+
+                fetch("" + query)
+                    .then(res => res.json())
+                    .then(data => {
+                        resultBox.innerHTML = "";
+
+                        if (data.results.length === 0) {
+                            resultBox.innerHTML =
+                                "<div class='search-item'>No consumers found</div>";
+                        } else {
+                            data.results.forEach(c => {
+                                resultBox.innerHTML += `
+                            <div class="search-item"
+                                 onclick="window.location.href='/zytech_app/consumer/${c.id}/'">
+                                <strong>${c.name}</strong>
+                                <small>${c.consumer_number} • ${c.place}</small>
+                            </div>
+                        `;
+                            });
+                        }
+
+                        resultBox.style.display = "block";
+                    });
+            });
+
+        });
+    </script>
+
+
+
+
+</body>
+
+</html>

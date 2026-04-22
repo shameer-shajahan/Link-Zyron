@@ -1,0 +1,911 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %} Customer Payments {% endblock %}
+
+{% block content %}
+
+<style>
+    .payment-avatar {
+  width: 50px;
+  height: 50px;
+  background-color: rgba(72, 127, 255, 0.15);
+  border-radius: 50%;
+  border: 1px solid rgba(72, 127, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.payment-avatar:hover {
+  transform: rotate(360deg) scale(1.1);
+  box-shadow: 0 4px 15px rgba(72, 127, 255, 0.4);
+}
+
+</style>
+
+
+<style>
+/* ===== Animated Delete Modal ===== */
+
+.delete-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 9999;
+}
+
+.delete-modal-backdrop.show {
+  opacity: 1;
+  pointer-events: auto;
+  animation: backdropFadeIn 0.3s ease-out;
+}
+
+.delete-modal-backdrop.hiding {
+  animation: backdropFadeOut 0.2s ease-out;
+}
+
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+}
+
+@keyframes backdropFadeOut {
+  from {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+  to {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+}
+
+.delete-modal {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 40px;
+  width: 90%;
+  max-width: 440px;
+  text-align: center;
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  transform: scale(0.9) translateY(20px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.delete-modal-backdrop.show .delete-modal {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  animation: modalBounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.delete-modal-backdrop.hiding .delete-modal {
+  animation: modalSlideOut 0.2s ease-out;
+}
+
+@keyframes modalBounceIn {
+  0% {
+    transform: scale(0.8) translateY(30px);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05) translateY(-5px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideOut {
+  from {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.9) translateY(20px);
+    opacity: 0;
+  }
+}
+
+.delete-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 24px;
+  background: #fef2f2;
+  color: #dc2626;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  border: 2px solid #fee2e2;
+  animation: iconPulseWave 2s ease-in-out infinite;
+  position: relative;
+}
+
+.delete-modal-backdrop.show .delete-icon {
+  animation: iconEntrance 0.6s ease-out 0.2s both, iconPulseWave 2s ease-in-out 0.8s infinite;
+}
+
+@keyframes iconEntrance {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes iconPulseWave {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 15px rgba(220, 38, 38, 0);
+  }
+}
+
+.delete-icon iconify-icon {
+  animation: iconShake 3s ease-in-out infinite;
+}
+
+@keyframes iconShake {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  10%, 30% {
+    transform: rotate(-10deg);
+  }
+  20%, 40% {
+    transform: rotate(10deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+}
+
+.delete-modal h4 {
+  font-weight: 600;
+  font-size: 20px;
+  margin-bottom: 12px;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  opacity: 0;
+}
+
+.delete-modal-backdrop.show .delete-modal h4 {
+  animation: fadeInUp 0.4s ease-out 0.3s both;
+}
+
+.delete-modal p {
+  font-size: 15px;
+  color: #64748b;
+  margin-bottom: 32px;
+  line-height: 1.65;
+  max-width: 360px;
+  margin-left: auto;
+  margin-right: auto;
+  opacity: 0;
+}
+
+.delete-modal-backdrop.show .delete-modal p {
+  animation: fadeInUp 0.4s ease-out 0.4s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.delete-modal p strong {
+  color: #0f172a;
+  font-weight: 600;
+  display: inline-block;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  border-radius: 6px;
+  margin: 0 4px;
+  border: 1px solid #e2e8f0;
+  animation: highlightPulse 2s ease-in-out infinite;
+}
+
+@keyframes highlightPulse {
+  0%, 100% {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  }
+  50% {
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+  }
+}
+
+.delete-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  opacity: 0;
+}
+
+.delete-modal-backdrop.show .delete-actions {
+  animation: fadeInUp 0.4s ease-out 0.5s both;
+}
+
+.delete-actions .btn {
+  min-width: 140px;
+  height: 44px;
+  font-weight: 500;
+  font-size: 15px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.delete-actions .btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.delete-actions .btn:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+.delete-actions .btn-secondary {
+  background: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.delete-actions .btn-secondary:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.delete-actions .btn-secondary:active {
+  transform: translateY(0);
+}
+
+.delete-actions .btn-danger {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+}
+
+.delete-actions .btn-danger:hover {
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+  animation: buttonShake 0.5s ease-in-out;
+}
+
+.delete-actions .btn-danger:active {
+  transform: translateY(-1px);
+  animation: buttonPress 0.1s ease-out;
+}
+
+@keyframes buttonShake {
+  0%, 100% { transform: translateY(-3px) rotate(0deg); }
+  25% { transform: translateY(-3px) rotate(-2deg); }
+  75% { transform: translateY(-3px) rotate(2deg); }
+}
+
+@keyframes buttonPress {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .delete-modal {
+    padding: 32px 24px;
+    width: 95%;
+    border-radius: 12px;
+  }
+
+  .delete-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 32px;
+  }
+
+  .delete-modal h4 {
+    font-size: 18px;
+  }
+
+  .delete-modal p {
+    font-size: 14px;
+  }
+
+  .delete-actions {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+
+  .delete-actions .btn {
+    width: 100%;
+    min-width: unset;
+  }
+}
+
+/* Loading state for form submission */
+.delete-actions form button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  animation: loadingPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes loadingPulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+/* Light Mode Badge Styles (DEFAULT) */
+.email-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f0f7ff 100%);
+  border: 2px solid #90caf9;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14.2px;
+  color: #1976d2;
+}
+
+.email-badge i {
+  font-size: 14.2px;
+  color: #1976d2;
+}
+
+.mobile-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #f3e5f5 0%, #fce4ec 100%);
+  border: 2px solid #ce93d8;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14.2px;
+  color: #7b1fa2;
+}
+
+.mobile-badge i {
+  font-size: 14.2px;
+  color: #7b1fa2;
+}
+
+.mobile-badge-green {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #e8f5e9 0%, #e0f2f1 100%);
+  border: 2px solid #81c784;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14.2px;
+  color: #2e7d32;
+}
+
+.mobile-badge-green i {
+  font-size: 14.2px;
+  color: #2e7d32;
+}
+
+.mobile-badge-red {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #fdecea 0%, #fce4e4 100%);
+  border: 2px solid #e57373;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14.2px;
+  color: #c62828;
+}
+
+.mobile-badge-red i {
+  font-size: 14.2px;
+  color: #c62828;
+}
+
+/* Dark Mode Badge Styles ONLY */
+[data-theme="dark"] .email-badge {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
+  border: 2px solid #3b5f8f;
+  color: #90caf9;
+}
+
+[data-theme="dark"] .email-badge i {
+  color: #90caf9;
+}
+
+[data-theme="dark"] .mobile-badge {
+  background: linear-gradient(135deg, #4a1f54 0%, #5d2968 100%);
+  border: 2px solid #7e4a8f;
+  color: #ce93d8;
+}
+
+[data-theme="dark"] .mobile-badge i {
+  color: #ce93d8;
+}
+
+[data-theme="dark"] .mobile-badge-green {
+  background: linear-gradient(135deg, #1b4d20 0%, #256d2a 100%);
+  border: 2px solid #3d8b42;
+  color: #81c784;
+}
+
+[data-theme="dark"] .mobile-badge-green i {
+  color: #81c784;
+}
+
+[data-theme="dark"] .mobile-badge-red {
+  background: linear-gradient(135deg, #5d1f1f 0%, #7d2828 100%);
+  border: 2px solid #a84444;
+  color: #e57373;
+}
+
+[data-theme="dark"] .mobile-badge-red i {
+  color: #e57373;
+}
+
+
+/* Mobile Responsive - Stack buttons vertically */
+@media (max-width: 767px) {
+  .card-header .d-flex.align-items-center.gap-3 {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: 100%;
+  }
+  
+  .card-header .position-relative.search-box-animate {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+  
+  .card-header .btn-float {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  
+  .card-header form {
+    width: 100% !important;
+  }
+  
+  .card-header form .btn-float {
+    width: 100% !important;
+  }
+}
+</style>
+
+<div class="dashboard-main-body">
+
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24 fade-in">
+    <h6 class="fw-semibold mb-0">Payment Management</h6>
+    <ul class="d-flex align-items-center gap-2">
+      <li class="fw-medium">
+        <a href="" class="d-flex align-items-center gap-1 hover-text-primary">
+          <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+          Dashboard
+        </a>
+      </li>
+      <li>-</li>
+      <li class="fw-medium">Customer Payments</li>
+    </ul>
+  </div>
+
+ 
+
+  <div class="card basic-data-table card-animate">
+    <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <h5 class="card-title mb-0">Customer Payments</h5>
+      <div class="d-flex align-items-center gap-3">
+        
+        <!-- Search Box -->
+        <div class="position-relative search-box-animate">
+          <input
+            type="text"
+            id="paymentSearchInput"
+            class="form-control form-control-sm"
+            placeholder="Search payments..."
+            style="padding-left: 35px; min-width: 200px;"
+            autocomplete="off"
+          >
+          <iconify-icon
+            icon="ion:search-outline"
+            class="position-absolute search-icon-pulse"
+            style="left: 10px; top: 50%; transform: translateY(-50%); color: #9ca3af;">
+          </iconify-icon>
+          <div id="searchSpinner" class="position-absolute" style="right: 10px; top: 50%; transform: translateY(-50%); display: none;">
+            <div class="spinner-border spinner-border-sm text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Payment Button -->
+        <a href="{% url 'customer_payment_create' %}" class="btn btn-primary btn-sm d-flex align-items-center gap-2 btn-float">
+          <iconify-icon icon="ion:add-outline" class="text-xl"></iconify-icon>
+          Add Payment
+        </a>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table bordered-table mb-0" id="paymentTable">
+          <thead>
+            <tr>
+              <th scope="col">
+                <div class="d-flex align-items-center gap-2">
+                  <iconify-icon icon="solar:calendar-outline" class="text-xl"></iconify-icon>
+                  Date
+                </div>
+              </th>
+              <th scope="col">
+                <div class="d-flex align-items-center gap-2">
+                  <iconify-icon icon="solar:user-outline" class="text-xl"></iconify-icon>
+                  Customer
+                </div>
+              </th>
+              <th scope="col">
+                <div class="d-flex align-items-center gap-2">
+                  <iconify-icon icon="solar:dollar-outline" class="text-xl"></iconify-icon>
+                  Paid Amount
+                </div>
+              </th>
+              <th scope="col">
+                <div class="d-flex align-items-center gap-2">
+                  <iconify-icon icon="solar:wallet-outline" class="text-xl"></iconify-icon>
+                  Current Balance
+                </div>
+              </th>
+              <th scope="col" class="text-center">
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                  <iconify-icon icon="solar:settings-outline" class="text-xl"></iconify-icon>
+                  Action
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="paymentTableBody">
+            {% for p in payments %}
+            <tr class="payment-row table-row-animate" 
+                data-payment-date="{{ p.date|lower }}" 
+                data-payment-customer="{{ p.customer.name|lower }}">
+              <td>
+                <div class="d-flex align-items-center gap-3">
+                  <div class="flex-shrink-0">
+                    <div class="payment-avatar d-flex align-items-center justify-content-center">
+                      <iconify-icon icon="solar:calendar-bold" class="text-primary-600" style="font-size: 24px;"></iconify-icon>
+                    </div>
+                  </div>
+                  <div class="flex-grow-1">
+                    <h6 class="text-md mb-0 fw-semibold">{{ p.date }}</h6>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="email-badge">
+                  <i class="fas fa-user"></i>
+                  <span>{{ p.customer.name }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="mobile-badge-green">
+                  <i class="fa-solid fa-indian-rupee-sign"></i>
+                  <span>{{ p.amount }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="mobile-badge">
+                  <i class="fa-solid fa-wallet"></i>
+                  <span>{{ p.customer.balance }}</span>
+                </div>
+              </td>
+              <td class="text-center">
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                  <button type="button"
+                          class="w-40-px h-40-px bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center action-btn"
+                          data-delete-url="{% url 'customer_payment_delete' p.id %}"
+                          data-payment-info="{{ p.customer.name }} - ₹{{ p.amount }}"
+                          onclick="openDeleteModal(this)"
+                          title="Delete">
+                    <iconify-icon icon="mingcute:delete-2-line" width="22" height="22"></iconify-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" class="text-center py-5">
+                <div class="d-flex flex-column align-items-center gap-3 empty-state-animate">
+                  <div class="w-80-px h-80-px bg-neutral-100 rounded-circle d-flex align-items-center justify-content-center">
+                    <iconify-icon icon="solar:inbox-outline" class="text-neutral-400" style="font-size: 44px;"></iconify-icon>
+                  </div>
+                  <div>
+                    <h5 class="mb-1">No Payments Found</h5>
+                    <p class="text-secondary-light mb-3">Start by adding your first payment</p>
+                    <a href="{% url 'customer_payment_create' %}"
+                       class="btn btn-primary btn-md d-flex align-items-center justify-content-center gap-2 btn-float w-auto">
+                      <iconify-icon icon="ion:add-outline" class="text-lg"></iconify-icon>
+                      Add Payment
+                    </a>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      {% if payments.has_other_pages %}
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mt-24 pagination-animate">
+        <div class="text-secondary-light">
+          Showing {{ payments.start_index }} to {{ payments.end_index }} of {{ payments.paginator.count }} entries
+        </div>
+        <nav aria-label="Page navigation">
+          <ul class="pagination d-flex align-items-center gap-2 mb-0">
+            {% if payments.has_previous %}
+            <li class="page-item">
+              <a class="page-link bg-neutral-200 text-secondary-light fw-medium radius-8 border-0 px-3 py-2 page-link-animate" href="?page=1">
+                <iconify-icon icon="ep:d-arrow-left" class="text-xl"></iconify-icon>
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link bg-neutral-200 text-secondary-light fw-medium radius-8 border-0 px-3 py-2 page-link-animate" href="?page={{ payments.previous_page_number }}">
+                <iconify-icon icon="solar:arrow-left-linear" class="text-xl"></iconify-icon>
+              </a>
+            </li>
+            {% endif %}
+
+            <li class="page-item">
+              <a class="page-link bg-primary-600 text-white fw-medium radius-8 border-0 px-3 py-2 page-link-active" href="javascript:void(0)">{{ payments.number }}</a>
+            </li>
+
+            {% if payments.has_next %}
+            <li class="page-item">
+              <a class="page-link bg-neutral-200 text-secondary-light fw-medium radius-8 border-0 px-3 py-2 page-link-animate" href="?page={{ payments.next_page_number }}">
+                <iconify-icon icon="solar:arrow-right-linear" class="text-xl"></iconify-icon>
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link bg-neutral-200 text-secondary-light fw-medium radius-8 border-0 px-3 py-2 page-link-animate" href="?page={{ payments.paginator.num_pages }}">
+                <iconify-icon icon="ep:d-arrow-right" class="text-xl"></iconify-icon>
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="delete-modal-backdrop">
+  <div class="delete-modal">
+    <div class="delete-icon">
+      <iconify-icon icon="solar:trash-bin-minimalistic-outline"></iconify-icon>
+    </div>
+
+    <h5>Delete Payment</h5>
+    <p>
+      Are you sure you want to delete payment for <strong id="paymentInfo"></strong>? This action cannot be undone and all associated data will be permanently removed.
+    </p>
+
+    <div class="delete-actions">
+      <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+
+      <form method="post" id="deleteForm">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">
+          Delete Payment
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function openDeleteModal(btn) {
+  const url = btn.getAttribute("data-delete-url");
+  const paymentInfo = btn.getAttribute("data-payment-info");
+  
+  document.getElementById("deleteForm").action = url;
+  document.getElementById("paymentInfo").textContent = paymentInfo;
+  document.getElementById("deleteModal").classList.add("show");
+}
+
+function closeDeleteModal() {
+  const modal = document.getElementById("deleteModal");
+  modal.classList.add("hiding");
+  
+  setTimeout(() => {
+    modal.classList.remove("show", "hiding");
+  }, 200);
+}
+
+// Close modal when clicking outside
+document.getElementById("deleteModal").addEventListener("click", function(e) {
+  if (e.target === this) {
+    closeDeleteModal();
+  }
+});
+
+// Close modal on Escape key
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") {
+    const modal = document.getElementById("deleteModal");
+    if (modal.classList.contains("show")) {
+      closeDeleteModal();
+    }
+  }
+});
+</script>
+
+
+<script>
+// Real-time search functionality
+(function () {
+  const searchInput = document.getElementById("paymentSearchInput");
+  const tableBody = document.getElementById("paymentTableBody");
+  const searchSpinner = document.getElementById("searchSpinner");
+  let searchTimeout;
+
+  if (!searchInput || !tableBody) return;
+
+  // Debounce function to avoid too many requests
+  function debounce(func, wait) {
+    return function executedFunction(...args) {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => func(...args), wait);
+    };
+  }
+
+  // Filter table rows in real-time
+  function filterTable(searchTerm) {
+    const filter = searchTerm.toLowerCase().trim();
+    const rows = tableBody.querySelectorAll(".payment-row");
+    let visibleCount = 0;
+
+    rows.forEach((row, index) => {
+      const date = row.getAttribute("data-payment-date") || "";
+      const customer = row.getAttribute("data-payment-customer") || "";
+
+      const matches = 
+        date.includes(filter) ||
+        customer.includes(filter) ||
+        row.innerText.toLowerCase().includes(filter);
+
+      if (filter === "" || matches) {
+        row.style.display = "";
+        row.style.animation = `fadeInRow 0.3s ease-out ${index * 0.05}s both`;
+        visibleCount++;
+      } else {
+        row.style.display = "none";
+      }
+    });
+
+    // Show "No results" message if no rows are visible
+    showNoResultsMessage(visibleCount === 0 && filter !== "");
+  }
+
+  // Show/hide no results message
+  function showNoResultsMessage(show) {
+    let noResultsRow = document.getElementById("noResultsRow");
+    
+    if (show && !noResultsRow) {
+      noResultsRow = document.createElement("tr");
+      noResultsRow.id = "noResultsRow";
+      noResultsRow.innerHTML = `
+        <td colspan="5" class="text-center py-5">
+          <div class="d-flex flex-column align-items-center gap-3 empty-state-animate">
+            <div class="w-80-px h-80-px bg-neutral-100 rounded-circle d-flex align-items-center justify-content-center">
+              <iconify-icon icon="solar:magnifer-outline" class="text-neutral-400" style="font-size: 44px;"></iconify-icon>
+            </div>
+            <div>
+              <h5 class="mb-1">No Results Found</h5>
+              <p class="text-secondary-light mb-0">Try adjusting your search terms</p>
+            </div>
+          </div>
+        </td>
+      `;
+      tableBody.appendChild(noResultsRow);
+    } else if (!show && noResultsRow) {
+      noResultsRow.remove();
+    }
+  }
+
+  // Handle search input with debouncing
+  const handleSearch = debounce(function(e) {
+    const searchTerm = e.target.value;
+    
+    // Show spinner
+    searchSpinner.style.display = "block";
+    
+    // Filter after a short delay to show spinner
+    setTimeout(() => {
+      filterTable(searchTerm);
+      searchSpinner.style.display = "none";
+    }, 150);
+  }, 300);
+
+  // Attach event listener
+  searchInput.addEventListener("input", handleSearch);
+
+  // Clear search on Escape key
+  searchInput.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") {
+      this.value = "";
+      filterTable("");
+      this.blur();
+    }
+  });
+
+  // Focus search on Ctrl/Cmd + K
+  document.addEventListener("keydown", function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+      e.preventDefault();
+      searchInput.focus();
+    }
+  });
+})();
+</script>
+{% endblock %}

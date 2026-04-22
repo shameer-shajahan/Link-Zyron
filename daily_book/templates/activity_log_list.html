@@ -1,0 +1,1620 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+
+{% block title %} Activity Logs {% endblock %}
+
+{% block content %}
+
+<style>
+/* Animation for table rows */
+@keyframes fadeInRow {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Search box animations */
+.search-box-animate {
+  transition: all 0.3s ease;
+}
+
+.search-box-animate:focus-within {
+  transform: translateY(-2px);
+}
+
+.search-icon-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Empty state animation */
+.empty-state-animate {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Card animation */
+.card-animate {
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Table row animation */
+.table-row-animate {
+  animation: fadeInRow 0.3s ease-out;
+}
+
+/* Pagination animation */
+.pagination-animate {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.page-link-animate {
+  transition: all 0.2s ease;
+}
+
+.page-link-animate:hover {
+  transform: translateY(-2px);
+}
+
+/* Fade in animation */
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Message slide in */
+.message-slide-in {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Bulk Action Bar - FIXED STYLING */
+.bulk-action-bar {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(150%);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 16px 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bulk-action-bar.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+[data-theme="dark"] .bulk-action-bar {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-color: #334155;
+}
+
+.bulk-action-bar .selected-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #487fff 0%, #3b66cc 100%);
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.bulk-action-bar .bulk-btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bulk-action-bar .bulk-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.bulk-action-bar .bulk-delete-btn {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+}
+
+
+.bulk-action-bar .bulk-cancel-btn {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+[data-theme="dark"] .bulk-action-bar .bulk-cancel-btn {
+  background: #334155;
+  color: #e2e8f0;
+  border-color: #475569;
+}
+
+/* CUSTOM CHECKBOX STYLES - GUARANTEED VISIBLE */
+.log-checkbox,
+.select-all-checkbox {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  min-height: 22px !important;
+  border: 2.5px solid #487fff !important;
+  border-radius: 4px !important;
+  background-color: #ffffff !important;
+  cursor: pointer !important;
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 999 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  vertical-align: middle !important;
+  flex-shrink: 0 !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-theme="dark"] .log-checkbox,
+[data-theme="dark"] .select-all-checkbox {
+  background-color: #1e293b !important;
+  border-color: #487fff !important;
+}
+
+.log-checkbox:hover,
+.select-all-checkbox:hover {
+  transform: scale(1.1);
+  border-color: #3b66cc !important;
+  box-shadow: 0 0 0 3px rgba(72, 127, 255, 0.2) !important;
+}
+
+.log-checkbox:checked,
+.select-all-checkbox:checked {
+  background-color: #487fff !important;
+  border-color: #487fff !important;
+}
+
+.log-checkbox:checked::before,
+.select-all-checkbox:checked::before {
+  content: "✓" !important;
+  display: block !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  color: #ffffff !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+  line-height: 1 !important;
+}
+
+.log-checkbox:focus,
+.select-all-checkbox:focus {
+  outline: 2px solid #487fff !important;
+  outline-offset: 2px !important;
+}
+
+/* IMPROVED - Highlight selected rows with better visibility */
+tr.selected {
+  background: linear-gradient(90deg, rgba(72, 127, 255, 0.15) 0%, rgba(72, 127, 255, 0.08) 100%) !important;
+  border-left: 4px solid #487fff !important;
+  box-shadow: 0 2px 8px rgba(72, 127, 255, 0.1) !important;
+  transition: all 0.3s ease;
+}
+
+tr.selected:hover {
+  background: linear-gradient(90deg, rgba(72, 127, 255, 0.20) 0%, rgba(72, 127, 255, 0.12) 100%) !important;
+  box-shadow: 0 4px 12px rgba(72, 127, 255, 0.15) !important;
+}
+
+[data-theme="dark"] tr.selected {
+  background: linear-gradient(90deg, rgba(72, 127, 255, 0.25) 0%, rgba(72, 127, 255, 0.15) 100%) !important;
+  border-left: 4px solid #487fff !important;
+  box-shadow: 0 2px 8px rgba(72, 127, 255, 0.2) !important;
+}
+
+[data-theme="dark"] tr.selected:hover {
+  background: linear-gradient(90deg, rgba(72, 127, 255, 0.30) 0%, rgba(72, 127, 255, 0.20) 100%) !important;
+  box-shadow: 0 4px 12px rgba(72, 127, 255, 0.25) !important;
+}
+
+/* Add animation when row is selected */
+tr.selected td {
+  position: relative;
+  overflow: hidden;
+}
+
+tr.selected td::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 1.5s ease-in-out;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+</style>
+
+
+<style>
+/* Filter Input Styles */
+.filter-input {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  transition: all 0.3s ease;
+}
+
+.filter-input:focus {
+  border-color: #487fff;
+  box-shadow: 0 0 0 3px rgba(72, 127, 255, 0.1);
+  outline: none;
+}
+
+/* Dark Mode Filter Inputs */
+[data-theme="dark"] .filter-input {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .filter-input:focus {
+  border-color: #487fff;
+  background-color: #1e293b;
+}
+
+/* Clear Filters Button */
+#clearFilters {
+  transition: all 0.3s ease;
+  border-radius: 8px;
+}
+
+#clearFilters:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] #clearFilters {
+  background-color: transparent;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] #clearFilters:hover {
+  background-color: #1e293b;
+  border-color: #487fff;
+}
+
+/* Orange Badge for Browser */
+.mobile-badge-orange {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  border: 2px solid #fdba74;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14.2px;
+  color: #c2410c;
+}
+
+.mobile-badge-orange i {
+  font-size: 14.2px;
+  color: #c2410c;
+}
+
+/* Yellow Badge for Warning */
+.mobile-badge-yellow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+  border: 2px solid #fde047;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14.2px;
+  color: #a16207;
+}
+
+.mobile-badge-yellow i {
+  font-size: 14.2px;
+  color: #a16207;
+}
+
+/* Dark Mode - Orange Badge */
+[data-theme="dark"] .mobile-badge-orange {
+  background: linear-gradient(135deg, #7c2d12 0%, #9a3412 100%);
+  border: 2px solid #c2410c;
+  color: #fdba74;
+}
+
+[data-theme="dark"] .mobile-badge-orange i {
+  color: #fdba74;
+}
+
+/* Dark Mode - Yellow Badge */
+[data-theme="dark"] .mobile-badge-yellow {
+  background: linear-gradient(135deg, #713f12 0%, #854d0e 100%);
+  border: 2px solid #a16207;
+  color: #fde047;
+}
+
+[data-theme="dark"] .mobile-badge-yellow i {
+  color: #fde047;
+}
+
+.complaint-avatar {
+  width: 50px;
+  height: 50px;
+  background-color: rgba(72, 127, 255, 0.15);
+  border-radius: 50%;
+  border: 1px solid rgba(72, 127, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.complaint-avatar:hover {
+  transform: rotate(360deg) scale(1.1);
+  box-shadow: 0 4px 15px rgba(72, 127, 255, 0.4);
+}
+
+/* Light Mode Badge Styles (DEFAULT) */
+.email-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f0f7ff 100%);
+  border: 2px solid #90caf9;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14.2px;
+  color: #1976d2;
+}
+
+.email-badge i {
+  font-size: 14.2px;
+  color: #1976d2;
+}
+
+.mobile-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #f3e5f5 0%, #fce4ec 100%);
+  border: 2px solid #ce93d8;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14.2px;
+  color: #7b1fa2;
+}
+
+.mobile-badge i {
+  font-size: 14.2px;
+  color: #7b1fa2;
+}
+
+.mobile-badge-green {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #e8f5e9 0%, #e0f2f1 100%);
+  border: 2px solid #81c784;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14.2px;
+  color: #2e7d32;
+}
+
+.mobile-badge-green i {
+  font-size: 14.2px;
+  color: #2e7d32;
+}
+
+.mobile-badge-red {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #fdecea 0%, #fce4e4 100%);
+  border: 2px solid #e57373;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14.2px;
+  color: #c62828;
+}
+
+.mobile-badge-red i {
+  font-size: 14.2px;
+  color: #c62828;
+}
+
+/* Dark Mode Badge Styles ONLY */
+[data-theme="dark"] .email-badge {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
+  border: 2px solid #3b5f8f;
+  color: #90caf9;
+}
+
+[data-theme="dark"] .email-badge i {
+  color: #90caf9;
+}
+
+[data-theme="dark"] .mobile-badge {
+  background: linear-gradient(135deg, #4a1f54 0%, #5d2968 100%);
+  border: 2px solid #7e4a8f;
+  color: #ce93d8;
+}
+
+[data-theme="dark"] .mobile-badge i {
+  color: #ce93d8;
+}
+
+[data-theme="dark"] .mobile-badge-green {
+  background: linear-gradient(135deg, #1b4d20 0%, #256d2a 100%);
+  border: 2px solid #3d8b42;
+  color: #81c784;
+}
+
+[data-theme="dark"] .mobile-badge-green i {
+  color: #81c784;
+}
+
+[data-theme="dark"] .mobile-badge-red {
+  background: linear-gradient(135deg, #5d1f1f 0%, #7d2828 100%);
+  border: 2px solid #a84444;
+  color: #e57373;
+}
+
+[data-theme="dark"] .mobile-badge-red i {
+  color: #e57373;
+}
+
+/* Action button animations */
+.action-btn {
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Mobile Responsive - Stack elements vertically */
+@media (max-width: 767px) {
+  .card-header .d-flex.align-items-center.gap-3 {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: 100%;
+  }
+  
+  .card-header .position-relative.search-box-animate {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  .bulk-action-bar {
+    flex-direction: column;
+    padding: 12px 16px;
+    gap: 12px;
+    bottom: 20px;
+    width: 90%;
+    max-width: 90%;
+  }
+
+  .bulk-action-bar .bulk-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ===== Animated Delete Modal ===== */
+
+.delete-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 9999;
+}
+
+.delete-modal-backdrop.show {
+  opacity: 1;
+  pointer-events: auto;
+  animation: backdropFadeIn 0.3s ease-out;
+}
+
+.delete-modal-backdrop.hiding {
+  animation: backdropFadeOut 0.2s ease-out;
+}
+
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+}
+
+@keyframes backdropFadeOut {
+  from {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+  to {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+}
+
+.delete-modal {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 40px;
+  width: 90%;
+  max-width: 440px;
+  text-align: center;
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  transform: scale(0.9) translateY(20px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.delete-modal-backdrop.show .delete-modal {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  animation: modalBounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.delete-modal-backdrop.hiding .delete-modal {
+  animation: modalSlideOut 0.2s ease-out;
+}
+
+@keyframes modalBounceIn {
+  0% {
+    transform: scale(0.8) translateY(30px);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05) translateY(-5px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideOut {
+  from {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.9) translateY(20px);
+    opacity: 0;
+  }
+}
+
+.delete-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 24px;
+  background: #fef2f2;
+  color: #dc2626;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  border: 2px solid #fee2e2;
+  animation: iconPulseWave 2s ease-in-out infinite;
+  position: relative;
+}
+
+.delete-modal-backdrop.show .delete-icon {
+  animation: iconEntrance 0.6s ease-out 0.2s both, iconPulseWave 2s ease-in-out 0.8s infinite;
+}
+
+@keyframes iconEntrance {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes iconPulseWave {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 15px rgba(220, 38, 38, 0);
+  }
+}
+
+.delete-icon iconify-icon {
+  animation: iconShake 3s ease-in-out infinite;
+}
+
+@keyframes iconShake {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  10%, 30% {
+    transform: rotate(-10deg);
+  }
+  20%, 40% {
+    transform: rotate(10deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+}
+
+.delete-modal h5 {
+  font-weight: 600;
+  font-size: 20px;
+  margin-bottom: 12px;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  opacity: 0;
+}
+
+.delete-modal-backdrop.show .delete-modal h5 {
+  animation: fadeInUp 0.4s ease-out 0.3s both;
+}
+
+.delete-modal p {
+  font-size: 15px;
+  color: #64748b;
+  margin-bottom: 32px;
+  line-height: 1.65;
+  max-width: 360px;
+  margin-left: auto;
+  margin-right: auto;
+  opacity: 0;
+}
+
+.delete-modal-backdrop.show .delete-modal p {
+  animation: fadeInUp 0.4s ease-out 0.4s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.delete-modal p strong {
+  color: #0f172a;
+  font-weight: 600;
+  display: inline-block;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  border-radius: 6px;
+  margin: 0 4px;
+  border: 1px solid #e2e8f0;
+  animation: highlightPulse 2s ease-in-out infinite;
+}
+
+@keyframes highlightPulse {
+  0%, 100% {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  }
+  50% {
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+  }
+}
+
+.delete-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  opacity: 0;
+}
+
+.delete-modal-backdrop.show .delete-actions {
+  animation: fadeInUp 0.4s ease-out 0.5s both;
+}
+
+.delete-actions .btn {
+  min-width: 140px;
+  height: 44px;
+  font-weight: 500;
+  font-size: 15px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.delete-actions .btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.delete-actions .btn:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+.delete-actions .btn-secondary {
+  background: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.delete-actions .btn-secondary:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.delete-actions .btn-secondary:active {
+  transform: translateY(0);
+}
+
+.delete-actions .btn-danger {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+}
+
+.delete-actions .btn-danger:hover {
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+  animation: buttonShake 0.5s ease-in-out;
+}
+
+.delete-actions .btn-danger:active {
+  transform: translateY(-1px);
+  animation: buttonPress 0.1s ease-out;
+}
+
+@keyframes buttonShake {
+  0%, 100% { transform: translateY(-3px) rotate(0deg); }
+  25% { transform: translateY(-3px) rotate(-2deg); }
+  75% { transform: translateY(-3px) rotate(2deg); }
+}
+
+@keyframes buttonPress {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+[data-theme="dark"] .delete-modal {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .delete-modal h5 {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .delete-modal p {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .delete-modal p strong {
+  color: #e2e8f0;
+  background: linear-gradient(135deg, #334155 0%, #475569 100%) !important;
+  border-color: #475569;
+}
+
+[data-theme="dark"] .delete-actions .btn-secondary {
+  background: #334155;
+  color: #e2e8f0;
+  border-color: #475569;
+}
+
+[data-theme="dark"] .delete-actions .btn-secondary:hover {
+  background: #475569;
+  border-color: #64748b;
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .delete-modal {
+    padding: 32px 24px;
+    width: 95%;
+    border-radius: 12px;
+  }
+
+  .delete-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 32px;
+  }
+
+  .delete-modal h5 {
+    font-size: 18px;
+  }
+
+  .delete-modal p {
+    font-size: 14px;
+  }
+
+  .delete-actions {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+
+  .delete-actions .btn {
+    width: 100%;
+    min-width: unset;
+  }
+}
+</style>
+
+<div class="dashboard-main-body">
+
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24 fade-in">
+    <h6 class="fw-semibold mb-0">Activity Log Management</h6>
+    <ul class="d-flex align-items-center gap-2">
+      <li class="fw-medium">
+        <a href="{% url 'admin_dashboard' %}" class="d-flex align-items-center gap-1 hover-text-primary">
+          <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+          Dashboard
+        </a>
+      </li>
+      <li>-</li>
+      <li class="fw-medium">Activity Logs</li>
+    </ul>
+  </div>
+
+
+
+  <div class="card basic-data-table card-animate">
+    <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <h5 class="card-title mb-0">Activity Logs List</h5>
+      <div class="d-flex align-items-center gap-3">
+        
+        <!-- Search Box -->
+        <div class="position-relative search-box-animate">
+          <input
+            type="text"
+            id="activitySearchInput"
+            class="form-control form-control-sm"
+            placeholder="Search logs..."
+            style="padding-left: 35px; min-width: 200px;"
+            autocomplete="off"
+          >
+          <iconify-icon
+            icon="ion:search-outline"
+            class="position-absolute search-icon-pulse"
+            style="left: 10px; top: 50%; transform: translateY(-50%); color: #9ca3af;">
+          </iconify-icon>
+          <div id="searchSpinner" class="position-absolute" style="right: 10px; top: 50%; transform: translateY(-50%); display: none;">
+            <div class="spinner-border spinner-border-sm text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="card-body border-bottom">
+      <div class="row g-3 align-items-end">
+        <!-- Date Filter -->
+        <div class="col-lg-3 col-md-6">
+          <label class="form-label fw-semibold text-sm d-flex">
+            <iconify-icon icon="solar:calendar-outline" class="text-lg me-1 mt-1"></iconify-icon>
+            <span class="mt-2">Filter by Date</span>
+          </label>
+          <input 
+            type="date" 
+            id="dateFilter" 
+            class="form-control form-control-sm filter-input"
+            placeholder="Select date"
+          >
+        </div>
+
+        <!-- User Filter -->
+        <div class="col-lg-3 col-md-6">
+          <label class="form-label fw-semibold text-sm d-flex">
+            <iconify-icon icon="solar:user-outline" class="text-lg me-1 mt-2"></iconify-icon>
+            <span class="mt-2">Filter by User</span>
+          </label>
+          <select id="userFilter" class="form-select form-select-sm filter-input">
+            <option value="">All Users</option>
+            {% for log in logs %}
+              {% if log.user %}
+                <option value="{{ log.user.email }}">{{ log.user.name }}</option>
+              {% endif %}
+            {% endfor %}
+            <option value="System">System</option>
+          </select>
+        </div>
+
+        <!-- Level Filter -->
+        <div class="col-lg-3 col-md-6">
+          <label class="form-label fw-semibold text-sm  d-flex">
+            <iconify-icon icon="solar:shield-check-outline" class="text-lg me-1 mt-2"></iconify-icon>
+            <span class="mt-2">Filter by Level</span>
+          </label>
+          <select id="levelFilter" class="form-select form-select-sm filter-input">
+            <option value="">All Levels</option>
+            <option value="success">Success</option>
+            <option value="error">Error</option>
+            <option value="warning">Warning</option>
+            <option value="info">Info</option>
+          </select>
+        </div>
+
+        <!-- Clear Filters Button -->
+        <div class="col-lg-3 col-md-6">
+          <button type="button" id="clearFilters" class="btn text-info-600 btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2" style="height: 38px;">
+            <iconify-icon icon="solar:refresh-outline" class="text-lg"></iconify-icon>
+            Clear Filters
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table bordered-table mb-0" id="activityTable">
+          <thead>
+            <tr>
+              <th scope="col" style="width: 60px; text-align: center;">
+                <div class="d-flex align-items-center justify-content-center">
+                  <input type="checkbox" class="select-all-checkbox" id="selectAll" style="width: 20px; height: 20px;">
+                </div>
+              </th>
+              <th scope="col">
+                <div class="d-flex align-items-center gap-2">
+                  <iconify-icon icon="solar:calendar-outline" class="text-xl"></iconify-icon>
+                  Date & Time
+                </div>
+              </th>
+              <th scope="col">
+                <div class="d-flex align-items-center gap-2">
+                  <iconify-icon icon="solar:user-outline" class="text-xl"></iconify-icon>
+                  User
+                </div>
+              </th>
+              <th scope="col">
+                <div class="d-flex align-items-center gap-2">
+                  <iconify-icon icon="solar:shield-check-outline" class="text-xl"></iconify-icon>
+                  Level
+                </div>
+              </th>
+              <th scope="col">
+                <div class="d-flex align-items-center gap-2">
+                  <iconify-icon icon="solar:chat-round-outline" class="text-xl"></iconify-icon>
+                  Message
+                </div>
+              </th>
+              <th scope="col" class="text-center">
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                  <iconify-icon icon="solar:settings-outline" class="text-xl"></iconify-icon>
+                  Action
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="activityTableBody">
+            {% for log in logs %}
+            <tr class="activity-row table-row-animate" 
+                data-activity-user="{{ log.user.email|default:'System'|lower }}" 
+                data-activity-level="{{ log.level|lower }}" 
+                data-activity-message="{{ log.message|lower }}"
+                data-activity-ip="{{ log.ip_address|lower }}"
+                data-activity-date="{{ log.created_at|date:'Y-m-d' }}"
+                data-log-id="{{ log.id }}">
+              <td style="text-align: center; vertical-align: middle;">
+                <div class="d-flex align-items-center justify-content-center">
+                  <input type="checkbox" class="log-checkbox" value="{{ log.id }}" style="width: 20px; height: 20px;">
+                </div>
+              </td>
+              <td>
+                <div class="mobile-badge-green">
+                  <i class="fa-solid fa-calendar"></i>
+                  <span>{{ log.created_at|date:"d-m-Y H:i" }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="d-flex align-items-center gap-3">
+                  <div class="flex-shrink-0">
+                    <div class="complaint-avatar d-flex align-items-center justify-content-center">
+                      <iconify-icon icon="solar:user-bold" class="text-primary-600" style="font-size: 24px;"></iconify-icon>
+                    </div>
+                  </div>
+                  <div class="flex-grow-1">
+                    <h6 class="text-md mb-0 fw-semibold">
+                      {% if log.user %}
+                        {{ log.user.name }}
+                      {% else %}
+                        System
+                      {% endif %}
+                    </h6>
+                    <span class="text-sm text-secondary-light">
+                      {% if log.user %}
+                        {{ log.user.role|title }}
+                      {% else %}
+                        Automated
+                      {% endif %}
+                    </span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                {% if log.level == 'success' %}
+                <div class="mobile-badge-green">
+                  <i class="fa-solid fa-check-circle"></i>
+                  <span>{{ log.level|title }}</span>
+                </div>
+                {% elif log.level == 'error' %}
+                <div class="mobile-badge-red">
+                  <i class="fa-solid fa-exclamation-circle"></i>
+                  <span>{{ log.level|title }}</span>
+                </div>
+                {% elif log.level == 'warning' %}
+                <div class="mobile-badge-yellow">
+                  <i class="fa-solid fa-exclamation-triangle"></i>
+                  <span>{{ log.level|title }}</span>
+                </div>
+                {% else %}
+                <div class="mobile-badge">
+                  <i class="fa-solid fa-info-circle"></i>
+                  <span>{{ log.level|title }}</span>
+                </div>
+                {% endif %}
+              </td>
+              <td>
+                <div class="email-badge">
+                  <i class="fa-solid fa-message"></i>
+                  <span>{{ log.message|truncatechars:40 }}</span>
+
+                </div>
+              </td>
+              <td class="text-center">
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                  <!-- Delete Button (Admin Only) -->
+                  {% if request.user.role == 'admin' %}
+                    <button type="button"
+                            class="w-40-px h-40-px bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center action-btn"
+                            data-delete-url="{% url 'activity_log_delete' log.id %}"
+                            data-log-message="{{ log.message|truncatewords:5 }}"
+                            onclick="openDeleteModal(this)"
+                            title="Delete Log">
+                      <iconify-icon icon="mingcute:delete-2-line" width="22" height="22"></iconify-icon>
+                    </button>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="6" class="text-center py-5">
+                <div class="d-flex flex-column align-items-center gap-3 empty-state-animate">
+                  <div class="w-80-px h-80-px bg-neutral-100 rounded-circle d-flex align-items-center justify-content-center">
+                    <iconify-icon icon="solar:inbox-outline" class="text-neutral-400" style="font-size: 44px;"></iconify-icon>
+                  </div>
+                  <div>
+                    <h5 class="mb-1">No Activity Logs Found</h5>
+                    <p class="text-secondary-light mb-0">No activity has been recorded yet</p>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      {% if logs.has_other_pages %}
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mt-24 pagination-animate">
+        <div class="text-secondary-light">
+          Showing {{ logs.start_index }} to {{ logs.end_index }} of {{ logs.paginator.count }} entries
+        </div>
+        <nav aria-label="Page navigation">
+          <ul class="pagination d-flex align-items-center gap-2 mb-0">
+            {% if logs.has_previous %}
+            <li class="page-item">
+              <a class="page-link bg-neutral-200 text-secondary-light fw-medium radius-8 border-0 px-3 py-2 page-link-animate" href="?page=1">
+                <iconify-icon icon="ep:d-arrow-left" class="text-xl"></iconify-icon>
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link bg-neutral-200 text-secondary-light fw-medium radius-8 border-0 px-3 py-2 page-link-animate" href="?page={{ logs.previous_page_number }}">
+                <iconify-icon icon="solar:arrow-left-linear" class="text-xl"></iconify-icon>
+              </a>
+            </li>
+            {% endif %}
+
+            <li class="page-item">
+              <a class="page-link bg-primary-600 text-white fw-medium radius-8 border-0 px-3 py-2 page-link-active" href="javascript:void(0)">{{ logs.number }}</a>
+            </li>
+
+            {% if logs.has_next %}
+            <li class="page-item">
+              <a class="page-link bg-neutral-200 text-secondary-light fw-medium radius-8 border-0 px-3 py-2 page-link-animate" href="?page={{ logs.next_page_number }}">
+                <iconify-icon icon="solar:arrow-right-linear" class="text-xl"></iconify-icon>
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link bg-neutral-200 text-secondary-light fw-medium radius-8 border-0 px-3 py-2 page-link-animate" href="?page={{ logs.paginator.num_pages }}">
+                <iconify-icon icon="ep:d-arrow-right" class="text-xl"></iconify-icon>
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Bulk Action Bar - FIXED BOTTOM BAR -->
+<div id="bulkActionBar" class="bulk-action-bar">
+  <div class="selected-count">
+    <iconify-icon icon="solar:check-circle-bold" style="font-size: 20px;"></iconify-icon>
+    <span id="selectedCount">0</span> Selected
+  </div>
+  
+  <button class="bulk-btn bulk-delete-btn" onclick="openBulkDeleteModal()">
+    <iconify-icon icon="solar:trash-bin-minimalistic-bold" style="font-size: 18px;"></iconify-icon>
+    Delete Selected
+  </button>
+  
+  <button class="bulk-btn bulk-cancel-btn" onclick="cancelBulkSelection()">
+    <iconify-icon icon="solar:close-circle-bold" style="font-size: 18px;"></iconify-icon>
+    Cancel
+  </button>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="delete-modal-backdrop">
+  <div class="delete-modal">
+    <div class="delete-icon">
+      <iconify-icon icon="solar:trash-bin-minimalistic-outline"></iconify-icon>
+    </div>
+
+    <h5 id="modalTitle">Delete Activity Log</h5>
+    <p id="modalMessage">
+      Are you sure you want to delete this activity log: <strong id="logMessage"></strong>? This action cannot be undone.
+    </p>
+
+    <div class="delete-actions">
+      <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+
+      <form method="post" id="deleteForm">
+        {% csrf_token %}
+        <input type="hidden" name="log_ids" id="logIdsInput">
+        <button type="submit" class="btn btn-danger" id="deleteButton">
+          Delete Log
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+// Global variables for bulk delete
+let selectedLogIds = new Set();
+
+// Select All functionality
+document.getElementById('selectAll').addEventListener('change', function() {
+  const checkboxes = document.querySelectorAll('.log-checkbox');
+  const isChecked = this.checked;
+  
+  checkboxes.forEach(checkbox => {
+    const row = checkbox.closest('tr');
+    if (row.style.display !== 'none') { // Only select visible rows
+      checkbox.checked = isChecked;
+      
+      if (isChecked) {
+        selectedLogIds.add(checkbox.value);
+        row.classList.add('selected');
+      } else {
+        selectedLogIds.delete(checkbox.value);
+        row.classList.remove('selected');
+      }
+    }
+  });
+  
+  updateBulkActionBar();
+});
+
+// Individual checkbox selection
+document.addEventListener('change', function(e) {
+  if (e.target.classList.contains('log-checkbox')) {
+    const checkbox = e.target;
+    const row = checkbox.closest('tr');
+    
+    if (checkbox.checked) {
+      selectedLogIds.add(checkbox.value);
+      row.classList.add('selected');
+    } else {
+      selectedLogIds.delete(checkbox.value);
+      row.classList.remove('selected');
+      document.getElementById('selectAll').checked = false;
+    }
+    
+    updateBulkActionBar();
+  }
+});
+
+// Update bulk action bar visibility and count
+function updateBulkActionBar() {
+  const bulkBar = document.getElementById('bulkActionBar');
+  const selectedCount = document.getElementById('selectedCount');
+  
+  console.log('Selected IDs:', Array.from(selectedLogIds)); // Debug
+  selectedCount.textContent = selectedLogIds.size;
+  
+  if (selectedLogIds.size > 0) {
+    bulkBar.classList.add('show');
+    console.log('Showing bulk action bar'); // Debug
+  } else {
+    bulkBar.classList.remove('show');
+    console.log('Hiding bulk action bar'); // Debug
+  }
+}
+
+// Cancel bulk selection
+function cancelBulkSelection() {
+  selectedLogIds.clear();
+  document.querySelectorAll('.log-checkbox').forEach(checkbox => {
+    checkbox.checked = false;
+  });
+  document.querySelectorAll('.activity-row').forEach(row => {
+    row.classList.remove('selected');
+  });
+  document.getElementById('selectAll').checked = false;
+  updateBulkActionBar();
+}
+
+// Open bulk delete modal
+function openBulkDeleteModal() {
+  const count = selectedLogIds.size;
+  
+  document.getElementById('modalTitle').textContent = `Delete ${count} Activity Log${count > 1 ? 's' : ''}`;
+  document.getElementById('modalMessage').innerHTML = `Are you sure you want to delete <strong>${count}</strong> activity log${count > 1 ? 's' : ''}? This action cannot be undone.`;
+  document.getElementById('deleteButton').textContent = `Delete ${count} Log${count > 1 ? 's' : ''}`;
+  
+  // Set the log IDs in the hidden input
+  document.getElementById('logIdsInput').value = Array.from(selectedLogIds).join(',');
+  
+  // Set form action for bulk delete
+  document.getElementById('deleteForm').action = "{% url 'activity_log_bulk_delete' %}";
+  
+  document.getElementById('deleteModal').classList.add('show');
+}
+
+// Single log delete modal
+function openDeleteModal(btn) {
+  const url = btn.getAttribute("data-delete-url");
+  const logMessage = btn.getAttribute("data-log-message");
+  
+  document.getElementById('modalTitle').textContent = 'Delete Activity Log';
+  document.getElementById('modalMessage').innerHTML = `Are you sure you want to delete this activity log: <strong>${logMessage}</strong>? This action cannot be undone.`;
+  document.getElementById('deleteButton').textContent = 'Delete Log';
+  
+  document.getElementById("deleteForm").action = url;
+  document.getElementById('logIdsInput').value = '';
+  
+  document.getElementById("deleteModal").classList.add("show");
+}
+
+function closeDeleteModal() {
+  const modal = document.getElementById("deleteModal");
+  modal.classList.add("hiding");
+  
+  setTimeout(() => {
+    modal.classList.remove("show", "hiding");
+  }, 200);
+}
+
+// Close modal when clicking outside
+document.getElementById("deleteModal").addEventListener("click", function(e) {
+  if (e.target === this) {
+    closeDeleteModal();
+  }
+});
+
+// Close modal on Escape key
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") {
+    const modal = document.getElementById("deleteModal");
+    if (modal.classList.contains("show")) {
+      closeDeleteModal();
+    }
+  }
+});
+</script>
+
+<script>
+// Real-time search and filter functionality
+(function () {
+  const searchInput = document.getElementById("activitySearchInput");
+  const dateFilter = document.getElementById("dateFilter");
+  const userFilter = document.getElementById("userFilter");
+  const levelFilter = document.getElementById("levelFilter");
+  const clearFiltersBtn = document.getElementById("clearFilters");
+  const tableBody = document.getElementById("activityTableBody");
+  const searchSpinner = document.getElementById("searchSpinner");
+  let searchTimeout;
+
+  if (!searchInput || !tableBody) return;
+
+  // Remove duplicate users from user filter dropdown
+  const userOptions = userFilter.querySelectorAll('option:not(:first-child):not(:last-child)');
+  const uniqueUsers = new Set();
+  userOptions.forEach(option => {
+    if (uniqueUsers.has(option.value)) {
+      option.remove();
+    } else {
+      uniqueUsers.add(option.value);
+    }
+  });
+
+  // Debounce function
+  function debounce(func, wait) {
+    return function executedFunction(...args) {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => func(...args), wait);
+    };
+  }
+
+  // Filter table rows
+  function filterTable() {
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    const selectedDate = dateFilter.value;
+    const selectedUser = userFilter.value.toLowerCase();
+    const selectedLevel = levelFilter.value.toLowerCase();
+    const rows = tableBody.querySelectorAll(".activity-row");
+    let visibleCount = 0;
+
+    rows.forEach((row, index) => {
+      const user = row.getAttribute("data-activity-user") || "";
+      const level = row.getAttribute("data-activity-level") || "";
+      const message = row.getAttribute("data-activity-message") || "";
+      const ip = row.getAttribute("data-activity-ip") || "";
+      const date = row.getAttribute("data-activity-date") || "";
+
+      // Search match
+      const searchMatches = 
+        searchTerm === "" ||
+        user.includes(searchTerm) ||
+        level.includes(searchTerm) ||
+        message.includes(searchTerm) ||
+        ip.includes(searchTerm);
+
+      // Date match
+      const dateMatches = selectedDate === "" || date === selectedDate;
+
+      // User match
+      const userMatches = selectedUser === "" || user === selectedUser;
+
+      // Level match
+      const levelMatches = selectedLevel === "" || level === selectedLevel;
+
+      if (searchMatches && dateMatches && userMatches && levelMatches) {
+        row.style.display = "";
+        row.style.animation = `fadeInRow 0.3s ease-out ${index * 0.05}s both`;
+        visibleCount++;
+      } else {
+        row.style.display = "none";
+        // Uncheck hidden rows
+        const checkbox = row.querySelector('.log-checkbox');
+        if (checkbox && checkbox.checked) {
+          checkbox.checked = false;
+          selectedLogIds.delete(checkbox.value);
+          row.classList.remove('selected');
+        }
+      }
+    });
+
+    // Update select all checkbox
+    updateSelectAllCheckbox();
+    updateBulkActionBar();
+    
+    // Show "No results" message
+    showNoResultsMessage(visibleCount === 0);
+  }
+
+  // Update select all checkbox state
+  function updateSelectAllCheckbox() {
+    const visibleCheckboxes = Array.from(document.querySelectorAll('.log-checkbox')).filter(cb => {
+      return cb.closest('tr').style.display !== 'none';
+    });
+    
+    const allChecked = visibleCheckboxes.length > 0 && visibleCheckboxes.every(cb => cb.checked);
+    document.getElementById('selectAll').checked = allChecked;
+  }
+
+  // Show/hide no results message
+  function showNoResultsMessage(show) {
+    let noResultsRow = document.getElementById("noResultsRow");
+    
+    if (show && !noResultsRow) {
+      noResultsRow = document.createElement("tr");
+      noResultsRow.id = "noResultsRow";
+      noResultsRow.innerHTML = `
+        <td colspan="6" class="text-center py-5">
+          <div class="d-flex flex-column align-items-center gap-3 empty-state-animate">
+            <div class="w-80-px h-80-px bg-neutral-100 rounded-circle d-flex align-items-center justify-content-center">
+              <iconify-icon icon="solar:magnifer-outline" class="text-neutral-400" style="font-size: 44px;"></iconify-icon>
+            </div>
+            <div>
+              <h5 class="mb-1">No Results Found</h5>
+              <p class="text-secondary-light mb-0">Try adjusting your search terms or filters</p>
+            </div>
+          </div>
+        </td>
+      `;
+      tableBody.appendChild(noResultsRow);
+    } else if (!show && noResultsRow) {
+      noResultsRow.remove();
+    }
+  }
+
+  // Handle search with debouncing
+  const handleSearch = debounce(function() {
+    searchSpinner.style.display = "block";
+    setTimeout(() => {
+      filterTable();
+      searchSpinner.style.display = "none";
+    }, 150);
+  }, 300);
+
+  // Clear all filters
+  function clearFilters() {
+    searchInput.value = "";
+    dateFilter.value = "";
+    userFilter.value = "";
+    levelFilter.value = "";
+    filterTable();
+  }
+
+  // Event listeners
+  searchInput.addEventListener("input", handleSearch);
+  dateFilter.addEventListener("change", filterTable);
+  userFilter.addEventListener("change", filterTable);
+  levelFilter.addEventListener("change", filterTable);
+  clearFiltersBtn.addEventListener("click", clearFilters);
+
+  // Clear search on Escape
+  searchInput.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") {
+      clearFilters();
+      this.blur();
+    }
+  });
+
+  // Focus search on Ctrl/Cmd + K
+  document.addEventListener("keydown", function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+      e.preventDefault();
+      searchInput.focus();
+    }
+  });
+})();
+</script>
+
+
+{% endblock %}

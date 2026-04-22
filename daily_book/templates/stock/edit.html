@@ -1,0 +1,38 @@
+{% extends 'master_base.html' %}
+{% load static %}
+
+{% block title %} Master {% endblock %}
+
+{% block content %}
+<h2>Edit Stock Item</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <!-- CATEGORY -->
+    <label>Category</label><br>
+    <select name="category" required>
+        {% for c in categories %}
+        <option value="{{ c.id }}" {% if c.id == stock.category.id %}selected{% endif %}>{{ c.name }}</option>
+        {% endfor %}
+    </select>
+    <br><br>
+
+    <!-- ITEM NAME -->
+    <label>Item Name</label><br>
+    <input type="text" name="name" value="{{ stock.name }}" required>
+    <br><br>
+
+    <!-- GSM -->
+    <label>GSM</label><br>
+    <input type="number" name="gsm" value="{{ stock.gsm }}" required>
+    <br><br>
+
+
+
+    <button type="submit">Update</button>
+    <a href="{% url 'stock_list' %}">Cancel</a>
+
+</form>
+
+{% endblock %}

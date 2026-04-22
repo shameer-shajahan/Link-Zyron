@@ -1,0 +1,914 @@
+{% extends base_template %}
+{% block title %}Shop Daily Entries{% endblock %}
+
+{% block content %}
+
+<style>
+  .auto-list{
+    position:absolute;
+    top:100%;
+    left:0;
+    min-width:220px;
+    max-width:320px;
+    max-height:220px;
+    overflow-y:auto;
+    background:#fff;
+    border-radius:6px;
+    z-index:99999 !important;
+    box-shadow:0 6px 18px rgba(0,0,0,.15);
+    margin-top: 2px;
+  }
+  .auto-item{
+    padding:8px 12px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition: background 0.2s ease;
+  }
+  .auto-item:hover{
+    background:#f3f4f6;
+  }
+  
+  /* Dark mode autocomplete */
+  [data-theme="dark"] .auto-list{
+    background:#1e293b;
+    border-color:#334155;
+    box-shadow:0 6px 18px rgba(0,0,0,.4);
+  }
+  [data-theme="dark"] .auto-item:hover{
+    background:#334155;
+  }
+  
+  /* Dark mode for table and inputs */
+  [data-theme="dark"] .table {
+    color: #e2e8f0;
+  }
+  
+  [data-theme="dark"] .table-bordered {
+    border-color: #334155;
+  }
+  
+  [data-theme="dark"] .table thead th {
+    background-color: #1e293b;
+    color: #cbd5e1;
+    border-color: #334155;
+  }
+  
+  [data-theme="dark"] .table tbody tr {
+    background-color: #0f172a;
+    border-color: #334155;
+  }
+  
+  [data-theme="dark"] .table tbody td {
+    border-color: #334155;
+  }
+  
+  [data-theme="dark"] .form-control {
+    background-color: #1e293b;
+    color: #e2e8f0;
+    border-color: #334155;
+  }
+  
+  [data-theme="dark"] .form-control:focus {
+    background-color: #1e293b;
+    color: #e2e8f0;
+    border-color: #3b82f6;
+  }
+  
+  [data-theme="dark"] .form-control::placeholder {
+    color: #64748b;
+  }
+  
+  [data-theme="dark"] .form-select {
+    background-color: #1e293b;
+    color: #e2e8f0;
+    border-color: #334155;
+  }
+  
+  /* Ensure table cells with position relative don't clip autocomplete */
+  .table-responsive{
+    overflow: visible !important;
+  }
+  
+  td.position-relative{
+    overflow: visible !important;
+  }
+
+  /* Card Animation */
+  .card-animate {
+    animation: cardFadeIn 0.5s ease-out;
+  }
+
+  @keyframes cardFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .table-row-animate {
+    animation: fadeInRow 0.3s ease-out both;
+  }
+
+  @keyframes fadeInRow {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .empty-state-animate {
+    animation: emptyStateBounce 0.6s ease-out;
+  }
+
+  @keyframes emptyStateBounce {
+    0% {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Light Mode Badge Styles (DEFAULT) */
+  .email-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #e3f2fd 0%, #f0f7ff 100%);
+    border: 2px solid #90caf9;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14.2px;
+    color: #1976d2;
+  }
+
+  .email-badge i {
+    font-size: 14.2px;
+    color: #1976d2;
+  }
+
+  .mobile-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #f3e5f5 0%, #fce4ec 100%);
+    border: 2px solid #ce93d8;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14.2px;
+    color: #7b1fa2;
+  }
+
+  .mobile-badge i {
+    font-size: 14.2px;
+    color: #7b1fa2;
+  }
+
+  .mobile-badge-green {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #e8f5e9 0%, #e0f2f1 100%);
+    border: 2px solid #81c784;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14.2px;
+    color: #2e7d32;
+  }
+
+  .mobile-badge-green i {
+    font-size: 14.2px;
+    color: #2e7d32;
+  }
+
+  .mobile-badge-red {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #fdecea 0%, #fce4e4 100%);
+    border: 2px solid #e57373;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14.2px;
+    color: #c62828;
+  }
+
+  .mobile-badge-red i {
+    font-size: 14.2px;
+    color: #c62828;
+  }
+
+  .mobile-badge-blue {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #e8f4fd 0%, #e3f2fd 100%);
+    border: 2px solid #64b5f6;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14.2px;
+    color: #1565c0;
+  }
+
+  .mobile-badge-blue i {
+    font-size: 14.2px;
+    color: #1565c0;
+  }
+
+  .mobile-badge-orange {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border: 2px solid #ffb74d;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14.2px;
+    color: #e65100;
+  }
+
+  .mobile-badge-orange i {
+    font-size: 14.2px;
+    color: #e65100;
+  }
+
+  .mobile-badge-cyan {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+    border: 2px solid #4dd0e1;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14.2px;
+    color: #00838f;
+  }
+
+  .mobile-badge-cyan i {
+    font-size: 14.2px;
+    color: #00838f;
+  }
+
+  /* Dark Mode Badge Styles ONLY */
+  [data-theme="dark"] .email-badge {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
+    border: 2px solid #3b5f8f;
+    color: #90caf9;
+  }
+
+  [data-theme="dark"] .email-badge i {
+    color: #90caf9;
+  }
+
+  [data-theme="dark"] .mobile-badge {
+    background: linear-gradient(135deg, #4a1f54 0%, #5d2968 100%);
+    border: 2px solid #7e4a8f;
+    color: #ce93d8;
+  }
+
+  [data-theme="dark"] .mobile-badge i {
+    color: #ce93d8;
+  }
+
+  [data-theme="dark"] .mobile-badge-green {
+    background: linear-gradient(135deg, #1b4d20 0%, #256d2a 100%);
+    border: 2px solid #3d8b42;
+    color: #81c784;
+  }
+
+  [data-theme="dark"] .mobile-badge-green i {
+    color: #81c784;
+  }
+
+  [data-theme="dark"] .mobile-badge-red {
+    background: linear-gradient(135deg, #5d1f1f 0%, #7d2828 100%);
+    border: 2px solid #a84444;
+    color: #e57373;
+  }
+
+  [data-theme="dark"] .mobile-badge-red i {
+    color: #e57373;
+  }
+
+  [data-theme="dark"] .mobile-badge-blue {
+    background: linear-gradient(135deg, #1a3a5f 0%, #224a7f 100%);
+    border: 2px solid #3b6a9f;
+    color: #64b5f6;
+  }
+
+  [data-theme="dark"] .mobile-badge-blue i {
+    color: #64b5f6;
+  }
+
+  [data-theme="dark"] .mobile-badge-orange {
+    background: linear-gradient(135deg, #5d3a1f 0%, #7d4a28 100%);
+    border: 2px solid #9f6a3b;
+    color: #ffb74d;
+  }
+
+  [data-theme="dark"] .mobile-badge-orange i {
+    color: #ffb74d;
+  }
+
+  [data-theme="dark"] .mobile-badge-cyan {
+    background: linear-gradient(135deg, #1f4d5d 0%, #286d7d 100%);
+    border: 2px solid #3b8d9f;
+    color: #4dd0e1;
+  }
+
+  [data-theme="dark"] .mobile-badge-cyan i {
+    color: #4dd0e1;
+  }
+
+  /* Bordered Table Style */
+  .bordered-table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .bordered-table thead th {
+    background: #f8fafc;
+    border-bottom: 2px solid #e2e8f0;
+    padding: 16px;
+    font-weight: 600;
+    color: #475569;
+  }
+
+  .bordered-table tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+  }
+
+  .bordered-table tbody tr:hover {
+    background: #f8fafc;
+    transform: translateX(4px);
+  }
+
+  .bordered-table tbody td {
+    padding: 16px;
+    vertical-align: middle;
+  }
+
+  /* Dark Mode Table */
+  [data-theme="dark"] .bordered-table thead th {
+    background: #1e293b;
+    border-bottom: 2px solid #334155;
+    color: #cbd5e1;
+  }
+
+  [data-theme="dark"] .bordered-table tbody tr {
+    border-bottom: 1px solid #334155;
+  }
+
+  [data-theme="dark"] .bordered-table tbody tr:hover {
+    background: #1e293b;
+  }
+
+  /* Entry Detail Card */
+  .entry-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .entry-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  [data-theme="dark"] .entry-card {
+    border-color: #334155;
+    background-color: #0f172a;
+  }
+
+  [data-theme="dark"] .entry-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Pagination Animation */
+  .pagination-animate {
+    animation: fadeInUp 0.4s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .page-link-animate {
+    transition: all 0.3s ease;
+  }
+
+  .page-link-animate:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .page-link-active {
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  /* Dark mode pagination */
+  [data-theme="dark"] .page-link {
+    background-color: #1e293b !important;
+    color: #cbd5e1 !important;
+  }
+
+  [data-theme="dark"] .page-link-active {
+    background-color: #3b82f6 !important;
+    color: #ffffff !important;
+  }
+</style>
+
+<div class="dashboard-main-body">
+  
+  <!-- Filter Card -->
+  <div class="card card-animate">
+    <!-- Card Header -->
+    <div class="card-header">
+      <h5 class="card-title mb-0">Filter Shop Daily Entries</h5>
+    </div>
+
+    <!-- Card Body - Filters -->
+    <div class="card-body">
+      <form method="get" id="filterForm">
+        <div class="row gy-3">
+
+          <!-- FILTER SECTION -->
+          <div class="col-12">
+            <h6 class="fw-semibold mb-3 mt-3 text-primary">Filter Options</h6>
+          </div>
+
+          <!-- Shop -->
+          <div class="col-md-4 col-12">
+            <label class="form-label">Shop</label>
+            <div class="icon-field">
+              <span class="icon">
+                <iconify-icon icon="solar:shop-outline"></iconify-icon>
+              </span>
+              <select name="shop" class="form-control">
+                <option value="">All Shops</option>
+                {% for s in shops %}
+                <option value="{{ s.id }}" {% if request.GET.shop == s.id|stringformat:"s" %}selected{% endif %}>
+                  {{ s.name }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <!-- Customer -->
+          <div class="col-md-4 col-12">
+            <label class="form-label">Customer</label>
+            <div class="icon-field">
+              <span class="icon">
+                <iconify-icon icon="solar:user-outline"></iconify-icon>
+              </span>
+              <select name="customer" class="form-control">
+                <option value="">All Customers</option>
+                {% for c in customers %}
+                <option value="{{ c.id }}" {% if request.GET.customer == c.id|stringformat:"s" %}selected{% endif %}>
+                  {{ c.name }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <!-- Paper -->
+          <div class="col-md-4 col-12">
+            <label class="form-label">Paper</label>
+            <div class="icon-field">
+              <span class="icon">
+                <iconify-icon icon="solar:document-text-outline"></iconify-icon>
+              </span>
+              <select name="paper" class="form-control">
+                <option value="">All Papers</option>
+                {% for p in papers %}
+                <option value="{{ p.id }}" {% if request.GET.paper == p.id|stringformat:"s" %}selected{% endif %}>
+                  {{ p.name }} - {{ p.gsm }} gsm
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <!-- Side -->
+          <div class="col-md-3 col-12">
+            <label class="form-label">Side</label>
+            <div class="icon-field">
+              <span class="icon">
+                <iconify-icon icon="solar:copy-outline"></iconify-icon>
+              </span>
+              <select name="side" class="form-control">
+                <option value="">All</option>
+                <option value="single" {% if request.GET.side == "single" %}selected{% endif %}>Single</option>
+                <option value="double" {% if request.GET.side == "double" %}selected{% endif %}>Double</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Payment -->
+          <div class="col-md-3 col-12">
+            <label class="form-label">Payment</label>
+            <div class="icon-field">
+              <span class="icon">
+                <iconify-icon icon="solar:wallet-outline"></iconify-icon>
+              </span>
+              <select name="payment" class="form-control">
+                <option value="">All</option>
+                <option value="cash" {% if request.GET.payment == "cash" %}selected{% endif %}>Cash</option>
+                <option value="upi" {% if request.GET.payment == "upi" %}selected{% endif %}>UPI</option>
+                <option value="credit" {% if request.GET.payment == "credit" %}selected{% endif %}>Credit</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Start Date -->
+          <div class="col-md-3 col-12">
+            <label class="form-label">Start Date</label>
+            <div class="icon-field">
+              <span class="icon">
+                <iconify-icon icon="solar:calendar-mark-outline"></iconify-icon>
+              </span>
+              <input type="date" name="start" class="form-control" value="{{ request.GET.start }}">
+            </div>
+          </div>
+
+          <!-- End Date -->
+          <div class="col-md-3 col-12">
+            <label class="form-label">End Date</label>
+            <div class="icon-field">
+              <span class="icon">
+                <iconify-icon icon="solar:calendar-mark-outline"></iconify-icon>
+              </span>
+              <input type="date" name="end" class="form-control" value="{{ request.GET.end }}">
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="col-12">
+            <div class="row mt-3">
+              <div class="col-md-3 col-12 mb-2">
+                <button type="submit" class="btn btn-primary w-100">
+                  <i class="fa-regular fa-circle-check"></i>
+                  Apply Filters
+                </button>
+              </div>
+              <div class="col-md-3 col-12 mb-2">
+                <a href="{% url 'shop_daily_entry_list' %}" class="btn btn-outline-secondary w-100">
+                  <i class="fa-regular fa-circle-xmark"></i>
+                  Reset
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div> <!-- row -->
+      </form>
+    </div>
+  </div> <!-- Filter card -->
+
+  <!-- Search Bar Section -->
+  <div class="card mt-4 card-animate">
+    <div class="card-header">
+      <h5 class="card-title mb-0">Search Entries</h5>
+    </div>
+    <div class="card-body">
+      <form method="get" id="searchForm">
+        <!-- Preserve filter parameters -->
+        {% if request.GET.shop %}<input type="hidden" name="shop" value="{{ request.GET.shop }}">{% endif %}
+        {% if request.GET.customer %}<input type="hidden" name="customer" value="{{ request.GET.customer }}">{% endif %}
+        {% if request.GET.paper %}<input type="hidden" name="paper" value="{{ request.GET.paper }}">{% endif %}
+        {% if request.GET.side %}<input type="hidden" name="side" value="{{ request.GET.side }}">{% endif %}
+        {% if request.GET.payment %}<input type="hidden" name="payment" value="{{ request.GET.payment }}">{% endif %}
+        {% if request.GET.start %}<input type="hidden" name="start" value="{{ request.GET.start }}">{% endif %}
+        {% if request.GET.end %}<input type="hidden" name="end" value="{{ request.GET.end }}">{% endif %}
+        
+        <div class="row gy-3">
+          <div class="col-md-8 col-12">
+            <div class="icon-field">
+              <span class="icon">
+                <iconify-icon icon="solar:magnifer-outline"></iconify-icon>
+              </span>
+              <input 
+                type="text" 
+                name="search" 
+                class="form-control" 
+                placeholder="Search by shop, customer, date, payment, or amount..." 
+                value="{{ search_query }}"
+              >
+            </div>
+          </div>
+          <div class="col-md-2 col-12">
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              Search
+            </button>
+          </div>
+          {% if search_query %}
+          <div class="col-md-2 col12">
+            <a href="?{% if request.GET.shop %}shop={{ request.GET.shop }}&{% endif %}{% if request.GET.customer %}customer={{ request.GET.customer }}&{% endif %}{% if request.GET.paper %}paper={{ request.GET.paper }}&{% endif %}{% if request.GET.side %}side={{ request.GET.side }}&{% endif %}{% if request.GET.payment %}payment={{ request.GET.payment }}&{% endif %}{% if request.GET.start %}start={{ request.GET.start }}&{% endif %}{% if request.GET.end %}end={{ request.GET.end }}{% endif %}" class="btn btn-outline-secondary">
+              <i class="fa-solid fa-xmark"></i>
+              Clear Search
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Entries Results Card - Grouped by Shop -->
+  {% regroup entries by shop as shop_groups %}
+
+  {% for group in shop_groups %}
+  <div class="card mt-4 basic-data-table card-animate">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <div class="col-md-3 col-6 mb-2">
+        <div class="mobile-badge-blue" style="border-radius: 10px;">
+          <i class="fa-solid fa-shop"></i>
+          <span>{{ group.grouper.name }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      
+      {% for e in group.list %}
+      <div class="entry-card table-row-animate">
+        <!-- Entry Header -->
+        <div class="row mb-3">
+          <div class="col-md-3 col-6 mb-2">
+            <div class="mobile-badge-green" style="border-radius: 10px;">
+              <i class="fa-solid fa-calendar"></i>
+              <span>{{ e.date }}</span>
+            </div>
+          </div>
+          <div class="col-md-3 col-6 mb-2">
+            <div class="mobile-badge" style="border-radius: 10px;">
+              <i class="fa-solid fa-user"></i>
+              <span>{{ e.customer.name }}</span>
+            </div>
+          </div>
+          <div class="col-md-3 col-6 mb-2">
+            {% if e.is_credit %}
+            <div class="mobile-badge-red" style="border-radius: 10px;">
+              <i class="fa-solid fa-credit-card"></i>
+              <span>Credit</span>
+            </div>
+            {% else %}
+            <div class="mobile-badge" style="border-radius: 10px;">
+              <i class="fa-solid fa-money-bill"></i>
+              <span>{{ e.payment }}</span>
+            </div>
+            {% endif %}
+          </div>
+          <div class="col-md-3 col-6 mb-2">
+            <div class="email-badge" style="border-radius: 10px;">
+              <i class="fa-solid fa-indian-rupee-sign"></i>
+              <span>{{ e.total_amount }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Entry Items Table -->
+        <div class="table-responsive">
+          <table class="table bordered-table mb-0">
+            <thead>
+              <tr>
+                <th>
+                  <div class="d-flex align-items-center gap-2">
+                    <iconify-icon icon="solar:document-text-outline" class="text-xl"></iconify-icon>
+                    Paper
+                  </div>
+                </th>
+                <th>
+                  <div class="d-flex align-items-center gap-2">
+                    <iconify-icon icon="solar:tag-outline" class="text-xl"></iconify-icon>
+                    Item
+                  </div>
+                </th>
+                <th>
+                  <div class="d-flex align-items-center gap-2">
+                    <iconify-icon icon="solar:star-outline" class="text-xl"></iconify-icon>
+                    Finishing
+                  </div>
+                </th>
+                <th>
+                  <div class="d-flex align-items-center gap-2">
+                    <iconify-icon icon="solar:copy-outline" class="text-xl"></iconify-icon>
+                    Side
+                  </div>
+                </th>
+                <th>
+                  <div class="d-flex align-items-center gap-2">
+                    <iconify-icon icon="solar:hashtag-outline" class="text-xl"></iconify-icon>
+                    Qty
+                  </div>
+                </th>
+                <th>
+                  <div class="d-flex align-items-center gap-2">
+                    <iconify-icon icon="si:rupee-fill" class="text-xl"></iconify-icon>
+                    Rate
+                  </div>
+                </th>
+                <th>
+                  <div class="d-flex align-items-center gap-2">
+                    <iconify-icon icon="si:rupee-fill" class="text-xl"></iconify-icon>
+                    Amount
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in e.items.all %}
+              <tr>
+                <td>
+                  <div class="mobile-badge">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <span>{{ i.paper.name }} - {{ i.paper.gsm }} gsm</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="mobile-badge-blue">
+                    <i class="fa-solid fa-tag"></i>
+                    <span>{{ i.item_name }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="mobile-badge-orange">
+                    <i class="fa-solid fa-star"></i>
+                    <span>{{ i.finishing.name|default:"-" }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="mobile-badge-cyan">
+                    <i class="fa-solid fa-copy"></i>
+                    <span>{{ i.side }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="mobile-badge-green">
+                    <i class="fa-solid fa-hashtag"></i>
+                    <span>{{ i.quantity_breakdown }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="email-badge">
+                    <i class="fa-solid fa-indian-rupee-sign"></i>
+                    <span>{{ i.rate }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="email-badge">
+                    <i class="fa-solid fa-indian-rupee-sign"></i>
+                    <span>{{ i.amount }}</span>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Entry Actions -->
+        <div class="row mt-3">
+          <div class="col-md-4 col-12 mb-2">
+            <a href="{% url 'shop_daily_entry_detail' e.id %}" class="btn btn-info w-100">
+              <i class="fa-regular fa-eye"></i>
+              View Details
+            </a>
+          </div>
+          <div class="col-md-4 col-12 mb-2">
+            <a href="{% url 'shop_daily_entry_edit' e.id %}" class="btn btn-warning w-100">
+              <i class="fa-regular fa-pen-to-square"></i>
+              Edit Entry
+            </a>
+          </div>
+          <div class="col-md-4 col-12 mb-2">
+            <a href="{% url 'shop_daily_entry_delete' e.id %}" class="btn btn-danger w-100">
+              <i class="fa-regular fa-trash-can"></i>
+              Delete
+            </a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="text-center py-5">
+        <div class="d-flex flex-column align-items-center gap-3 empty-state-animate">
+          <div class="w-80-px h-80-px bg-neutral-100 rounded-circle d-flex align-items-center justify-content-center">
+            <iconify-icon icon="solar:inbox-outline" class="text-neutral-400" style="font-size: 44px;"></iconify-icon>
+          </div>
+          <div>
+            <h5 class="mb-1">No Entries Found</h5>
+            <p class="text-secondary-light mb-0">No entries available for this shop</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+  </div>
+  {% empty %}
+  <div class="card mt-4 card-animate">
+    <div class="card-body">
+      <div class="text-center py-5">
+        <div class="d-flex flex-column align-items-center gap-3 empty-state-animate">
+          <div class="w-80-px h-80-px bg-neutral-100 rounded-circle d-flex align-items-center justify-content-center">
+            <iconify-icon icon="solar:inbox-outline" class="text-neutral-400" style="font-size: 44px;"></iconify-icon>
+          </div>
+          <div>
+            <h5 class="mb-1">No Entries Found</h5>
+            <p class="text-secondary-light mb-0">Try adjusting your filters or search</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  <!-- Pagination -->
+  {% if entries.has_other_pages %}
+  <div class="card mt-4 card-animate pagination-animate">
+    <div class="card-body">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div class="text-secondary-light">
+          Showing {{ entries.start_index }} to {{ entries.end_index }} of {{ entries.paginator.count }} entries
+          {% if search_query %}
+          <span class="badge bg-primary-600 ms-2">Search: "{{ search_query }}"</span>
+          {% endif %}
+        </div>
+        <nav aria-label="Page navigation">
+          <ul class="pagination d-flex align-items-center gap-2 mb-0">
+            {% if entries.has_previous %}
+            <li class="page-item">
+              <a class="page-link bg-neutral-200 text-secondary-light fw-medium radius-8 border-0 px-3 py-2 page-link-animate"
+                href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if request.GET.shop %}&shop={{ request.GET.shop }}{% endif %}{% if request.GET.customer %}&customer={{ request.GET.customer }}{% endif %}{% if request.GET.paper %}&paper={{ request.GET.paper }}{% endif %}{% if request.GET.side %}&side={{ request.GET.side }}{% endif %}{% if request.GET.payment %}&payment={{ request.GET.payment }}{% endif %}{% if request.GET.start %}&start={{ request.GET.start }}{% endif %}{% if request.GET.end %}&end={{ request.GET.end }}{% endif %}">
+                <iconify-icon icon="ep:d-arrow-left" class="text-xl"></iconify-icon>
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link bg-neutral-200 text-secondary-light fw-medium radius-8 border-0 px-3 py-2 page-link-animate"
+                href="?page={{ entries.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if request.GET.shop %}&shop={{ request.GET.shop }}{% endif %}{% if request.GET.customer %}&customer={{ request.GET.customer }}{% endif %}{% if request.GET.paper %}&paper={{ request.GET.paper }}{% endif %}{% if request.GET.side %}&side={{ request.GET.side }}{% endif %}{% if request.GET.payment %}&payment={{ request.GET.payment }}{% endif %}{% if request.GET.start %}&start={{ request.GET.start }}{% endif %}{% if request.GET.end %}&end={{ request.GET.end }}{% endif %}">
+                <iconify-icon icon="solar:arrow-left-linear" class="text-xl"></iconify-icon>
+              </a>
+            </li>
+            {% endif %}
+
+            <li class="page-item">
+              <a class="page-link bg-primary-600 text-white fw-medium radius-8 border-0 px-3 py-2 page-link-active"
+                href="javascript:void(0)">{{ entries.number }}</a>
+            </li>
+
+            {% if entries.has_next %}
+            <li class="page-item">
+              <a class="page-link bg-neutral-200 text-secondary-light fw-medium radius-8 border-0 px-3 py-2 page-link-animate"
+                href="?page={{ entries.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if request.GET.shop %}&shop={{ request.GET.shop }}{% endif %}{% if request.GET.customer %}&customer={{ request.GET.customer }}{% endif %}{% if request.GET.paper %}&paper={{ request.GET.paper }}{% endif %}{% if request.GET.side %}&side={{ request.GET.side }}{% endif %}{% if request.GET.payment %}&payment={{ request.GET.payment }}{% endif %}{% if request.GET.start %}&start={{ request.GET.start }}{% endif %}{% if request.GET.end %}&end={{ request.GET.end }}{% endif %}">
+                <iconify-icon icon="solar:arrow-right-linear" class="text-xl"></iconify-icon>
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link bg-neutral-200 text-secondary-light fw-medium radius-8 border-0 px-3 py-2 page-link-animate"
+                href="?page={{ entries.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if request.GET.shop %}&shop={{ request.GET.shop }}{% endif %}{% if request.GET.customer %}&customer={{ request.GET.customer }}{% endif %}{% if request.GET.paper %}&paper={{ request.GET.paper }}{% endif %}{% if request.GET.side %}&side={{ request.GET.side }}{% endif %}{% if request.GET.payment %}&payment={{ request.GET.payment }}{% endif %}{% if request.GET.start %}&start={{ request.GET.start }}{% endif %}{% if request.GET.end %}&end={{ request.GET.end }}{% endif %}">
+                <iconify-icon icon="ep:d-arrow-right" class="text-xl"></iconify-icon>
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+</div> <!-- dashboard-main-body -->
+
+{% endblock %}

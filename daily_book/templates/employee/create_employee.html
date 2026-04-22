@@ -1,0 +1,192 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block title %}{% if edit %}Update Employee{% else %}Create Employee{% endif %}{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-main-body">
+  <div class="card">
+
+    <!-- Card Header -->
+    <div class="card-header">
+      <h5 class="card-title mb-0">
+        {% if edit %}Update Employee{% else %}Create New Employee{% endif %}
+      </h5>
+    </div>
+
+    <!-- Card Body -->
+    <div class="card-body">
+
+      <!-- FORM -->
+      <form method="POST">
+        {% csrf_token %}
+
+        <div class="row gy-3">
+
+          <!-- PERSONAL INFORMATION SECTION -->
+          <div class="col-12">
+            <h6 class="fw-semibold mb-3 mt-3 text-primary">Personal Information</h6>
+          </div>
+
+          <!-- Name -->
+          <div class="col-md-6 col-12">
+            <label class="form-label">Full Name</label>
+            <div class="icon-field">
+              <span class="icon">
+                <iconify-icon icon="solar:user-outline"></iconify-icon>
+              </span>
+              <input 
+                type="text" 
+                name="name" 
+                class="form-control" 
+                placeholder="Enter Full Name"
+                value="{% if edit %}{{ employee.user.name }}{% endif %}"
+                required>
+            </div>
+          </div>
+
+          <!-- Employee ID -->
+          <div class="col-md-6 col-12">
+            <label class="form-label">Employee ID</label>
+            <div class="icon-field">
+              <span class="icon">
+                <iconify-icon icon="solar:document-text-outline"></iconify-icon>
+              </span>
+              <input 
+                type="text" 
+                name="employee_id" 
+                class="form-control" 
+                placeholder="Enter Employee ID"
+                value="{{ employee.employee_id|default:'' }}"
+                required>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="col-md-6 col-12">
+            <label class="form-label">Email Address</label>
+            <div class="icon-field">
+              <span class="icon">
+                <iconify-icon icon="solar:letter-outline"></iconify-icon>
+              </span>
+              <input 
+                type="email" 
+                name="email" 
+                class="form-control" 
+                placeholder="Enter Email Address"
+                value="{% if edit %}{{ employee.user.email }}{% endif %}"
+                required>
+            </div>
+          </div>
+
+          <!-- Phone Number -->
+          <div class="col-md-6 col-12">
+            <label class="form-label">Phone Number</label>
+            <div class="icon-field">
+              <span class="icon">
+                <iconify-icon icon="solar:phone-outline"></iconify-icon>
+              </span>
+              <input 
+                type="text" 
+                name="phone" 
+                class="form-control" 
+                placeholder="Enter Phone Number"
+                value="{{ employee.phone|default:'' }}"
+                required>
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="col-md-6 col-12">
+            <label class="form-label">Password {% if edit %}<small class="form-label">(Leave blank to keep existing)</small>{% endif %}</label>
+            <div class="icon-field">
+              <span class="icon">
+                <iconify-icon icon="solar:lock-password-outline"></iconify-icon>
+              </span>
+              <input 
+                type="password" 
+                name="password" 
+                class="form-control" 
+                placeholder="Enter Password"
+                {% if not edit %}required{% endif %}>
+            </div>
+          </div>
+
+          <!-- EMPLOYMENT DETAILS SECTION -->
+          <div class="col-12 mt-4">
+            <h6 class="fw-semibold mb-3 mt-5 text-primary">Employment Details</h6>
+          </div>
+
+          <!-- Department -->
+          <div class="col-md-6 col-12">
+            <label class="form-label">Department</label>
+            <div class="icon-field">
+              <span class="icon">
+                <iconify-icon icon="solar:buildings-outline"></iconify-icon>
+              </span>
+              <input 
+                type="text"
+                name="department"
+                class="form-control"
+                placeholder="Enter Department"
+                value="{{ employee.department|default:'' }}"
+                required>
+            </div>
+          </div>
+
+          <!-- Joining Date -->
+          <div class="col-md-6 col-12">
+            <label class="form-label">Joining Date</label>
+            <div class="icon-field">
+              <span class="icon">
+                <iconify-icon icon="solar:calendar-outline"></iconify-icon>
+              </span>
+              <input 
+                type="date"
+                name="joining_date"
+                class="form-control"
+                value="{{ employee.joining_date|date:'Y-m-d'|default:'' }}"
+                required>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="col-12">
+            <div class="row mt-3">
+
+              <!-- Left Button -->
+              <div class="col">
+                {% if edit %}
+                <button type="submit" class="btn btn-primary w-100">
+                  <i class="fa-regular fa-circle-check"></i>
+                  Update Employee
+                </button>
+                {% else %}
+                <button type="submit" class="btn btn-primary w-100">
+                  <i class="fa-regular fa-circle-check"></i>
+                  Create Employee
+                </button>
+                {% endif %}
+              </div>
+
+              <!-- Right Button -->
+              <div class="col">
+                <a href="{% url 'employee_list' %}" class="btn btn-outline-secondary w-100">
+                  <i class="fa-regular fa-circle-xmark"></i>
+                  Cancel
+                </a>
+              </div>
+
+            </div>
+          </div>
+
+        </div> <!-- row -->
+
+      </form>
+
+    </div> <!-- card-body -->
+
+  </div> <!-- card -->
+</div> <!-- dashboard-main-body -->
+
+{% endblock %}

@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+
+<html>
+  {% load humanize %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: white;
+    }
+    
+    @page {
+      size: A4;
+      margin: 0;
+    }
+    
+    @media print {
+      body {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+    }
+    
+    .container {
+      max-width: 210mm;
+      height: 297mm;
+      margin: 0 auto;
+      background-color: white;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Header */
+    .header {
+      background-color: white;
+      padding: 1.5rem 1.5rem 1rem 1.5rem;
+      text-align: center;
+      border-bottom: 3px solid #dc2626;
+    }
+    
+    .logo-section {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 0.75rem;
+    }
+    
+    .logo-section img {
+      max-height: 70px;
+      width: auto;
+      display: inline-block;
+      margin: 0 auto;
+    }
+    
+    .company-info {
+      font-size: 0.75rem;
+      color: #1e293b;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    
+    /* Invoice Header */
+    .invoice-top {
+      display: flex;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      background-color: #f8fafc;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .invoice-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    
+    .invoice-number {
+      font-size: 0.875rem;
+      color: #475569;
+      margin-top: 0.25rem;
+    }
+    
+    .invoice-date {
+      text-align: right;
+      font-size: 0.875rem;
+      color: #475569;
+    }
+    
+    .date-label {
+      font-weight: 600;
+      color: #1e293b;
+    }
+    
+    /* Main Content */
+    .content {
+      padding: 1rem 1.5rem;
+      flex: 1;
+    }
+    
+    /* Info Cards */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .info-card {
+      border-left: 4px solid #1e293b;
+      background-color: #f8fafc;
+      padding: 0.75rem;
+      border-radius: 0 0.25rem 0.25rem 0;
+    }
+    
+    .card-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #1e293b;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .card-title-dot {
+      width: 0.4rem;
+      height: 0.4rem;
+      background-color: #1e293b;
+      border-radius: 50%;
+      margin-right: 0.4rem;
+    }
+    
+    .card-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      font-size: 0.75rem;
+    }
+    
+    .card-row {
+      display: flex;
+    }
+    
+    .card-label {
+      font-weight: 600;
+      color: #475569;
+      min-width: 85px;
+      font-size: 0.7rem;
+    }
+    
+    .card-value {
+      color: #0f172a;
+      font-weight: 500;
+    }
+    
+    /* Items Section */
+    .items-section {
+      margin-bottom: 0.875rem;
+    }
+    
+    .section-header {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #0f172a;
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 2px solid #1e293b;
+      display: flex;
+      align-items: center;
+    }
+    
+    .section-header-bar {
+      width: 0.25rem;
+      height: 1rem;
+      background-color: #1e293b;
+      margin-right: 0.6rem;
+    }
+    
+    /* Table */
+    .table-wrapper {
+      overflow-x: auto;
+    }
+    
+    .items-table {
+      width: 100%;
+      font-size: 0.75rem;
+      border-collapse: collapse;
+    }
+    
+    .items-table thead {
+      background-color: #1e293b;
+      color: white;
+    }
+    
+    .items-table th {
+      text-align: left;
+      padding: 0.5rem 0.6rem;
+      font-weight: 700;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .items-table th.text-center {
+      text-align: center;
+    }
+    
+    .items-table th.text-right {
+      text-align: right;
+    }
+    
+    .items-table tbody tr {
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .items-table tbody tr:last-child {
+      border-bottom: 2px solid #cbd5e1;
+    }
+    
+    .items-table tbody tr:hover {
+      background-color: #f8fafc;
+    }
+    
+    .items-table td {
+      padding: 0.5rem 0.6rem;
+    }
+    
+    .items-table td.text-center {
+      text-align: center;
+    }
+    
+    .items-table td.text-right {
+      text-align: right;
+    }
+    
+    .item-number {
+      font-weight: 700;
+      color: #94a3b8;
+    }
+    
+    .item-title {
+      font-weight: 600;
+      color: #0f172a;
+    }
+    
+    .item-subtitle {
+      font-size: 0.65rem;
+      color: #64748b;
+      font-weight: 500;
+    }
+    
+    .qty-badge {
+      display: inline-block;
+      background-color: #f1f5f9;
+      padding: 0.2rem 0.6rem;
+      border-radius: 0.25rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    
+    .amount-cell {
+      font-weight: 700;
+      color: #0f172a;
+    }
+    
+    /* Summary Section */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 0.875rem;
+    }
+    
+    .terms-box {
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.25rem;
+      padding: 0.75rem;
+    }
+    
+    .terms-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      color: #1e293b;
+      margin-bottom: 0.5rem;
+    }
+    
+    .terms-text {
+      font-size: 0.65rem;
+      color: #475569;
+      line-height: 1.5;
+    }
+    
+    .totals-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.35rem 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .total-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #475569;
+    }
+    
+    .total-value {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    
+    .grand-total {
+      background-color: #1e293b;
+      color: white;
+      border-radius: 0.25rem;
+      padding: 0.4rem 0.5rem;
+      margin-top: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: none;
+    }
+    
+    .grand-total .total-label {
+      font-size: 0.75rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      color: white;
+      flex: 0 0 auto;
+    }
+    
+    .grand-total .total-value {
+      font-size: 1rem;
+      font-weight: 900;
+      color: white;
+      flex: 0 0 auto;
+      text-align: right;
+    }
+    
+    /* Footer */
+    .footer {
+      border-top: 2px solid #e2e8f0;
+      padding-top: 0.75rem;
+      margin-top: 0.75rem;
+    }
+    
+    .thank-you {
+      text-align: center;
+      margin-bottom: 0.875rem;
+    }
+    
+    .thank-you-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 0.2rem;
+    }
+    
+    .thank-you-subtitle {
+      font-size: 0.65rem;
+      color: #64748b;
+    }
+    
+    .signature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .signature-block {
+      text-align: center;
+    }
+    
+    .signature-line {
+      border-bottom: 2px solid #1e293b;
+      height: 2.5rem;
+      margin-bottom: 0.35rem;
+    }
+    
+    .signature-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      color: #475569;
+    }
+    
+    .footer-note {
+      text-align: center;
+      font-size: 0.65rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- Header with Logo -->
+    <div class="header">
+      <div class="logo-section">
+        <img src="{{ header_url }}" alt="Link Designers Home">
+      </div>
+      <div class="company-info">
+        Amrutha Complex, Near TDMC Hospital, Vandanam, Aravukad, Alappuzha 688561<br>
+        Ph: 7796612829, 8075209939 | Email: linkdms@gmail.com | Website: www.linktdmc.com
+      </div>
+    </div>
+
+    <!-- Invoice Top Section -->
+    <div class="invoice-top">
+      <div>
+        <div class="invoice-title">Bill #{{ entry.id }}</div>
+        <div class="invoice-number">Shop: {{ entry.shop.name }} | Customer: {{ entry.customer.name }}</div>
+      </div>
+      <div class="invoice-date">
+        <div><span class="date-label">Date:</span> {{ entry.date }}</div>
+        <div><span class="date-label">Payment:</span> {% if entry.is_credit %}Credit{% else %}{{ entry.payment }}{% endif %}</div>
+      </div>
+    </div>
+
+    <div class="content">
+      
+      <!-- Info Cards Grid -->
+      <div class="info-grid">
+        <!-- Billed To -->
+        <div class="info-card">
+          <h3 class="card-title">
+            <span class="card-title-dot"></span>
+            Billed To
+          </h3>
+          <div class="card-details">
+            <div class="card-row">
+              <span class="card-label">Customer:</span>
+              <span class="card-value">{{ entry.customer.name }}</span>
+            </div>
+            {% if entry.customer.phone %}
+            <div class="card-row">
+              <span class="card-label">Phone:</span>
+              <span class="card-value">{{ entry.customer.phone }}</span>
+            </div>
+            {% endif %}
+            {% if entry.customer.email %}
+            <div class="card-row">
+              <span class="card-label">Email:</span>
+              <span class="card-value">{{ entry.customer.email }}</span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Invoice Details -->
+        <div class="info-card">
+          <h3 class="card-title">
+            <span class="card-title-dot"></span>
+            Invoice Information
+          </h3>
+          <div class="card-details">
+            <div class="card-row">
+              <span class="card-label">Invoice Date:</span>
+              <span class="card-value">{{ entry.date }}</span>
+            </div>
+            <div class="card-row">
+              <span class="card-label">Shop Location:</span>
+              <span class="card-value">{{ entry.shop.name }}</span>
+            </div>
+            <div class="card-row">
+              <span class="card-label">Payment:</span>
+              <span class="card-value">{% if entry.is_credit %}Credit{% else %}{{ entry.payment }}{% endif %}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Items Table -->
+      <div class="items-section">
+        <h2 class="section-header">
+          <span class="section-header-bar"></span>
+          Order Items
+        </h2>
+        
+        <div class="table-wrapper">
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th>Paper</th>
+                <th>Item</th>
+                <th>Finishing</th>
+                <th class="text-center">Side</th>
+                <th class="text-center">Qty</th>
+                <th class="text-right">Paper Rate</th>
+                <th class="text-right">Finishing Rate</th>
+                <th class="text-right">Total Rate</th>
+                <th class="text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in items %}
+              <tr>
+                <td>
+                  <div class="item-title">{{ i.paper.name }}</div>
+                  <div class="item-subtitle">{{ i.paper.gsm }} GSM</div>
+                </td>
+                <td class="item-title">{{ i.item_name }}</td>
+                <td>{{ i.finishing.name|default:"—" }}</td>
+                <td class="text-center">{{ i.side }}</td>
+                <td class="text-center">
+                  <span class="qty-badge">{{ i.quantity_breakdown }}</span>
+                </td>
+                <td class="text-right">₹{{ i.paper_rate|floatformat:2|intcomma }}</td>
+                <td class="text-right">₹{{ i.finishing_rate|floatformat:2|intcomma }}</td>
+                <td class="text-right">₹{{ i.rate|floatformat:2|intcomma }}</td>
+                <td class="text-right amount-cell">₹{{ i.amount|floatformat:2|intcomma }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Summary Section -->
+      <div class="summary-grid">
+        <!-- Terms -->
+        <div class="terms-box">
+          <h3 class="terms-title">Terms & Conditions</h3>
+          <p class="terms-text">
+            Payment is due within 15 days from the invoice date. Late payments may incur additional charges. All items are checked for quality before dispatch. Please verify items upon receipt and report any discrepancies within 24 hours.
+          </p>
+        </div>
+
+        <!-- Totals -->
+        <div class="totals-section">
+          <div class="total-row">
+            <span class="total-label">Subtotal</span>
+            <span class="total-value">₹{{ entry.total_amount|floatformat:2|intcomma }}</span>
+          </div>
+          <div class="grand-total">
+            <span class="total-label">Total Amount</span>
+            <span class="total-value">₹{{ entry.total_amount|floatformat:2|intcomma }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Section -->
+      <div class="footer">
+        <div class="thank-you">
+          <h3 class="thank-you-title">Thank You For Your Business!</h3>
+          <p class="thank-you-subtitle">We appreciate your trust and look forward to serving you again</p>
+        </div>
+
+        <!-- <div class="signature-grid">
+          <div class="signature-block">
+            <div class="signature-line"></div>
+            <p class="signature-label">Customer Signature</p>
+          </div>
+          <div class="signature-block">
+            <div class="signature-line"></div>
+            <p class="signature-label">Authorized Signatory</p>
+          </div>
+        </div> -->
+
+        <!-- <p class="footer-note">
+          This is a computer-generated invoice and is valid without signature | For any queries, please contact us
+        </p> -->
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

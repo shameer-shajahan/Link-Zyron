@@ -1,0 +1,1168 @@
+{% extends 'employee_base.html' %}
+{% load static %}
+{% block title %}Employee Dashboard{% endblock %}
+
+{% block content %}
+
+<style>
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in {
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .card-animate {
+        animation: slideUp 0.6s ease-out both;
+    }
+
+    @keyframes iconBounce {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+    }
+
+    .icon-bounce {
+        transition: transform 0.3s ease;
+    }
+
+    .icon-bounce:hover {
+        animation: iconBounce 0.6s ease;
+    }
+
+    @keyframes counterPulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    .counter-animate {
+        transition: all 0.3s ease;
+    }
+
+    .counter-animate:hover {
+        animation: counterPulse 0.5s ease;
+    }
+
+    @keyframes tableRowSlide {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .table-row-animate {
+        animation: tableRowSlide 0.4s ease-out both;
+    }
+
+    .table-row-animate:nth-child(1) { animation-delay: 0.05s; }
+    .table-row-animate:nth-child(2) { animation-delay: 0.1s; }
+    .table-row-animate:nth-child(3) { animation-delay: 0.15s; }
+    .table-row-animate:nth-child(4) { animation-delay: 0.2s; }
+    .table-row-animate:nth-child(5) { animation-delay: 0.25s; }
+
+    .link-animate {
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .link-animate::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -2px;
+        left: 0;
+        background-color: #487fff;
+        transition: width 0.3s ease;
+    }
+
+    .link-animate:hover::after {
+        width: 100%;
+    }
+
+    .link-animate iconify-icon {
+        transition: transform 0.3s ease;
+    }
+
+    .link-animate:hover iconify-icon {
+        transform: translateX(5px);
+    }
+
+    @keyframes emptyStateFade {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .empty-state-animate {
+        animation: emptyStateFade 0.5s ease-out;
+    }
+
+    /* Consumer Avatar */
+    .consumer-avatar {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .consumer-avatar:hover {
+        transform: rotate(360deg) scale(1.1);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .consumer-row {
+        transition: all 0.3s ease;
+    }
+
+    .consumer-row:hover {
+        background-color: #f9fafb;
+        transform: translateX(5px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Badge Styles */
+    .email-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #e3f2fd 0%, #f0f7ff 100%);
+        border: 2px solid #90caf9;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 14.2px;
+        color: #1976d2;
+    }
+
+    .mobile-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #f3e5f5 0%, #fce4ec 100%);
+        border: 2px solid #ce93d8;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 14.2px;
+        color: #7b1fa2;
+    }
+
+    .mobile-badge-green {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #e8f5e9 0%, #e0f2f1 100%);
+        border: 2px solid #81c784;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 14.2px;
+        color: #2e7d32;
+    }
+
+    .mobile-badge-red {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #fdecea 0%, #fce4e4 100%);
+        border: 2px solid #e57373;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 14.2px;
+        color: #c62828;
+    }
+
+    .mobile-badge-orange {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+        border: 2px solid #ffb74d;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 14.2px;
+        color: #e65100;
+    }
+
+    /* Dark Mode Badge Styles */
+    [data-theme="dark"] .email-badge {
+        background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
+        border: 2px solid #3b5f8f;
+        color: #90caf9;
+    }
+
+    [data-theme="dark"] .mobile-badge {
+        background: linear-gradient(135deg, #4a1f54 0%, #5d2968 100%);
+        border: 2px solid #7e4a8f;
+        color: #ce93d8;
+    }
+
+    [data-theme="dark"] .mobile-badge-green {
+        background: linear-gradient(135deg, #1b4d20 0%, #256d2a 100%);
+        border: 2px solid #3d8b42;
+        color: #81c784;
+    }
+
+    [data-theme="dark"] .mobile-badge-red {
+        background: linear-gradient(135deg, #5d1f1f 0%, #7d2828 100%);
+        border: 2px solid #a84444;
+        color: #e57373;
+    }
+
+    [data-theme="dark"] .mobile-badge-orange {
+        background: linear-gradient(135deg, #5d4a1f 0%, #6d5a2a 100%);
+        border: 2px solid #8b7342;
+        color: #ffb74d;
+    }
+
+    .w-40-px {
+        width: 40px;
+    }
+
+    .h-40-px {
+        height: 40px;
+    }
+
+    .w-80-px {
+        width: 80px;
+    }
+
+    .h-80-px {
+        height: 80px;
+    }
+
+    .bg-neutral-100 {
+        background-color: #f3f4f6;
+    }
+
+    .text-neutral-400 {
+        color: #9ca3af;
+    }
+
+    .hover-text-primary:hover {
+        color: #487fff !important;
+        transition: color 0.3s ease;
+    }
+
+    .card {
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    thead th {
+        transition: all 0.3s ease;
+    }
+
+    thead th:hover {
+        background-color: #f8f9fa;
+    }
+
+    .action-btn {
+        transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transform: scale(1.1);
+    }
+
+    .low-stock-warning {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        background: #fff7ed;
+        color: #c2410c;
+        border: 2px solid #fdba74;
+    }
+
+    [data-theme="dark"] .low-stock-warning {
+        background: #7c2d12;
+        color: #fdba74;
+    }
+</style>
+
+<div class="dashboard-main-body">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24 fade-in">
+        <h6 class="fw-semibold mb-0">Dashboard</h6>
+        <ul class="d-flex align-items-center gap-2">
+            <li class="fw-medium">
+                <a href="" class="d-flex align-items-center gap-1 hover-text-primary">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                    Employee Dashboard
+                </a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">Overview</li>
+        </ul>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row row-cols-xxxl-5 row-cols-lg-3 row-cols-sm-2 row-cols-1 gy-4">
+        <!-- Employees Count -->
+        <!-- <div class="col">
+            <div class="card shadow-none border bg-gradient-start-1 h-100 card-animate" style="animation-delay: 0.1s;">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Total Employees</p>
+                            <h6 class="mb-0 counter-animate">{{ total_employees }}</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center icon-bounce">
+                            <iconify-icon icon="solar:users-group-rounded-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <a href="{% url 'employee_list' %}" class="text-info-main">View List</a>
+                        <span class="mx-2">|</span>
+                        <a href="{% url 'create_employee' %}" class="text-success-main">Add New</a>
+                    </p>
+                </div>
+            </div>
+        </div> -->
+
+        <!-- Press Customers -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-2 h-100 card-animate" style="animation-delay: 0.15s;">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Press Customers</p>
+                            <h6 class="mb-0 counter-animate">{{ press_customers }}</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center icon-bounce">
+                            <iconify-icon icon="solar:printer-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <a href="{% url 'normal_customer_list' %}?type=press" class="text-info-main">View List</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Normal Customers -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-3 h-100 card-animate" style="animation-delay: 0.2s;">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Normal Customers</p>
+                            <h6 class="mb-0 counter-animate">{{ normal_customers }}</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-info rounded-circle d-flex justify-content-center align-items-center icon-bounce">
+                            <iconify-icon icon="solar:user-rounded-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <a href="{% url 'normal_customer_list' %}?type=normal" class="text-info-main">View List</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Revenue -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-4 h-100 card-animate" style="animation-delay: 0.25s;">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Total Sales</p>
+                            <h6 class="mb-0">₹ <span id="totalSales">{{ total_sales }}</span></h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-success rounded-circle d-flex justify-content-center align-items-center icon-bounce">
+                            <iconify-icon icon="solar:wallet-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <span class="d-inline-flex align-items-center gap-1 text-success-main">
+                            Today: ₹ <span id="todaySales">{{ today_sales }}</span>
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Credit Balance -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-5 h-100 card-animate" style="animation-delay: 0.3s;">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Total Credit Balance</p>
+                            <h6 class="mb-0 text-danger-main">₹ <span id="creditBalance">{{ total_credit_balance }}</span></h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-danger rounded-circle d-flex justify-content-center align-items-center icon-bounce">
+                            <iconify-icon icon="solar:bill-list-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <span class="text-danger-main">Outstanding Amount</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Low Stock Items -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-1 h-100 card-animate" style="animation-delay: 0.35s;">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Low Stock Items</p>
+                            <h6 class="mb-0 counter-animate text-warning-main">{{ low_stock_count }}</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-warning-main rounded-circle d-flex justify-content-center align-items-center icon-bounce">
+                            <iconify-icon icon="solar:box-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <a href="{% url 'stock_list' %}" class="text-warning-main">View Stock</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Shops -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-2 h-100 card-animate" style="animation-delay: 0.4s;">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Total Shops</p>
+                            <h6 class="mb-0 counter-animate">{{ total_shops }}</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-primary-600 rounded-circle d-flex justify-content-center align-items-center icon-bounce">
+                            <iconify-icon icon="solar:shop-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <a href="{% url 'shop_list' %}" class="text-info-main">View List</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Payments -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-3 h-100 card-animate" style="animation-delay: 0.45s;">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Total Payments</p>
+                            <h6 class="mb-0">₹ <span id="totalPayments">{{ total_payments }}</span></h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center icon-bounce">
+                            <iconify-icon icon="solar:dollar-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <span class="text-success-main">Today: ₹ <span id="todayPayments">{{ today_payments }}</span></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Employees -->
+    <div class="row gy-4 mt-2">
+        <div class="col-xxl-12">
+            <div class="card h-100 card-animate" style="animation-delay: 0.5s;">
+                <div class="card-body p-24">
+                    <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
+                        <h6 class="mb-2 fw-semibold text-lg mb-0">Recent Employees</h6>
+                        <a href="{% url 'employee_list' %}" class="text-primary-600 hover-text-primary d-flex align-items-center gap-1 link-animate">
+                            View All
+                            <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
+                        </a>
+                    </div>
+                    <div class="table-responsive scroll-sm">
+                        <table class="table bordered-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:user-outline" class="text-xl"></iconify-icon>
+                                            Name
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:tag-outline" class="text-xl"></iconify-icon>
+                                            Employee ID
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:shop-outline" class="text-xl"></iconify-icon>
+                                            Shop
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:phone-outline" class="text-xl"></iconify-icon>
+                                            Phone
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:calendar-outline" class="text-xl"></iconify-icon>
+                                            Joining Date
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if recent_employees %}
+                                {% for employee in recent_employees %}
+                                <tr class="consumer-row table-row-animate">
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="flex-shrink-0">
+                                                <div class="consumer-avatar">
+                                                    <iconify-icon icon="solar:user-bold"></iconify-icon>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="text-md mb-0 fw-semibold">{{ employee.user.name }}</h6>
+                                                <span class="text-sm text-secondary-light">{{ employee.department }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="email-badge">
+                                            <i class="fas fa-id-card"></i>
+                                            <span>{{ employee.employee_id }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="mobile-badge-green">
+                                            <i class="fa-solid fa-shop"></i>
+                                            <span>{{ employee.shop.name|default:"Not Assigned" }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="mobile-badge">
+                                            <i class="fa-solid fa-phone"></i>
+                                            <span>{{ employee.phone }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="mobile-badge-red">
+                                            <i class="fa-solid fa-calendar"></i>
+                                            <span>{{ employee.joining_date|date:"d M, Y" }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-5">
+                                        <div class="d-flex flex-column align-items-center gap-3 empty-state-animate">
+                                            <div class="w-80-px h-80-px bg-neutral-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <iconify-icon icon="solar:inbox-outline" class="text-neutral-400" style="font-size: 48px;"></iconify-icon>
+                                            </div>
+                                            <div>
+                                                <h5 class="mb-1">No Employees Found</h5>
+                                                <p class="text-secondary-light mb-3">Start by adding your first employee</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Press Customers & Normal Customers -->
+    <div class="row gy-4 mt-2">
+        <!-- Press Customers -->
+        <div class="col-lg-6">
+            <div class="card h-100 card-animate" style="animation-delay: 0.55s;">
+                <div class="card-body p-24">
+                    <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
+                        <h6 class="mb-2 fw-semibold text-lg mb-0">Press Customers (Recent 10)</h6>
+                        <a href="{% url 'normal_customer_list' %}?type=press" class="text-primary-600 hover-text-primary d-flex align-items-center gap-1 link-animate">
+                            View All
+                            <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
+                        </a>
+                    </div>
+                    <div class="table-responsive scroll-sm">
+                        <table class="table bordered-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Phone</th>
+                                    <th scope="col">Credit Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for customer in recent_customers %}
+                                {% if customer.customer_type == 'press' %}
+                                <tr class="consumer-row table-row-animate">
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="flex-shrink-0">
+                                                <div class="consumer-avatar" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                                    <iconify-icon icon="solar:printer-bold"></iconify-icon>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="text-md mb-0 fw-semibold">{{ customer.name }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="mobile-badge">
+                                            <i class="fa-solid fa-phone"></i>
+                                            <span>{{ customer.phone|default:"N/A" }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if customer.balance > 0 %}
+                                        <div class="mobile-badge-red">
+                                            <i class="fa-solid fa-indian-rupee-sign"></i>
+                                            <span>{{ customer.balance }}</span>
+                                        </div>
+                                        {% else %}
+                                        <div class="mobile-badge-green">
+                                            <i class="fa-solid fa-check-circle"></i>
+                                            <span>No Credit</span>
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center py-5">
+                                        <div class="d-flex flex-column align-items-center gap-3 empty-state-animate">
+                                            <div class="w-80-px h-80-px bg-neutral-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <iconify-icon icon="solar:inbox-outline" class="text-neutral-400" style="font-size: 48px;"></iconify-icon>
+                                            </div>
+                                            <div>
+                                                <h5 class="mb-1">No Press Customers Found</h5>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Normal Customers -->
+        <div class="col-lg-6">
+            <div class="card h-100 card-animate" style="animation-delay: 0.6s;">
+                <div class="card-body p-24">
+                    <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
+                        <h6 class="mb-2 fw-semibold text-lg mb-0">Normal Customers (Recent 10)</h6>
+                        <a href="{% url 'normal_customer_list' %}?type=normal" class="text-primary-600 hover-text-primary d-flex align-items-center gap-1 link-animate">
+                            View All
+                            <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
+                        </a>
+                    </div>
+                    <div class="table-responsive scroll-sm">
+                        <table class="table bordered-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Phone</th>
+                                    <th scope="col">Credit Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for customer in recent_customers %}
+                                {% if customer.customer_type == 'normal' %}
+                                <tr class="consumer-row table-row-animate">
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="flex-shrink-0">
+                                                <div class="consumer-avatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                                    <iconify-icon icon="solar:user-bold"></iconify-icon>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="text-md mb-0 fw-semibold">{{ customer.name }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="mobile-badge">
+                                            <i class="fa-solid fa-phone"></i>
+                                            <span>{{ customer.phone|default:"N/A" }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if customer.balance > 0 %}
+                                        <div class="mobile-badge-red">
+                                            <i class="fa-solid fa-indian-rupee-sign"></i>
+                                            <span>{{ customer.balance }}</span>
+                                        </div>
+                                        {% else %}
+                                        <div class="mobile-badge-green">
+                                            <i class="fa-solid fa-check-circle"></i>
+                                            <span>No Credit</span>
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center py-5">
+                                        <div class="d-flex flex-column align-items-center gap-3 empty-state-animate">
+                                            <div class="w-80-px h-80-px bg-neutral-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <iconify-icon icon="solar:inbox-outline" class="text-neutral-400" style="font-size: 48px;"></iconify-icon>
+                                            </div>
+                                            <div>
+                                                <h5 class="mb-1">No Normal Customers Found</h5>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Items Balance -->
+    <div class="row gy-4 mt-2">
+        <div class="col-xxl-12">
+            <div class="card h-100 card-animate" style="animation-delay: 0.65s;">
+                <div class="card-body p-24">
+                    <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
+                        <h6 class="mb-2 fw-semibold text-lg mb-0">Stock Items Balance</h6>
+                        <a href="{% url 'stock_list' %}" class="text-primary-600 hover-text-primary d-flex align-items-center gap-1 link-animate">
+                            View All
+                            <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
+                        </a>
+                    </div>
+                    <div class="table-responsive scroll-sm">
+                        <table class="table bordered-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:box-outline" class="text-xl"></iconify-icon>
+                                            Item Name
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:tag-outline" class="text-xl"></iconify-icon>
+                                            Category
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:document-outline" class="text-xl"></iconify-icon>
+                                            GSM
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:box-minimalistic-outline" class="text-xl"></iconify-icon>
+                                            Quantity
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:flag-outline" class="text-xl"></iconify-icon>
+                                            Status
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if low_stock_items %}
+                                {% for item_data in low_stock_items %}
+                                <tr class="consumer-row table-row-animate">
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="flex-shrink-0">
+                                                <div class="consumer-avatar" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                                                    <iconify-icon icon="solar:box-bold"></iconify-icon>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="text-md mb-0 fw-semibold">{{ item_data.item.name }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="email-badge">
+                                            <i class="fas fa-layer-group"></i>
+                                            <span>{{ item_data.item.category.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="mobile-badge-green">
+                                            <i class="fa-solid fa-weight-hanging"></i>
+                                            <span>{{ item_data.item.gsm }} GSM</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="mobile-badge{% if item_data.quantity == 0 %}-red{% elif item_data.quantity < 50 %}-orange{% endif %}">
+                                            <i class="fa-solid fa-cubes"></i>
+                                            <span>{{ item_data.quantity }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if item_data.quantity == 0 %}
+                                        <span class="low-stock-warning" style="background: #fee2e2; color: #c62828; border-color: #e57373;">
+                                            <i class="fas fa-times-circle"></i>
+                                            Out of Stock
+                                        </span>
+                                        {% elif item_data.quantity < 50 %}
+                                        <span class="low-stock-warning">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            Very Low
+                                        </span>
+                                        {% else %}
+                                        <span class="low-stock-warning">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            Low Stock
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-5">
+                                        <div class="d-flex flex-column align-items-center gap-3 empty-state-animate">
+                                            <div class="w-80-px h-80-px bg-neutral-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <iconify-icon icon="solar:box-outline" class="text-neutral-400" style="font-size: 48px;"></iconify-icon>
+                                            </div>
+                                            <div>
+                                                <h5 class="mb-1 text-success-main">All Stock Levels are Good!</h5>
+                                                <p class="text-secondary-light mb-3">No low stock items found</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Credit Balances -->
+    <div class="row gy-4 mt-2">
+        <div class="col-xxl-12">
+            <div class="card h-100 card-animate" style="animation-delay: 0.7s;">
+                <div class="card-body p-24">
+                    <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
+                        <h6 class="mb-2 fw-semibold text-lg mb-0">Customers with Credit Balance</h6>
+                        <a href="{% url 'normal_customer_list' %}?credit=yes" class="text-primary-600 hover-text-primary d-flex align-items-center gap-1 link-animate">
+                            View All
+                            <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
+                        </a>
+                    </div>
+                    <div class="table-responsive scroll-sm">
+                        <table class="table bordered-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:user-outline" class="text-xl"></iconify-icon>
+                                            Customer Name
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:tag-outline" class="text-xl"></iconify-icon>
+                                            Type
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:phone-outline" class="text-xl"></iconify-icon>
+                                            Phone
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:bill-list-outline" class="text-xl"></iconify-icon>
+                                            Credit Balance
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for customer in recent_customers %}
+                                {% if customer.balance > 0 %}
+                                <tr class="consumer-row table-row-animate">
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="flex-shrink-0">
+                                                <div class="consumer-avatar" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);">
+                                                    <iconify-icon icon="solar:{% if customer.customer_type == 'press' %}printer-bold{% else %}user-bold{% endif %}"></iconify-icon>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="text-md mb-0 fw-semibold">{{ customer.name }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="email-badge">
+                                            <i class="fas fa-tag"></i>
+                                            <span>{{ customer.get_customer_type_display }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="mobile-badge">
+                                            <i class="fa-solid fa-phone"></i>
+                                            <span>{{ customer.phone|default:"N/A" }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="mobile-badge-red">
+                                            <i class="fa-solid fa-indian-rupee-sign"></i>
+                                            <span class="credit-amount">{{ customer.balance }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-5">
+                                        <div class="d-flex flex-column align-items-center gap-3 empty-state-animate">
+                                            <div class="w-80-px h-80-px bg-neutral-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <iconify-icon icon="solar:bill-check-outline" class="text-neutral-400" style="font-size: 48px;"></iconify-icon>
+                                            </div>
+                                            <div>
+                                                <h5 class="mb-1 text-success-main">No Outstanding Credits!</h5>
+                                                <p class="text-secondary-light mb-3">All customers have cleared their balances</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Sales Entries -->
+    <div class="row gy-4 mt-2">
+        <div class="col-xxl-12">
+            <div class="card h-100 card-animate" style="animation-delay: 0.75s;">
+                <div class="card-body p-24">
+                    <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
+                        <h6 class="mb-2 fw-semibold text-lg mb-0">Recent Sales Entries</h6>
+                        <a href="{% url 'shop_daily_entry_list' %}" class="text-primary-600 hover-text-primary d-flex align-items-center gap-1 link-animate">
+                            View All
+                            <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
+                        </a>
+                    </div>
+                    <div class="table-responsive scroll-sm">
+                        <table class="table bordered-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:calendar-outline" class="text-xl"></iconify-icon>
+                                            Date
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:shop-outline" class="text-xl"></iconify-icon>
+                                            Shop
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:user-outline" class="text-xl"></iconify-icon>
+                                            Customer
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:wallet-outline" class="text-xl"></iconify-icon>
+                                            Payment
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:dollar-outline" class="text-xl"></iconify-icon>
+                                            Amount
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if recent_entries %}
+                                {% for entry in recent_entries %}
+                                <tr class="consumer-row table-row-animate">
+                                    <td>
+                                        <div class="mobile-badge">
+                                            <i class="fa-solid fa-calendar"></i>
+                                            <span>{{ entry.date|date:"d M, Y" }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="email-badge">
+                                            <i class="fa-solid fa-shop"></i>
+                                            <span>{{ entry.shop.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="mobile-badge-green">
+                                            <i class="fa-solid fa-user"></i>
+                                            <span>{{ entry.customer.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if entry.is_credit %}
+                                        <div class="mobile-badge-red">
+                                            <i class="fa-solid fa-credit-card"></i>
+                                            <span>Credit</span>
+                                        </div>
+                                        {% else %}
+                                        <div class="mobile-badge-green">
+                                            <i class="fa-solid fa-money-bill"></i>
+                                            <span>{{ entry.get_payment_display }}</span>
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="mobile-badge-orange">
+                                            <i class="fa-solid fa-indian-rupee-sign"></i>
+                                            <span class="entry-amount">{{ entry.total_amount }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-5">
+                                        <div class="d-flex flex-column align-items-center gap-3 empty-state-animate">
+                                            <div class="w-80-px h-80-px bg-neutral-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <iconify-icon icon="solar:inbox-outline" class="text-neutral-400" style="font-size: 48px;"></iconify-icon>
+                                            </div>
+                                            <div>
+                                                <h5 class="mb-1">No Sales Entries Found</h5>
+                                                <p class="text-secondary-light mb-3">No sales have been recorded yet</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Format Indian Currency
+    function formatIndianCurrency(number) {
+        return new Intl.NumberFormat('en-IN').format(number);
+    }
+
+    // Format all currency elements
+    const currencyElements = [
+        'totalSales',
+        'todaySales',
+        'creditBalance',
+        'totalPayments',
+        'todayPayments'
+    ];
+
+    currencyElements.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            const value = parseFloat(el.innerText);
+            if (!isNaN(value)) {
+                el.innerText = formatIndianCurrency(value);
+            }
+        }
+    });
+
+    // Format credit amounts in tables
+    document.querySelectorAll('.credit-amount, .entry-amount').forEach(el => {
+        const value = parseFloat(el.innerText);
+        if (!isNaN(value)) {
+            el.innerText = formatIndianCurrency(value);
+        }
+    });
+</script>
+
+{% endblock %}

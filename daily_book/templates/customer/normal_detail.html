@@ -1,0 +1,877 @@
+{% extends base_template %}
+{% block title %}{{ customer.name }} - Purchase Details{% endblock %}
+
+{% block content %}
+
+<style>
+  .auto-list{
+    position:absolute;
+    top:100%;
+    left:0;
+    min-width:220px;
+    max-width:320px;
+    max-height:220px;
+    overflow-y:auto;
+    background:#fff;
+    border-radius:6px;
+    z-index:99999 !important;
+    box-shadow:0 6px 18px rgba(0,0,0,.15);
+    margin-top: 2px;
+  }
+  .auto-item{
+    padding:8px 12px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition: background 0.2s ease;
+  }
+  .auto-item:hover{
+    background:#f3f4f6;
+  }
+  
+  /* Dark mode autocomplete */
+  [data-theme="dark"] .auto-list{
+    background:#1e293b;
+    border-color:#334155;
+    box-shadow:0 6px 18px rgba(0,0,0,.4);
+  }
+  [data-theme="dark"] .auto-item:hover{
+    background:#334155;
+  }
+  
+  /* Dark mode for table and inputs */
+  [data-theme="dark"] .table {
+    color: #e2e8f0;
+  }
+  
+  [data-theme="dark"] .table-bordered {
+    border-color: #334155;
+  }
+  
+  [data-theme="dark"] .table thead th {
+    background-color: #1e293b;
+    color: #cbd5e1;
+    border-color: #334155;
+  }
+  
+  [data-theme="dark"] .table tbody tr {
+    background-color: #0f172a;
+    border-color: #334155;
+  }
+  
+  [data-theme="dark"] .table tbody td {
+    border-color: #334155;
+  }
+  
+  [data-theme="dark"] .form-control {
+    background-color: #1e293b;
+    color: #e2e8f0;
+    border-color: #334155;
+  }
+  
+  [data-theme="dark"] .form-control:focus {
+    background-color: #1e293b;
+    color: #e2e8f0;
+    border-color: #3b82f6;
+  }
+  
+  [data-theme="dark"] .form-control::placeholder {
+    color: #64748b;
+  }
+  
+  [data-theme="dark"] .form-select {
+    background-color: #1e293b;
+    color: #e2e8f0;
+    border-color: #334155;
+  }
+  
+  /* Ensure table cells with position relative don't clip autocomplete */
+  .table-responsive{
+    overflow: visible !important;
+  }
+  
+  td.position-relative{
+    overflow: visible !important;
+  }
+
+  /* Card Animation */
+  .card-animate {
+    animation: cardFadeIn 0.5s ease-out;
+  }
+
+  @keyframes cardFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .table-row-animate {
+    animation: fadeInRow 0.3s ease-out both;
+  }
+
+  @keyframes fadeInRow {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .empty-state-animate {
+    animation: emptyStateBounce 0.6s ease-out;
+  }
+
+  @keyframes emptyStateBounce {
+    0% {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Light Mode Badge Styles (DEFAULT) */
+  .email-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #e3f2fd 0%, #f0f7ff 100%);
+    border: 2px solid #90caf9;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14.2px;
+    color: #1976d2;
+  }
+
+  .email-badge i {
+    font-size: 14.2px;
+    color: #1976d2;
+  }
+
+  .mobile-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #f3e5f5 0%, #fce4ec 100%);
+    border: 2px solid #ce93d8;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14.2px;
+    color: #7b1fa2;
+  }
+
+  .mobile-badge i {
+    font-size: 14.2px;
+    color: #7b1fa2;
+  }
+
+  .mobile-badge-green {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #e8f5e9 0%, #e0f2f1 100%);
+    border: 2px solid #81c784;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14.2px;
+    color: #2e7d32;
+  }
+
+  .mobile-badge-green i {
+    font-size: 14.2px;
+    color: #2e7d32;
+  }
+
+  .mobile-badge-red {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #fdecea 0%, #fce4e4 100%);
+    border: 2px solid #e57373;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14.2px;
+    color: #c62828;
+  }
+
+  .mobile-badge-red i {
+    font-size: 14.2px;
+    color: #c62828;
+  }
+
+  .mobile-badge-blue {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #e8f4fd 0%, #e3f2fd 100%);
+    border: 2px solid #64b5f6;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14.2px;
+    color: #1565c0;
+  }
+
+  .mobile-badge-blue i {
+    font-size: 14.2px;
+    color: #1565c0;
+  }
+
+  .mobile-badge-orange {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border: 2px solid #ffb74d;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14.2px;
+    color: #e65100;
+  }
+
+  .mobile-badge-orange i {
+    font-size: 14.2px;
+    color: #e65100;
+  }
+
+  .mobile-badge-cyan {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+    border: 2px solid #4dd0e1;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14.2px;
+    color: #00838f;
+  }
+
+  .mobile-badge-cyan i {
+    font-size: 14.2px;
+    color: #00838f;
+  }
+
+  .mobile-badge-purple {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+    border: 2px solid #ba68c8;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14.2px;
+    color: #6a1b9a;
+  }
+
+  .mobile-badge-purple i {
+    font-size: 14.2px;
+    color: #6a1b9a;
+  }
+
+  /* Dark Mode Badge Styles ONLY */
+  [data-theme="dark"] .email-badge {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
+    border: 2px solid #3b5f8f;
+    color: #90caf9;
+  }
+
+  [data-theme="dark"] .email-badge i {
+    color: #90caf9;
+  }
+
+  [data-theme="dark"] .mobile-badge {
+    background: linear-gradient(135deg, #4a1f54 0%, #5d2968 100%);
+    border: 2px solid #7e4a8f;
+    color: #ce93d8;
+  }
+
+  [data-theme="dark"] .mobile-badge i {
+    color: #ce93d8;
+  }
+
+  [data-theme="dark"] .mobile-badge-green {
+    background: linear-gradient(135deg, #1b4d20 0%, #256d2a 100%);
+    border: 2px solid #3d8b42;
+    color: #81c784;
+  }
+
+  [data-theme="dark"] .mobile-badge-green i {
+    color: #81c784;
+  }
+
+  [data-theme="dark"] .mobile-badge-red {
+    background: linear-gradient(135deg, #5d1f1f 0%, #7d2828 100%);
+    border: 2px solid #a84444;
+    color: #e57373;
+  }
+
+  [data-theme="dark"] .mobile-badge-red i {
+    color: #e57373;
+  }
+
+  [data-theme="dark"] .mobile-badge-blue {
+    background: linear-gradient(135deg, #1a3a5f 0%, #224a7f 100%);
+    border: 2px solid #3b6a9f;
+    color: #64b5f6;
+  }
+
+  [data-theme="dark"] .mobile-badge-blue i {
+    color: #64b5f6;
+  }
+
+  [data-theme="dark"] .mobile-badge-orange {
+    background: linear-gradient(135deg, #5d3a1f 0%, #7d4a28 100%);
+    border: 2px solid #9f6a3b;
+    color: #ffb74d;
+  }
+
+  [data-theme="dark"] .mobile-badge-orange i {
+    color: #ffb74d;
+  }
+
+  [data-theme="dark"] .mobile-badge-cyan {
+    background: linear-gradient(135deg, #1f4d5d 0%, #286d7d 100%);
+    border: 2px solid #3b8d9f;
+    color: #4dd0e1;
+  }
+
+  [data-theme="dark"] .mobile-badge-cyan i {
+    color: #4dd0e1;
+  }
+
+  [data-theme="dark"] .mobile-badge-purple {
+    background: linear-gradient(135deg, #3a1f4d 0%, #4a2968 100%);
+    border: 2px solid #6a4a8f;
+    color: #ba68c8;
+  }
+
+  [data-theme="dark"] .mobile-badge-purple i {
+    color: #ba68c8;
+  }
+
+  /* Bordered Table Style */
+  .bordered-table {
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .bordered-table thead th {
+    background: #f8fafc;
+    border-bottom: 2px solid #e2e8f0;
+    padding: 16px;
+    font-weight: 600;
+    color: #475569;
+  }
+
+  .bordered-table tbody tr {
+    border-bottom: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+  }
+
+  .bordered-table tbody tr:hover {
+    background: #f8fafc;
+    transform: translateX(4px);
+  }
+
+  .bordered-table tbody td {
+    padding: 16px;
+    vertical-align: middle;
+  }
+
+  /* Dark Mode Table */
+  [data-theme="dark"] .bordered-table thead th {
+    background: #1e293b;
+    border-bottom: 2px solid #334155;
+    color: #cbd5e1;
+  }
+
+  [data-theme="dark"] .bordered-table tbody tr {
+    border-bottom: 1px solid #334155;
+  }
+
+  [data-theme="dark"] .bordered-table tbody tr:hover {
+    background: #1e293b;
+  }
+
+  /* Entry Detail Card */
+  .entry-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .entry-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  [data-theme="dark"] .entry-card {
+    border-color: #334155;
+    background-color: #0f172a;
+  }
+
+  [data-theme="dark"] .entry-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+/* Customer Info Card */
+.customer-info-card {
+  background: #667eea;  /* Solid color instead of gradient */
+  color: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+}
+  [data-theme="dark"] .customer-info-card {
+    background: linear-gradient(135deg, #4a5f9d 0%, #5a3a7a 100%);
+    box-shadow: 0 8px 24px rgba(74, 95, 157, 0.5);
+  }
+
+  .customer-info-card h4 {
+    color: white;
+    margin-bottom: 16px;
+    font-weight: 700;
+  }
+
+  .customer-info-card .info-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+  }
+
+  .customer-info-card .info-item i {
+    font-size: 20px;
+  }
+
+  .customer-info-card .info-item strong {
+    min-width: 80px;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .customer-info-card .info-item span {
+    color: white;
+  }
+</style>
+
+<div class="dashboard-main-body">
+
+  <!-- Customer Information Card -->
+
+    <div class="row gy-4 mb-3">
+        <!-- Main Customer Information Card -->
+<div class="col-lg-8">
+    <div class="card h-100 card-animate" style="animation-delay: 0.1s;">
+        <div class="card-header border-bottom bg-base py-16 px-24">
+            <h6 class="text-lg fw-semibold mb-0">Customer Information</h6>
+        </div>
+        <div class="card-body p-24">
+            <div class="row gy-3">
+
+                <!-- Customer Name -->
+                <div class="col-md-6">
+                    <div class="d-flex align-items-start gap-3 pb-3 border-bottom border-neutral-100">
+                        <div class="w-44-px h-44-px rounded-circle bg-primary-50 d-flex justify-content-center align-items-center flex-shrink-0">
+                            <iconify-icon icon="solar:user-linear" class="text-primary-600 text-xl"></iconify-icon>
+                        </div>
+                        <div class="flex-grow-1">
+                            <span class="text-sm text-secondary-light fw-medium d-block mb-1">Customer Name</span>
+                            <h6 class="text-md fw-semibold mb-0">{{ customer.name }}</h6>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Type -->
+                <div class="col-md-6">
+                    <div class="d-flex align-items-start gap-3 pb-3 border-bottom border-neutral-100">
+                        <div class="w-44-px h-44-px rounded-circle bg-success-50 d-flex justify-content-center align-items-center flex-shrink-0">
+                            <iconify-icon icon="solar:tag-linear" class="text-success-600 text-xl"></iconify-icon>
+                        </div>
+                        <div class="flex-grow-1">
+                            <span class="text-sm text-secondary-light fw-medium d-block mb-1">Customer Type</span>
+                            <h6 class="text-md fw-semibold mb-0">Normal</h6>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phone -->
+                <div class="col-md-6">
+                    <div class="d-flex align-items-start gap-3 pb-3 border-bottom border-neutral-100">
+                        <div class="w-44-px h-44-px rounded-circle bg-warning-50 d-flex justify-content-center align-items-center flex-shrink-0">
+                            <iconify-icon icon="solar:phone-linear" class="text-warning-600 text-xl"></iconify-icon>
+                        </div>
+                        <div class="flex-grow-1">
+                            <span class="text-sm text-secondary-light fw-medium d-block mb-1">Phone</span>
+                            <h6 class="text-md fw-semibold mb-0">{{ customer.phone|default:"-" }}</h6>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Balance -->
+                <div class="col-md-6">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="w-44-px h-44-px rounded-circle bg-danger-50 d-flex justify-content-center align-items-center flex-shrink-0">
+                            <iconify-icon icon="solar:wallet-linear" class="text-danger-600 text-xl"></iconify-icon>
+                        </div>
+                        <div class="flex-grow-1">
+                            <span class="text-sm text-secondary-light fw-medium d-block mb-1">Balance</span>
+                            <h6 class="text-md fw-semibold mb-0">₹0.00</h6>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        <!-- Quick Actions Card -->
+        <div class="col-lg-4">
+            <div class="card h-100 card-animate" style="animation-delay: 0.2s;">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Quick Actions</h6>
+                </div>
+                <div class="card-body p-24">
+                    <div class="d-flex flex-column gap-3">
+                        <a href="" class="btn btn-neutral-400 radius-8 px-20 py-11 d-flex align-items-center justify-content-center gap-2 action-btn-animate">
+                            <iconify-icon icon="solar:arrow-left-linear" class="text-xl"></iconify-icon>
+                            Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+
+
+  <div class="card card-animate mb-3">
+
+    <!-- Card Header -->
+    <div class="card-header">
+      <h5 class="card-title mb-0">Filter Purchase Details</h5>
+    </div>
+
+    <!-- Card Body - Filters -->
+<div class="card-body ">
+  <form method="get" id="filterForm">
+    
+    <div class="row align-items-end g-3">
+
+      <!-- Filter Type -->
+      <div class="col-lg-2 col-md-4">
+        <label class="form-label">Filter Type</label>
+        <select name="filter" class="form-control" id="filterType">
+          <option value="day" {% if filter_type == 'day' %}selected{% endif %}>Day</option>
+          <option value="week" {% if filter_type == 'week' %}selected{% endif %}>Week</option>
+          <option value="month" {% if filter_type == 'month' %}selected{% endif %}>Month</option>
+          <option value="year" {% if filter_type == 'year' %}selected{% endif %}>Year</option>
+          <option value="custom" {% if filter_type == 'custom' %}selected{% endif %}>Custom</option>
+        </select>
+      </div>
+
+      <!-- Start Date -->
+      <div class="col-lg-2 col-md-4">
+        <label class="form-label">Start Date</label>
+        <input type="date" name="start" class="form-control" value="{{ start }}">
+      </div>
+
+      <!-- End Date -->
+      <div class="col-lg-2 col-md-4">
+        <label class="form-label">End Date</label>
+        <input type="date" name="end" class="form-control" value="{{ end }}">
+      </div>
+
+      <!-- Apply Button -->
+      <div class="col-lg-2 col-md-4">
+        <button type="submit" class="btn btn-primary w-100">
+          <i class="fa-regular fa-circle-check"></i> Apply
+        </button>
+      </div>
+
+      <!-- Reset -->
+      <div class="col-lg-2 col-md-4">
+        <a href="{% url 'normal_customer_detail' customer.id %}" 
+           class="btn btn-outline-secondary w-100">
+          <i class="fa-regular fa-circle-xmark"></i> Reset
+        </a>
+      </div>
+
+      <!-- Download PDF -->
+      <div class="col-lg-2 col-md-4">
+        <a href="{% url 'normal_customer_detail_pdf' customer.id %}?filter={{ filter_type }}&start={{ start }}&end={{ end }}"
+           class="btn btn-success w-100">
+          <i class="fa-regular fa-file-pdf"></i> PDF
+        </a>
+      </div>
+
+    </div>
+
+  </form>
+</div>
+
+
+  </div> <!-- card -->
+
+  <!-- Total Amount Summary Card -->
+  <div class="card mt-4 card-animate mb-3">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-12">
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+              <div class="w-60-px h-60-px bg-primary-600 rounded-circle d-flex align-items-center justify-content-center">
+                <iconify-icon icon="solar:dollar-outline" class="text-white" style="font-size: 32px;"></iconify-icon>
+              </div>
+              <div>
+                <h6 class="mb-1">Total Purchase Amount</h6>
+                <p class="text-secondary-light mb-0">Based on selected filters</p>
+              </div>
+            </div>
+            <div>
+              <h4 class="mb-0 text-primary-600">₹{{ total_amount|default:"0.00" }}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Entries Results Card - Grouped by Shop -->
+  {% regroup entries by shop as shop_groups %}
+
+  {% for group in shop_groups %}
+  <div class="card mt-4 basic-data-table card-animate">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <div class="col-md-3 col-6 mb-2">
+        <div class="mobile-badge-blue" style="border-radius: 10px;">
+          <i class="fa-solid fa-shop"></i>
+          <span>{{ group.grouper.name }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      
+      {% for e in group.list %}
+      <div class="entry-card table-row-animate">
+        <!-- Entry Header -->
+        <div class="row mb-3">
+          <div class="col-md-3 col-6 mb-2">
+            <div class="mobile-badge-green" style="border-radius: 10px;">
+              <i class="fa-solid fa-calendar"></i>
+              <span>{{ e.date }}</span>
+            </div>
+          </div>
+          <div class="col-md-3 col-6 mb-2">
+            <div class="mobile-badge" style="border-radius: 10px;">
+              <i class="fa-solid fa-user"></i>
+              <span>{{ e.customer.name }}</span>
+            </div>
+          </div>
+          <div class="col-md-3 col-6 mb-2">
+            {% if e.is_credit %}
+            <div class="mobile-badge-red" style="border-radius: 10px;">
+              <i class="fa-solid fa-credit-card"></i>
+              <span>Credit</span>
+            </div>
+            {% else %}
+            <div class="mobile-badge-purple" style="border-radius: 10px;">
+              <i class="fa-solid fa-money-bill"></i>
+              <span>{{ e.payment|title }}</span>
+            </div>
+            {% endif %}
+          </div>
+          <div class="col-md-3 col-6 mb-2">
+            <div class="email-badge" style="border-radius: 10px;">
+              <i class="fa-solid fa-indian-rupee-sign"></i>
+              <span>{{ e.total_amount }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Entry Items Table -->
+        <div class="table-responsive">
+          <table class="table bordered-table mb-0">
+            <thead>
+              <tr>
+                <th>
+                  <div class="d-flex align-items-center gap-2">
+                    <iconify-icon icon="solar:document-text-outline" class="text-xl"></iconify-icon>
+                    Paper
+                  </div>
+                </th>
+                <th>
+                  <div class="d-flex align-items-center gap-2">
+                    <iconify-icon icon="solar:tag-outline" class="text-xl"></iconify-icon>
+                    Item
+                  </div>
+                </th>
+                <th>
+                  <div class="d-flex align-items-center gap-2">
+                    <iconify-icon icon="solar:star-outline" class="text-xl"></iconify-icon>
+                    Finishing
+                  </div>
+                </th>
+                <th>
+                  <div class="d-flex align-items-center gap-2">
+                    <iconify-icon icon="solar:copy-outline" class="text-xl"></iconify-icon>
+                    Side
+                  </div>
+                </th>
+                <th>
+                  <div class="d-flex align-items-center gap-2">
+                    <iconify-icon icon="solar:hashtag-outline" class="text-xl"></iconify-icon>
+                    Qty
+                  </div>
+                </th>
+                <th>
+                  <div class="d-flex align-items-center gap-2">
+                    <iconify-icon icon="si:rupee-fill" class="text-xl"></iconify-icon>
+                    Rate
+                  </div>
+                </th>
+                <th>
+                  <div class="d-flex align-items-center gap-2">
+                    <iconify-icon icon="si:rupee-fill" class="text-xl"></iconify-icon>
+                    Amount
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in e.items.all %}
+              <tr>
+                <td>
+                  <div class="mobile-badge">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <span>{{ i.paper.name }} - {{ i.paper.gsm }} gsm</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="mobile-badge-blue">
+                    <i class="fa-solid fa-tag"></i>
+                    <span>{{ i.item_name }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="mobile-badge-orange">
+                    <i class="fa-solid fa-star"></i>
+                    <span>{{ i.finishing.name|default:"-" }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="mobile-badge-cyan">
+                    <i class="fa-solid fa-copy"></i>
+                    <span>{{ i.side|title }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="mobile-badge-green">
+                    <i class="fa-solid fa-hashtag"></i>
+                    <span>{{ i.quantity_breakdown }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="email-badge">
+                    <i class="fa-solid fa-indian-rupee-sign"></i>
+                    <span>{{ i.rate }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="email-badge">
+                    <i class="fa-solid fa-indian-rupee-sign"></i>
+                    <span>{{ i.amount }}</span>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Entry Actions -->
+        <div class="row mt-3">
+          <div class="col-md-4 col-12 mb-2">
+            <a href="{% url 'shop_daily_entry_detail' e.id %}" class="btn btn-info w-100">
+              <i class="fa-regular fa-eye"></i>
+              View Details
+            </a>
+          </div>
+          <div class="col-md-4 col-12 mb-2">
+            <a href="{% url 'shop_daily_entry_edit' e.id %}" class="btn btn-warning w-100">
+              <i class="fa-regular fa-pen-to-square"></i>
+              Edit Entry
+            </a>
+          </div>
+          <div class="col-md-4 col-12 mb-2">
+            <a href="{% url 'shop_daily_entry_delete' e.id %}" class="btn btn-danger w-100">
+              <i class="fa-regular fa-trash-can"></i>
+              Delete
+            </a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="text-center py-5">
+        <div class="d-flex flex-column align-items-center gap-3 empty-state-animate">
+          <div class="w-80-px h-80-px bg-neutral-100 rounded-circle d-flex align-items-center justify-content-center">
+            <iconify-icon icon="solar:inbox-outline" class="text-neutral-400" style="font-size: 44px;"></iconify-icon>
+          </div>
+          <div>
+            <h5 class="mb-1">No Entries Found</h5>
+            <p class="text-secondary-light mb-0">No purchase entries available for this shop</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+  </div>
+  {% empty %}
+  <div class="card mt-4 card-animate">
+    <div class="card-body">
+      <div class="text-center py-5">
+        <div class="d-flex flex-column align-items-center gap-3 empty-state-animate">
+          <div class="w-80-px h-80-px bg-neutral-100 rounded-circle d-flex align-items-center justify-content-center">
+            <iconify-icon icon="solar:inbox-outline" class="text-neutral-400" style="font-size: 44px;"></iconify-icon>
+          </div>
+          <div>
+            <h5 class="mb-1">No Purchase Entries Found</h5>
+            <p class="text-secondary-light mb-0">This customer has no purchase history for the selected period</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+</div> <!-- dashboard-main-body -->
+
+{% endblock %}

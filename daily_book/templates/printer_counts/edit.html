@@ -1,0 +1,33 @@
+{% extends 'master_base.html' %}
+{% load static %}
+
+{% block title %} Master {% endblock %}
+
+{% block content %}
+<h2>Edit Printer Count</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <select name="printer">
+        {% for p in printers %}
+        <option value="{{ p.id }}" {% if p.id == count.printer.id %}selected{% endif %}>
+            {{ p.name }}
+        </option>
+        {% endfor %}
+    </select><br><br>
+
+    <input type="date" name="date" value="{{ count.date }}"><br><br>
+
+
+    <select name="type">
+        <option value="color" {% if count.type == 'color' %}selected{% endif %}>Color</option>
+        <option value="b/w" {% if count.type == 'b/w' %}selected{% endif %}>B/W</option>
+    </select><br><br>
+
+    <input type="number" name="count" value="{{ count.count }}"><br><br>
+
+    <button type="submit">Update</button>
+</form>
+
+{% endblock %}

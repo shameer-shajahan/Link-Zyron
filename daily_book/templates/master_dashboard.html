@@ -1,0 +1,1117 @@
+{% extends 'master_base.html' %}
+{% load static %}
+{% block title %}Master Dashboard{% endblock %}
+
+{% block content %}
+
+<style>
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in {
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .card-animate {
+        animation: slideUp 0.6s ease-out both;
+    }
+
+    @keyframes iconBounce {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+    }
+
+    .icon-bounce {
+        transition: transform 0.3s ease;
+    }
+
+    .icon-bounce:hover {
+        animation: iconBounce 0.6s ease;
+    }
+
+    @keyframes counterPulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    .counter-animate {
+        transition: all 0.3s ease;
+    }
+
+    .counter-animate:hover {
+        animation: counterPulse 0.5s ease;
+    }
+
+    @keyframes tableRowSlide {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .table-row-animate {
+        animation: tableRowSlide 0.4s ease-out both;
+    }
+
+    .table-row-animate:nth-child(1) { animation-delay: 0.05s; }
+    .table-row-animate:nth-child(2) { animation-delay: 0.1s; }
+    .table-row-animate:nth-child(3) { animation-delay: 0.15s; }
+    .table-row-animate:nth-child(4) { animation-delay: 0.2s; }
+    .table-row-animate:nth-child(5) { animation-delay: 0.25s; }
+
+    .link-animate {
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .link-animate::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -2px;
+        left: 0;
+        background-color: #487fff;
+        transition: width 0.3s ease;
+    }
+
+    .link-animate:hover::after {
+        width: 100%;
+    }
+
+    .link-animate iconify-icon {
+        transition: transform 0.3s ease;
+    }
+
+    .link-animate:hover iconify-icon {
+        transform: translateX(5px);
+    }
+
+    @keyframes emptyStateFade {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .empty-state-animate {
+        animation: emptyStateFade 0.5s ease-out;
+    }
+
+    /* Item Avatar */
+    .item-avatar {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .item-avatar:hover {
+        transform: rotate(360deg) scale(1.1);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .item-row {
+        transition: all 0.3s ease;
+    }
+
+    .item-row:hover {
+        background-color: #f9fafb;
+        transform: translateX(5px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Badge Styles */
+    .info-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #e3f2fd 0%, #f0f7ff 100%);
+        border: 2px solid #90caf9;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 14.2px;
+        color: #1976d2;
+    }
+
+    .success-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #e8f5e9 0%, #e0f2f1 100%);
+        border: 2px solid #81c784;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 14.2px;
+        color: #2e7d32;
+    }
+
+    .warning-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+        border: 2px solid #ffb74d;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 14.2px;
+        color: #e65100;
+    }
+
+    .danger-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #fdecea 0%, #fce4e4 100%);
+        border: 2px solid #e57373;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 14.2px;
+        color: #c62828;
+    }
+
+    .primary-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #f3e5f5 0%, #fce4ec 100%);
+        border: 2px solid #ce93d8;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 14.2px;
+        color: #7b1fa2;
+    }
+
+    /* Dark Mode Badge Styles */
+    [data-theme="dark"] .info-badge {
+        background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
+        border: 2px solid #3b5f8f;
+        color: #90caf9;
+    }
+
+    [data-theme="dark"] .success-badge {
+        background: linear-gradient(135deg, #1b4d20 0%, #256d2a 100%);
+        border: 2px solid #3d8b42;
+        color: #81c784;
+    }
+
+    [data-theme="dark"] .warning-badge {
+        background: linear-gradient(135deg, #5d4a1f 0%, #6d5a2a 100%);
+        border: 2px solid #8b7342;
+        color: #ffb74d;
+    }
+
+    [data-theme="dark"] .danger-badge {
+        background: linear-gradient(135deg, #5d1f1f 0%, #7d2828 100%);
+        border: 2px solid #a84444;
+        color: #e57373;
+    }
+
+    [data-theme="dark"] .primary-badge {
+        background: linear-gradient(135deg, #4a1f54 0%, #5d2968 100%);
+        border: 2px solid #7e4a8f;
+        color: #ce93d8;
+    }
+
+    .w-40-px {
+        width: 40px;
+    }
+
+    .h-40-px {
+        height: 40px;
+    }
+
+    .w-80-px {
+        width: 80px;
+    }
+
+    .h-80-px {
+        height: 80px;
+    }
+
+    .bg-neutral-100 {
+        background-color: #f3f4f6;
+    }
+
+    .text-neutral-400 {
+        color: #9ca3af;
+    }
+
+    .hover-text-primary:hover {
+        color: #487fff !important;
+        transition: color 0.3s ease;
+    }
+
+    .card {
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    thead th {
+        transition: all 0.3s ease;
+    }
+
+    thead th:hover {
+        background-color: #f8f9fa;
+    }
+
+    .action-btn {
+        transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transform: scale(1.1);
+    }
+
+    .low-stock-warning {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        background: #fff7ed;
+        color: #c2410c;
+        border: 2px solid #fdba74;
+    }
+
+    [data-theme="dark"] .low-stock-warning {
+        background: #7c2d12;
+        color: #fdba74;
+    }
+</style>
+
+<div class="dashboard-main-body">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24 fade-in">
+        <h6 class="fw-semibold mb-0">Master Dashboard</h6>
+        <ul class="d-flex align-items-center gap-2">
+            <li class="fw-medium">
+                <a href="" class="d-flex align-items-center gap-1 hover-text-primary">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                    Dashboard
+                </a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">Overview</li>
+        </ul>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row row-cols-xxxl-5 row-cols-lg-3 row-cols-sm-2 row-cols-1 gy-4">
+        <!-- Total Shops -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-1 h-100 card-animate" style="animation-delay: 0.1s;">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Total Shops</p>
+                            <h6 class="mb-0 counter-animate">{{ total_shops }}</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-primary-600 rounded-circle d-flex justify-content-center align-items-center icon-bounce">
+                            <iconify-icon icon="solar:shop-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <a href="{% url 'shop_list' %}" class="text-info-main">View List</a>
+                        <span class="mx-2">|</span>
+                        <a href="{% url 'shop_create' %}" class="text-success-main">Add New</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Printers -->
+        <!-- <div class="col">
+            <div class="card shadow-none border bg-gradient-start-2 h-100 card-animate" style="animation-delay: 0.15s;">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Total Printers</p>
+                            <h6 class="mb-0 counter-animate">{{ total_printers }}</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center icon-bounce">
+                            <iconify-icon icon="solar:printer-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <a href="{% url 'printer_list' %}" class="text-info-main">View List</a>
+                        <span class="mx-2">|</span>
+                        <a href="{% url 'printer_create' %}" class="text-success-main">Add New</a>
+                    </p>
+                </div>
+            </div>
+        </div> -->
+
+        <!-- Total Categories -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-3 h-100 card-animate" style="animation-delay: 0.2s;">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Item Categories</p>
+                            <h6 class="mb-0 counter-animate">{{ total_categories }}</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-info rounded-circle d-flex justify-content-center align-items-center icon-bounce">
+                            <iconify-icon icon="solar:layers-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <a href="{% url 'category_list' %}" class="text-info-main">View List</a>
+                        <span class="mx-2">|</span>
+                        <a href="{% url 'category_create' %}" class="text-success-main">Add New</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Stock Items -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-4 h-100 card-animate" style="animation-delay: 0.25s;">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Stock Items</p>
+                            <h6 class="mb-0 counter-animate">{{ total_stock_items }}</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-success rounded-circle d-flex justify-content-center align-items-center icon-bounce">
+                            <iconify-icon icon="solar:box-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <a href="{% url 'stock_list' %}" class="text-info-main">View List</a>
+                        <span class="mx-2">|</span>
+                        <a href="{% url 'stock_create' %}" class="text-success-main">Add New</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Low Stock Items -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-5 h-100 card-animate" style="animation-delay: 0.3s;">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Low Stock Items</p>
+                            <h6 class="mb-0 counter-animate text-warning-main">{{ low_stock_count }}</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-warning-main rounded-circle d-flex justify-content-center align-items-center icon-bounce">
+                            <iconify-icon icon="solar:box-minimalistic-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <span class="text-warning-main">Qty < 100</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Out of Stock -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-1 h-100 card-animate" style="animation-delay: 0.35s;">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Out of Stock</p>
+                            <h6 class="mb-0 counter-animate text-danger-main">{{ out_of_stock_count }}</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-danger rounded-circle d-flex justify-content-center align-items-center icon-bounce">
+                            <iconify-icon icon="solar:close-circle-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <span class="text-danger-main">Qty = 0</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Finishing -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-2 h-100 card-animate" style="animation-delay: 0.4s;">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Finishing Types</p>
+                            <h6 class="mb-0 counter-animate">{{ total_finishing }}</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center icon-bounce">
+                            <iconify-icon icon="solar:star-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <a href="{% url 'finishing_list' %}" class="text-info-main">View List</a>
+                        <span class="mx-2">|</span>
+                        <a href="{% url 'finishing_create' %}" class="text-success-main">Add New</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Adjustments -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-3 h-100 card-animate" style="animation-delay: 0.45s;">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Stock Adjustments</p>
+                            <h6 class="mb-0 counter-animate">{{ total_adjustments }}</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-primary-600 rounded-circle d-flex justify-content-center align-items-center icon-bounce">
+                            <iconify-icon icon="solar:refresh-circle-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <span class="text-success-main">Today: {{ today_adjustments }}</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Printer Counts -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-4 h-100 card-animate" style="animation-delay: 0.5s;">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Today's Prints</p>
+                            <h6 class="mb-0">
+                                <span class="text-info-main">C: {{ today_printer_counts.color|default:0 }}</span>
+                                <span class="mx-2">|</span>
+                                <span>B/W: {{ today_printer_counts.bw|default:0 }}</span>
+                            </h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center icon-bounce">
+                            <iconify-icon icon="solar:document-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <a href="{% url 'printer_count_list' %}" class="text-info-main">View All</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Stock Added -->
+        <div class="col">
+            <div class="card shadow-none border bg-gradient-start-5 h-100 card-animate" style="animation-delay: 0.55s;">
+                <div class="card-body p-20">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                        <div>
+                            <p class="fw-medium text-primary-light mb-1">Stock Added</p>
+                            <h6 class="mb-0 text-success-main counter-animate">{{ total_added }}</h6>
+                        </div>
+                        <div class="w-50-px h-50-px bg-success rounded-circle d-flex justify-content-center align-items-center icon-bounce">
+                            <iconify-icon icon="solar:add-circle-bold" class="text-white text-2xl mb-0"></iconify-icon>
+                        </div>
+                    </div>
+                    <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+                        <span class="text-danger-main">Reduced: {{ total_reduced }}</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Shops & Printers -->
+    <div class="row gy-4 mt-2">
+        <!-- Recent Shops -->
+        <div class="col-lg-6">
+            <div class="card h-100 card-animate" style="animation-delay: 0.6s;">
+                <div class="card-body p-24">
+                    <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
+                        <h6 class="mb-2 fw-semibold text-lg mb-0">Recent Shops</h6>
+                        <a href="{% url 'shop_list' %}" class="text-primary-600 hover-text-primary d-flex align-items-center gap-1 link-animate">
+                            View All
+                            <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
+                        </a>
+                    </div>
+                    <div class="table-responsive scroll-sm">
+                        <table class="table bordered-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:shop-outline" class="text-xl"></iconify-icon>
+                                            Shop Name
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:map-point-outline" class="text-xl"></iconify-icon>
+                                            Location
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if recent_shops %}
+                                {% for shop in recent_shops %}
+                                <tr class="item-row table-row-animate">
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="flex-shrink-0">
+                                                <div class="item-avatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                                    <iconify-icon icon="solar:shop-bold"></iconify-icon>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="text-md mb-0 fw-semibold">{{ shop.name }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="info-badge">
+                                            <i class="fa-solid fa-location-dot"></i>
+                                            <span>{{ shop.location }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="2" class="text-center py-5">
+                                        <div class="d-flex flex-column align-items-center gap-3 empty-state-animate">
+                                            <div class="w-80-px h-80-px bg-neutral-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <iconify-icon icon="solar:inbox-outline" class="text-neutral-400" style="font-size: 48px;"></iconify-icon>
+                                            </div>
+                                            <div>
+                                                <h5 class="mb-1">No Shops Found</h5>
+                                                <p class="text-secondary-light mb-3">Start by adding your first shop</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Printers -->
+        <div class="col-lg-6">
+            <div class="card h-100 card-animate" style="animation-delay: 0.65s;">
+                <div class="card-body p-24">
+                    <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
+                        <h6 class="mb-2 fw-semibold text-lg mb-0">Recent Printers</h6>
+                        <a href="{% url 'printer_list' %}" class="text-primary-600 hover-text-primary d-flex align-items-center gap-1 link-animate">
+                            View All
+                            <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
+                        </a>
+                    </div>
+                    <div class="table-responsive scroll-sm">
+                        <table class="table bordered-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:printer-outline" class="text-xl"></iconify-icon>
+                                            Printer Name
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:shop-outline" class="text-xl"></iconify-icon>
+                                            Shop
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:tag-outline" class="text-xl"></iconify-icon>
+                                            Model
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if recent_printers %}
+                                {% for printer in recent_printers %}
+                                <tr class="item-row table-row-animate">
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="flex-shrink-0">
+                                                <div class="item-avatar" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                                    <iconify-icon icon="solar:printer-bold"></iconify-icon>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="text-md mb-0 fw-semibold">{{ printer.name }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="success-badge">
+                                            <i class="fa-solid fa-shop"></i>
+                                            <span>{{ printer.shop.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="info-badge">
+                                            <i class="fa-solid fa-barcode"></i>
+                                            <span>{{ printer.model }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center py-5">
+                                        <div class="d-flex flex-column align-items-center gap-3 empty-state-animate">
+                                            <div class="w-80-px h-80-px bg-neutral-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <iconify-icon icon="solar:inbox-outline" class="text-neutral-400" style="font-size: 48px;"></iconify-icon>
+                                            </div>
+                                            <div>
+                                                <h5 class="mb-1">No Printers Found</h5>
+                                                <p class="text-secondary-light mb-3">Start by adding your first printer</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Low Stock Items -->
+    <div class="row gy-4 mt-2">
+        <div class="col-xxl-12">
+            <div class="card h-100 card-animate" style="animation-delay: 0.7s;">
+                <div class="card-body p-24">
+                    <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
+                        <h6 class="mb-2 fw-semibold text-lg mb-0">Low Stock Items (Qty < 100)</h6>
+                        <a href="{% url 'stock_list' %}" class="text-primary-600 hover-text-primary d-flex align-items-center gap-1 link-animate">
+                            View All Stock
+                            <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
+                        </a>
+                    </div>
+                    <div class="table-responsive scroll-sm">
+                        <table class="table bordered-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:box-outline" class="text-xl"></iconify-icon>
+                                            Item Name
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:tag-outline" class="text-xl"></iconify-icon>
+                                            Category
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:document-outline" class="text-xl"></iconify-icon>
+                                            GSM
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:box-minimalistic-outline" class="text-xl"></iconify-icon>
+                                            Quantity
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:flag-outline" class="text-xl"></iconify-icon>
+                                            Status
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if low_stock_items %}
+                                {% for item_data in low_stock_items %}
+                                <tr class="item-row table-row-animate">
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="flex-shrink-0">
+                                                <div class="item-avatar" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                                                    <iconify-icon icon="solar:box-bold"></iconify-icon>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="text-md mb-0 fw-semibold">{{ item_data.item.name }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="info-badge">
+                                            <i class="fas fa-layer-group"></i>
+                                            <span>{{ item_data.item.category.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="success-badge">
+                                            <i class="fa-solid fa-weight-hanging"></i>
+                                            <span>{{ item_data.item.gsm }} GSM</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="{% if item_data.quantity == 0 %}danger-badge{% elif item_data.quantity < 50 %}warning-badge{% else %}primary-badge{% endif %}">
+                                            <i class="fa-solid fa-cubes"></i>
+                                            <span>{{ item_data.quantity }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if item_data.quantity == 0 %}
+                                        <span class="low-stock-warning" style="background: #fee2e2; color: #c62828; border-color: #e57373;">
+                                            <i class="fas fa-times-circle"></i>
+                                            Out of Stock
+                                        </span>
+                                        {% elif item_data.quantity < 50 %}
+                                        <span class="low-stock-warning">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            Very Low
+                                        </span>
+                                        {% else %}
+                                        <span class="low-stock-warning">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            Low Stock
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-5">
+                                        <div class="d-flex flex-column align-items-center gap-3 empty-state-animate">
+                                            <div class="w-80-px h-80-px bg-neutral-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <iconify-icon icon="solar:box-outline" class="text-neutral-400" style="font-size: 48px;"></iconify-icon>
+                                            </div>
+                                            <div>
+                                                <h5 class="mb-1 text-success-main">All Stock Levels are Good!</h5>
+                                                <p class="text-secondary-light mb-3">No low stock items found</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Printer Counts -->
+    <div class="row gy-4 mt-2">
+        <div class="col-xxl-12">
+            <div class="card h-100 card-animate" style="animation-delay: 0.75s;">
+                <div class="card-body p-24">
+                    <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
+                        <h6 class="mb-2 fw-semibold text-lg mb-0">Recent Printer Counts</h6>
+                        <a href="{% url 'printer_count_list' %}" class="text-primary-600 hover-text-primary d-flex align-items-center gap-1 link-animate">
+                            View All
+                            <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
+                        </a>
+                    </div>
+                    <div class="table-responsive scroll-sm">
+                        <table class="table bordered-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:calendar-outline" class="text-xl"></iconify-icon>
+                                            Date
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:printer-outline" class="text-xl"></iconify-icon>
+                                            Printer
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:shop-outline" class="text-xl"></iconify-icon>
+                                            Shop
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:tag-outline" class="text-xl"></iconify-icon>
+                                            Type
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:document-outline" class="text-xl"></iconify-icon>
+                                            Count
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if recent_printer_counts %}
+                                {% for count in recent_printer_counts %}
+                                <tr class="item-row table-row-animate">
+                                    <td>
+                                        <div class="primary-badge">
+                                            <i class="fa-solid fa-calendar"></i>
+                                            <span>{{ count.date|date:"d M, Y" }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="flex-shrink-0">
+                                                <div class="item-avatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                                    <iconify-icon icon="solar:printer-bold"></iconify-icon>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="text-md mb-0 fw-semibold">{{ count.printer.name }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="success-badge">
+                                            <i class="fa-solid fa-shop"></i>
+                                            <span>{{ count.printer.shop.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if count.type == 'color' %}
+                                        <div class="info-badge">
+                                            <i class="fa-solid fa-palette"></i>
+                                            <span>Color</span>
+                                        </div>
+                                        {% else %}
+                                        <div class="primary-badge">
+                                            <i class="fa-solid fa-file"></i>
+                                            <span>B/W</span>
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="warning-badge">
+                                            <i class="fa-solid fa-hashtag"></i>
+                                            <span class="count-number">{{ count.count }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-5">
+                                        <div class="d-flex flex-column align-items-center gap-3 empty-state-animate">
+                                            <div class="w-80-px h-80-px bg-neutral-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <iconify-icon icon="solar:inbox-outline" class="text-neutral-400" style="font-size: 48px;"></iconify-icon>
+                                            </div>
+                                            <div>
+                                                <h5 class="mb-1">No Printer Counts Found</h5>
+                                                <p class="text-secondary-light mb-3">No printer counts have been recorded yet</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Stock Adjustments -->
+    <div class="row gy-4 mt-2">
+        <div class="col-xxl-12">
+            <div class="card h-100 card-animate" style="animation-delay: 0.8s;">
+                <div class="card-body p-24">
+                    <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between mb-20">
+                        <h6 class="mb-2 fw-semibold text-lg mb-0">Recent Stock Adjustments</h6>
+                        <a href="{% url 'stock_adjustment_list' %}" class="text-primary-600 hover-text-primary d-flex align-items-center gap-1 link-animate">
+                            View All
+                            <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
+                        </a>
+                    </div>
+                    <div class="table-responsive scroll-sm">
+                        <table class="table bordered-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:calendar-outline" class="text-xl"></iconify-icon>
+                                            Date
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:box-outline" class="text-xl"></iconify-icon>
+                                            Item
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:tag-outline" class="text-xl"></iconify-icon>
+                                            Type
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:hashtag-outline" class="text-xl"></iconify-icon>
+                                            Quantity
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:document-text-outline" class="text-xl"></iconify-icon>
+                                            Reason
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if recent_adjustments %}
+                                {% for adjustment in recent_adjustments %}
+                                <tr class="item-row table-row-animate">
+                                    <td>
+                                        <div class="primary-badge">
+                                            <i class="fa-solid fa-calendar"></i>
+                                            <span>{{ adjustment.date|date:"d M, Y" }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="flex-shrink-0">
+                                                <div class="item-avatar" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                                                    <iconify-icon icon="solar:box-bold"></iconify-icon>
+                                                </div>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="text-md mb-0 fw-semibold">{{ adjustment.item.name }}</h6>
+                                                <span class="text-sm text-secondary-light">{{ adjustment.item.category.name }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if adjustment.adjustment_type == 'add' %}
+                                        <div class="success-badge">
+                                            <i class="fa-solid fa-plus-circle"></i>
+                                            <span>Add Stock</span>
+                                        </div>
+                                        {% else %}
+                                        <div class="danger-badge">
+                                            <i class="fa-solid fa-minus-circle"></i>
+                                            <span>Reduce Stock</span>
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="warning-badge">
+                                            <i class="fa-solid fa-cubes"></i>
+                                            <span class="adjustment-qty">{{ adjustment.quantity }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="info-badge">
+                                            <i class="fa-solid fa-comment"></i>
+                                            <span>{{ adjustment.reason|truncatewords:5 }}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-5">
+                                        <div class="d-flex flex-column align-items-center gap-3 empty-state-animate">
+                                            <div class="w-80-px h-80-px bg-neutral-100 rounded-circle d-flex align-items-center justify-content-center">
+                                                <iconify-icon icon="solar:inbox-outline" class="text-neutral-400" style="font-size: 48px;"></iconify-icon>
+                                            </div>
+                                            <div>
+                                                <h5 class="mb-1">No Stock Adjustments Found</h5>
+                                                <p class="text-secondary-light mb-3">No stock adjustments have been made yet</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Format numbers with commas
+    function formatNumber(number) {
+        return new Intl.NumberFormat('en-IN').format(number);
+    }
+
+    // Format all count elements
+    document.querySelectorAll('.count-number, .adjustment-qty').forEach(el => {
+        const value = parseFloat(el.innerText);
+        if (!isNaN(value)) {
+            el.innerText = formatNumber(value);
+        }
+    });
+</script>
+
+{% endblock %}

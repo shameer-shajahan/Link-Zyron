@@ -1,0 +1,572 @@
+{% extends 'master_base.html' %}
+{% load static %}
+
+{% block title %}{% if finishing %}Edit Finishing{% else %}Add Finishing{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    
+/* === ANIMATIONS === */
+
+/* Fade In Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Card Slide Up Animation */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card-animate {
+    animation: slideUp 0.6s ease-out both;
+}
+
+/* Info Item Slide Animation */
+@keyframes infoItemSlide {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.info-item-animate {
+    animation: infoItemSlide 0.5s ease-out both;
+    transition: all 0.3s ease;
+}
+
+/* Action Button Animation */
+@keyframes buttonSlide {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.action-btn-animate {
+    animation: buttonSlide 0.5s ease-out;
+    transition: all 0.3s ease;
+}
+
+.action-btn-animate:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Card Hover Effect */
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Breadcrumb Link Animation */
+.hover-text-primary {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.hover-text-primary::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: #487fff;
+    transition: width 0.3s ease;
+}
+
+.hover-text-primary:hover::after {
+    width: 100%;
+}
+
+.hover-text-primary:hover {
+    color: #487fff !important;
+}
+
+.hover-text-primary iconify-icon {
+    transition: transform 0.3s ease;
+}
+
+.hover-text-primary:hover iconify-icon {
+    transform: translateX(-3px);
+}
+
+/* Form Controls Styling */
+.form-select,
+.form-control {
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.form-select:focus,
+.form-control:focus {
+    border-color: #487fff;
+    box-shadow: 0 0 0 3px rgba(72, 127, 255, 0.1);
+    outline: none;
+}
+
+/* Icon Field Styling */
+.icon-field {
+    position: relative;
+}
+
+.icon-field .icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    font-size: 20px;
+    z-index: 1;
+}
+
+.icon-field input {
+    padding-left: 48px;
+}
+
+/* Icon Field Textarea */
+.icon-field-textarea {
+    position: relative;
+}
+
+.icon-field-textarea .icon {
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    color: #9ca3af;
+    font-size: 20px;
+    z-index: 1;
+}
+
+.icon-field-textarea textarea {
+    padding-left: 48px;
+}
+
+/* Button Styles */
+.btn-primary-600 {
+    background-color: #487fff;
+    border-color: #487fff;
+    color: white;
+}
+
+.btn-primary-600:hover {
+    background-color: #3667e6;
+    border-color: #3667e6;
+}
+
+.btn-neutral-400 {
+    background-color: #9ca3af;
+    border-color: #9ca3af;
+    color: white;
+}
+
+.btn-neutral-400:hover {
+    background-color: #6b7280;
+    border-color: #6b7280;
+}
+
+/* Textarea Styling */
+textarea.form-control {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* Label Icon Styling */
+.form-label iconify-icon {
+    vertical-align: middle;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .card-animate {
+        animation-delay: 0s !important;
+    }
+    
+    .info-item-animate {
+        animation-delay: 0s !important;
+    }
+
+    .action-btn-animate {
+        flex-grow: 1 !important;
+    }
+}
+
+/* Focus States for Accessibility */
+.action-btn-animate:focus {
+    outline: 2px solid #487fff;
+    outline-offset: 2px;
+}
+
+/* Smooth Scroll */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Background Color Classes */
+.bg-primary-50 {
+    background-color: rgba(72, 127, 255, 0.1);
+}
+
+.bg-success-50 {
+    background-color: rgba(34, 197, 94, 0.1);
+}
+
+.bg-warning-50 {
+    background-color: rgba(251, 191, 36, 0.1);
+}
+
+.bg-info-50 {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+.bg-danger-50 {
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+.bg-purple-50 {
+    background-color: rgba(147, 51, 234, 0.1);
+}
+
+/* Text Color Classes */
+.text-primary-600 {
+    color: #487fff;
+}
+
+.text-success-600 {
+    color: #22c55e;
+}
+
+.text-warning-600 {
+    color: #f59e0b;
+}
+
+.text-info-600 {
+    color: #3b82f6;
+}
+
+.text-danger-600 {
+    color: #ef4444;
+}
+
+.text-purple-600 {
+    color: #9333ea;
+}
+
+/* Position Utilities */
+.ps-48 {
+    padding-left: 48px !important;
+}
+
+/* Smooth Transitions */
+* {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Info Cards Hover Effect */
+.bg-info-50,
+.bg-success-50,
+.bg-warning-50 {
+    transition: all 0.3s ease;
+}
+
+.bg-info-50:hover,
+.bg-success-50:hover,
+.bg-warning-50:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+</style>
+
+<div class="dashboard-main-body">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-24 fade-in">
+        <h6 class="fw-semibold mb-0">{% if finishing %}Edit Finishing{% else %}Add New Finishing{% endif %}</h6>
+        <ul class="d-flex align-items-center gap-2">
+            <li class="fw-medium">
+                <a href="{% url 'admin_dashboard' %}" class="d-flex align-items-center gap-1 hover-text-primary">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="icon text-lg"></iconify-icon>
+                    Dashboard
+                </a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">
+                <a href="{% url 'finishing_list' %}" class="d-flex align-items-center gap-1 hover-text-primary">
+                    Finishing
+                </a>
+            </li>
+            <li>-</li>
+            <li class="fw-medium">{% if finishing %}Edit{% else %}Create{% endif %}</li>
+        </ul>
+    </div>
+
+    <div class="row gy-4">
+        <!-- Main Finishing Form Card -->
+        <div class="col-lg-8">
+            <div class="card card-animate" style="animation-delay: 0.1s;">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Finishing Details</h6>
+                </div>
+                <div class="card-body p-24">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row gy-4">
+                            <!-- Finishing Name -->
+                            <div class="col-12">
+                                <div class="info-item-animate" style="animation-delay: 0.1s;">
+                                    <label class="form-label fw-semibold text-primary-light text-sm mb-2 d-flex align-items-center gap-2">
+                                        <iconify-icon icon="solar:star-shine-linear" class="text-success-600 text-xl"></iconify-icon>
+                                        Finishing Name
+                                        <span class="text-danger-600">*</span>
+                                    </label>
+                                    <div class="icon-field">
+                                        <span class="icon">
+                                            <iconify-icon icon="solar:star-outline"></iconify-icon>
+                                        </span>
+                                        <input 
+                                            type="text" 
+                                            name="name" 
+                                            class="form-control radius-8 px-16 py-12 ps-48" 
+                                            placeholder="Enter finishing name"
+                                            value="{% if finishing %}{{ finishing.name }}{% endif %}"
+                                            required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="info-item-animate" style="animation-delay: 0.15s;">
+                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-2">
+                                        <label class="form-label fw-semibold text-primary-light text-sm mb-0 d-flex align-items-center gap-2">
+                                            <iconify-icon icon="solar:tag-price-outline" class="text-info-600 text-xl"></iconify-icon>
+                                            Count Based Rates
+                                        </label>
+                                        <button type="button" id="addRateRowBtn" class="btn btn-sm btn-outline-primary">
+                                            <iconify-icon icon="solar:add-circle-outline" class="text-lg"></iconify-icon>
+                                            Add Slab
+                                        </button>
+                                    </div>
+                                    <p class="text-sm text-secondary-light mb-3">
+                                        Add different rates for different count ranges. Leave max count empty for an open-ended slab.
+                                    </p>
+
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered align-middle mb-0" id="rateSlabsTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Side</th>
+                                                    <th>Min Count</th>
+                                                    <th>Max Count</th>
+                                                    <th>Normal Rate</th>
+                                                    <th>Press Rate</th>
+                                                    <th class="text-center">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="rateSlabsBody">
+                                                {% for row in rate_rows %}
+                                                <tr class="rate-slab-row">
+                                                    <td>
+                                                        <select name="rate_side" class="form-control">
+                                                            <option value="single" {% if row.side == 'single' %}selected{% endif %}>Single</option>
+                                                            <option value="double" {% if row.side == 'double' %}selected{% endif %}>Double</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" min="1" name="rate_min_count" class="form-control" value="{{ row.min_count }}">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" min="1" name="rate_max_count" class="form-control" value="{{ row.max_count }}">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" min="0" step="0.01" name="normal_rate" class="form-control" value="{{ row.normal_rate }}">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" min="0" step="0.01" name="press_rate" class="form-control" value="{{ row.press_rate }}">
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <button type="button" class="btn btn-sm btn-outline-danger remove-rate-row">
+                                                            <iconify-icon icon="solar:trash-bin-minimalistic-outline" class="text-lg"></iconify-icon>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Buttons -->
+                            <div class="col-12 mt-4">
+                                <div class="d-flex flex-wrap gap-3 info-item-animate">
+                                    <button type="submit" class="btn btn-primary-600 radius-8 px-20 py-11 d-flex align-items-center justify-content-center gap-2 mt-3 flex-grow-1">
+                                        {% if finishing %}
+                                            <iconify-icon icon="solar:diskette-linear" class="text-xl"></iconify-icon>
+                                            Update Finishing
+                                        {% else %}
+                                            <iconify-icon icon="solar:add-circle-linear" class="text-xl"></iconify-icon>
+                                            Save Finishing
+                                        {% endif %}
+                                    </button>
+                                    <a href="{% url 'finishing_list' %}" class="btn btn-neutral-400 radius-8 px-20 py-11 d-flex align-items-center justify-content-center gap-2 mt-3">
+                                        <iconify-icon icon="solar:close-circle-linear" class="text-xl"></iconify-icon>
+                                        Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Information Sidebar -->
+        <div class="col-lg-4">
+            <div class="card card-animate" style="animation-delay: 0.2s;">
+                <div class="card-header border-bottom bg-base py-16 px-24">
+                    <h6 class="text-lg fw-semibold mb-0">Information</h6>
+                </div>
+                <div class="card-body p-24">
+                    <!-- Instructions -->
+                    <div class="p-3 bg-info-50 radius-8 mb-3">
+                        <div class="d-flex align-items-start gap-2">
+                            <iconify-icon icon="solar:info-circle-bold" class="text-info-600 text-xl flex-shrink-0"></iconify-icon>
+                            <div>
+                                <h6 class="text-sm fw-semibold mb-1">Instructions</h6>
+                                <p class="text-sm text-secondary-light mb-0">
+                                    {% if finishing %}
+                                        Update the finishing name and its customer-wise rate slabs.
+                                    {% else %}
+                                        Add a finishing name, then create count slabs with separate normal and press rates.
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Finishing Info -->
+                    <div class="p-3 bg-success-50 radius-8 mb-3">
+                        <div class="d-flex align-items-start gap-2">
+                            <iconify-icon icon="solar:{% if finishing %}document-text-bold{% else %}star-bold{% endif %}" class="text-success-600 text-xl flex-shrink-0"></iconify-icon>
+                            <div>
+                                <h6 class="text-sm fw-semibold mb-1">{% if finishing %}Current Finishing{% else %}Finishing Types{% endif %}</h6>
+                                <p class="text-sm text-secondary-light mb-0">
+                                    {% if finishing %}
+                                        Editing: <strong>{{ finishing.name }}</strong>
+                                    {% else %}
+                                        Add different finishing options and define slab pricing for each one.
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- About Finishing -->
+                    <div class="p-3 bg-warning-50 radius-8">
+                        <div class="d-flex align-items-start gap-2">
+                            <iconify-icon icon="solar:shield-check-bold" class="text-warning-600 text-xl flex-shrink-0"></iconify-icon>
+                            <div>
+                                <h6 class="text-sm fw-semibold mb-1">About Finishing</h6>
+                                <p class="text-sm text-secondary-light mb-0">
+                                    Finishing can now include count-wise pricing, so the daily entry form can auto-fill the correct rate based on customer type and quantity.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Action -->
+                    <div class="mt-4">
+                        <a href="{% url 'finishing_list' %}" class="btn btn-neutral-400 radius-8 px-20 py-11 d-flex align-items-center justify-content-center gap-2 w-100 mt-3">
+                            <iconify-icon icon="solar:list-linear" class="text-xl"></iconify-icon>
+                            View All Finishings
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const rateSlabsBody = document.getElementById('rateSlabsBody');
+    const addRateRowBtn = document.getElementById('addRateRowBtn');
+
+    function buildRateRow() {
+        const row = document.createElement('tr');
+        row.className = 'rate-slab-row';
+        row.innerHTML = `
+            <td>
+                <select name="rate_side" class="form-control">
+                    <option value="single">Single</option>
+                    <option value="double">Double</option>
+                </select>
+            </td>
+            <td><input type="number" min="1" name="rate_min_count" class="form-control"></td>
+            <td><input type="number" min="1" name="rate_max_count" class="form-control"></td>
+            <td><input type="number" min="0" step="0.01" name="normal_rate" class="form-control"></td>
+            <td><input type="number" min="0" step="0.01" name="press_rate" class="form-control"></td>
+            <td class="text-center">
+                <button type="button" class="btn btn-sm btn-outline-danger remove-rate-row">
+                    <iconify-icon icon="solar:trash-bin-minimalistic-outline" class="text-lg"></iconify-icon>
+                </button>
+            </td>
+        `;
+        return row;
+    }
+
+    addRateRowBtn.addEventListener('click', function () {
+        rateSlabsBody.appendChild(buildRateRow());
+    });
+
+    rateSlabsBody.addEventListener('click', function (event) {
+        const removeBtn = event.target.closest('.remove-rate-row');
+        if (!removeBtn) {
+            return;
+        }
+
+        const rows = rateSlabsBody.querySelectorAll('.rate-slab-row');
+        if (rows.length === 1) {
+            rows[0].querySelectorAll('input').forEach(input => {
+                input.value = '';
+            });
+            return;
+        }
+
+        removeBtn.closest('.rate-slab-row').remove();
+    });
+});
+</script>
+
+{% endblock %}

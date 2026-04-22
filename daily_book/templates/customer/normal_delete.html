@@ -1,0 +1,16 @@
+{% extends base_template %}
+{% block content %}
+<div class="container py-24">
+  <div class="card shadow-sm p-24">
+    <h4 class="mb-24 text-danger">Delete Normal Customer</h4>
+
+    <p>Are you sure you want to delete <strong>{{ customer.name }}</strong>?</p>
+
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Yes, Delete</button>
+      <a href="{% url 'normal_customer_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}
